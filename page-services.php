@@ -419,13 +419,8 @@ get_header();
     display: grid;
     grid-template-columns: 1fr;
     gap: 20px;
-}
-
-@media (min-width: 768px) {
-    .faq-grid {
-        grid-template-columns: repeat(2, 1fr);
-        align-items: start;
-    }
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .faq-card {
@@ -522,6 +517,15 @@ get_header();
 
 .faq-answer-content p:last-child {
     margin-bottom: 0;
+}
+
+.faq-answer-content ul {
+    margin: 0.75rem 0 0.5rem 1.25rem;
+    padding: 0;
+}
+
+.faq-answer-content li {
+    margin: 0.35rem 0;
 }
 
 .faq-header {
@@ -846,60 +850,8 @@ get_header();
             </div>
 
             <div class="faq-grid faq-accordion">
-                <!-- Карточка 1 -->
                 <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                    <button class="faq-question faq-card-header">
-                        <span class="faq-card-title" itemprop="name">Кому принадлежит пресс-форма или фильера после изготовления?</span>
-                        <div class="faq-icon-wrapper">
-                            <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </div>
-                    </button>
-                    <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div class="faq-answer-content" itemprop="text">
-                            <p>Если вы оплачиваете изготовление оснастки, она является вашей собственностью. Мы берем её на ответственное хранение и проводим бесплатное техническое обслуживание на протяжении всего срока сотрудничества.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Карточка 2 -->
-                <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                    <button class="faq-question faq-card-header">
-                        <span class="faq-card-title" itemprop="name">С какими видами пластиков вы работаете?</span>
-                        <div class="faq-icon-wrapper">
-                            <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </div>
-                    </button>
-                    <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div class="faq-answer-content" itemprop="text">
-                            <p>Мы перерабатываем широкий спектр полимеров: жесткий и мягкий ПВХ, полиэтилен (PE), полипропилен (PP), АБС-пластик. Наши технологи помогут подобрать сырье с нужными характеристиками.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Карточка 3 -->
-                <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                    <button class="faq-question faq-card-header">
-                        <span class="faq-card-title" itemprop="name">У меня нет чертежа, только образец или идея. Вы поможете?</span>
-                        <div class="faq-icon-wrapper">
-                            <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </div>
-                    </button>
-                    <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div class="faq-answer-content" itemprop="text">
-                            <p>Да. Оказываем услуги реверс-инжиниринга. Мы можем разработать 3D-модель и чертеж на основе вашего образца, эскиза или технического задания.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Карточка 4 -->
-                <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                    <button class="faq-question faq-card-header">
+                    <button class="faq-question faq-card-header" type="button">
                         <span class="faq-card-title" itemprop="name">Каков минимальный объем заказа?</span>
                         <div class="faq-icon-wrapper">
                             <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -909,14 +861,101 @@ get_header();
                     </button>
                     <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                         <div class="faq-answer-content" itemprop="text">
-                            <p>Минимальный объем зависит от технологии. Для литья под давлением — от 1000 штук, для экструзии — определяется погонажем (оптимально от 1000–3000 метров). Детали согласовываются на этапе коммерческого предложения.</p>
+                            <p>Мы ориентированы на серийное промышленное производство.</p>
+                            <ul>
+                                <li>Для литья под давлением: от 1000 единиц изделий.</li>
+                                <li>Для экструзии: оптимальная партия — от 1000 до 3000 погонных метров (в зависимости от веса профиля).</li>
+                            </ul>
+                            <p>Для постоянных клиентов и крупных проектов мы готовы обсуждать индивидуальные условия и тестовые партии меньшего объема.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Карточка 5 -->
                 <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                    <button class="faq-question faq-card-header">
+                    <button class="faq-question faq-card-header" type="button">
+                        <span class="faq-card-title" itemprop="name">У меня нет чертежа, только образец или идея. Вы поможете?</span>
+                        <div class="faq-icon-wrapper">
+                            <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                        <div class="faq-answer-content" itemprop="text">
+                            <p>Да. Совместно с разработчиками оснастки мы оказываем услуги реверс-инжиниринга. Мы можем разработать 3D-модель и чертеж на основе вашего физического образца, эскиза или технического задания, адаптировав изделие под технологии экструзии или литья.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <button class="faq-question faq-card-header" type="button">
+                        <span class="faq-card-title" itemprop="name">С какими видами пластиков вы работаете?</span>
+                        <div class="faq-icon-wrapper">
+                            <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                        <div class="faq-answer-content" itemprop="text">
+                            <p>Мы перерабатываем широкий спектр полимеров. Основные материалы: жесткий и мягкий ПВХ (PVC), полиэтилен (PE), полипропилен (PP), АБС-пластик (ABS). Если вашему проекту требуется специфический компаунд, наши технологи помогут подобрать сырье с нужными характеристиками (морозостойкость, УФ-стабильность, ударопрочность).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <button class="faq-question faq-card-header" type="button">
+                        <span class="faq-card-title" itemprop="name">Как быстро вы можете изготовить профиль или деталь?</span>
+                        <div class="faq-icon-wrapper">
+                            <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                        <div class="faq-answer-content" itemprop="text">
+                            <ul>
+                                <li>Если есть готовая оснастка: запуск производства занимает от нескольких дней до 2 недель (в зависимости от загрузки линий).</li>
+                                <li>Если нужна оснастка «с нуля»: процесс занимает от 2 до 4 месяцев (включая проектирование, производство пресс-формы/фильеры и пуско-наладку).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <button class="faq-question faq-card-header" type="button">
+                        <span class="faq-card-title" itemprop="name">Какие виды финишной обработки доступны?</span>
+                        <div class="faq-icon-wrapper">
+                            <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                        <div class="faq-answer-content" itemprop="text">
+                            <p>Мы предлагаем нарезку в размер, сверление отверстий, фрезеровку пазов, нанесение двухстороннего скотча и маркировку. По запросу возможно изготовление профилей с заданным цветом по шкале RAL.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <button class="faq-question faq-card-header" type="button">
+                        <span class="faq-card-title" itemprop="name">Кому принадлежит пресс-форма или фильера после изготовления?</span>
+                        <div class="faq-icon-wrapper">
+                            <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                        <div class="faq-answer-content" itemprop="text">
+                            <p>Если вы оплачиваете изготовление оснастки, она является вашей 100% собственностью. Мы берем её на ответственное хранение и проводим бесплатное техническое обслуживание (чистку, смазку, консервацию) на протяжении всего срока сотрудничества. Вы в любой момент можете забрать оснастку.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <button class="faq-question faq-card-header" type="button">
                         <span class="faq-card-title" itemprop="name">Предоставляете ли вы образцы продукции?</span>
                         <div class="faq-icon-wrapper">
                             <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -931,9 +970,8 @@ get_header();
                     </div>
                 </div>
 
-                <!-- Карточка 6 -->
                 <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                    <button class="faq-question faq-card-header">
+                    <button class="faq-question faq-card-header" type="button">
                         <span class="faq-card-title" itemprop="name">Как осуществляется контроль качества?</span>
                         <div class="faq-icon-wrapper">
                             <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -948,26 +986,8 @@ get_header();
                     </div>
                 </div>
 
-                <!-- Карточка 7 -->
                 <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                    <button class="faq-question faq-card-header">
-                        <span class="faq-card-title" itemprop="name">Какие виды финишной обработки доступны?</span>
-                        <div class="faq-icon-wrapper">
-                            <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </div>
-                    </button>
-                    <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div class="faq-answer-content" itemprop="text">
-                            <p>Мы предлагаем нарезку в размер, сверление отверстий, фрезеровку пазов, нанесение двухстороннего скотча и маркировку. По запросу возможно изготовление профилей с заданным цветом по RAL.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Карточка 8 -->
-                <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                    <button class="faq-question faq-card-header">
+                    <button class="faq-question faq-card-header" type="button">
                         <span class="faq-card-title" itemprop="name">Есть ли у вас доставка?</span>
                         <div class="faq-icon-wrapper">
                             <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -977,7 +997,7 @@ get_header();
                     </button>
                     <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                         <div class="faq-answer-content" itemprop="text">
-                            <p>Наше производство находится в Московской области. Мы отгружаем продукцию по всей России и странам СНГ через транспортные компании или отдельными машинами. Возможен самовывоз со склада готовой продукции.</p>
+                            <p>Наше производство находится в Московской области. Мы отгружаем продукцию по всей России и странам СНГ через транспортные компании (Деловые Линии, ПЭК и др.) или отдельными машинами. Возможен самовывоз со склада готовой продукции.</p>
                         </div>
                     </div>
                 </div>
