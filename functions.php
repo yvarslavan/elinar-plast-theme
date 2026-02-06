@@ -1117,13 +1117,9 @@ function elinar_scripts()
         wp_enqueue_style('injection-video-player', $theme_uri . '/assets/css/injection-video-player.css', array('elinar-products'), '1.0.0');
         wp_enqueue_script('injection-video-player', $theme_uri . '/assets/js/injection-video-player.js', array(), '1.0.0', true);
 
-        // GSAP для анимаций Timeline
+        // GSAP для анимаций (используется для других элементов на странице)
         wp_enqueue_script('gsap', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js', array(), '3.12.5', true);
         wp_enqueue_script('gsap-scrolltrigger', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js', array('gsap'), '3.12.5', true);
-
-        // Products Timeline
-        wp_enqueue_style('products-timeline', $theme_uri . '/assets/css/products-timeline.css', array(), '1.0.0');
-        wp_enqueue_script('products-timeline', $theme_uri . '/assets/js/products-timeline.js', array('gsap', 'gsap-scrolltrigger'), '1.0.0', true);
 
         // PDF Generation
         wp_enqueue_script('jspdf', 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', array(), '2.5.1', true);
@@ -1136,13 +1132,29 @@ function elinar_scripts()
         ));
     }
 
-    // Audit Form - используется на страницах Products, Technologies, About, Contacts и Front Page
-    $needs_audit_form = $is_front_page || $is_products_page || $is_tech_page || $is_about_page || $is_contacts_page;
+    // Audit Form - используется на страницах Products, Technologies, About, Contacts, Services и Front Page
+    $is_services_page = is_page_template('page-services.php') || strpos($request_uri, 'services') !== false;
+    $needs_audit_form = $is_front_page || $is_products_page || $is_tech_page || $is_about_page || $is_contacts_page || $is_services_page;
     if ($needs_audit_form) {
         $audit_form_ver = defined('WP_DEBUG') && WP_DEBUG ? '1.0.3.' . time() : '1.0.3';
         wp_enqueue_style('audit-form', $theme_uri . '/assets/css/audit-form.css', array(), $audit_form_ver);
         wp_enqueue_script('audit-form', $theme_uri . '/assets/js/audit-form.js', array(), '1.0.1', true);
     }
+
+    // Products Timeline - теперь используется на странице Services вместо Products
+    if ($is_services_page) {
+        // Сначала подключаем GSAP (зависимости), чтобы они были доступны при подключении таймлайна
+        if (!wp_script_is('gsap', 'enqueued')) {
+            wp_enqueue_script('gsap', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js', array(), '3.12.5', true);
+        }
+        if (!wp_script_is('gsap-scrolltrigger', 'enqueued')) {
+            wp_enqueue_script('gsap-scrolltrigger', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js', array('gsap'), '3.12.5', true);
+        }
+
+        wp_enqueue_style('products-timeline', $theme_uri . '/assets/css/products-timeline.css', array(), '1.0.0');
+        wp_enqueue_script('products-timeline', $theme_uri . '/assets/js/products-timeline.js', array('gsap', 'gsap-scrolltrigger'), '1.0.0', true);
+    }
+
 
     // Форма запроса КП – только на странице "Запрос расчета"
     if ($is_quote_page) {

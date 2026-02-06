@@ -568,6 +568,151 @@ get_header();
         </div>
     </section>
 
+    <!-- FAQ Section -->
+    <section class="section bg-light" itemscope itemtype="https://schema.org/FAQPage">
+        <div class="container">
+            <div class="section-title">
+                <h2>Самые Популярные Вопросы</h2>
+                <p>Коротко и по делу о минимальных партиях, сроках и материалах.</p>
+            </div>
+            <div class="faq-accordion faq-accordion-compact">
+                <div class="faq-item" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <button class="faq-question" type="button">
+                        <span itemprop="name">Каков минимальный объем заказа?</span>
+                        <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                        <div class="faq-answer-content" itemprop="text">
+                            <p>Мы ориентированы на серийное промышленное производство.</p>
+                            <ul>
+                                <li>Для литья под давлением: от 1000 единиц изделий.</li>
+                                <li>Для экструзии: оптимальная партия — от 1000 до 3000 погонных метров (в зависимости от веса профиля).</li>
+                            </ul>
+                            <p>Для постоянных клиентов и крупных проектов мы готовы обсуждать индивидуальные условия и тестовые партии меньшего объема.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <button class="faq-question" type="button">
+                        <span itemprop="name">У меня нет чертежа, только образец или идея. Вы поможете?</span>
+                        <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                        <div class="faq-answer-content" itemprop="text">
+                            <p>Да. Совместно с разработчиками оснастки мы оказываем услуги реверс-инжиниринга. Мы можем разработать 3D-модель и чертеж на основе вашего физического образца, эскиза или технического задания, адаптировав изделие под технологии экструзии или литья.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <button class="faq-question" type="button">
+                        <span itemprop="name">С какими видами пластиков вы работаете?</span>
+                        <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                        <div class="faq-answer-content" itemprop="text">
+                            <p>Мы перерабатываем широкий спектр полимеров. Основные материалы: жесткий и мягкий ПВХ (PVC), полиэтилен (PE), полипропилен (PP), АБС-пластик (ABS). Если вашему проекту требуется специфический компаунд, наши технологи помогут подобрать сырье с нужными характеристиками (морозостойкость, УФ-стабильность, ударопрочность).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <button class="faq-question" type="button">
+                        <span itemprop="name">Как быстро вы можете изготовить профиль или деталь?</span>
+                        <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                        <div class="faq-answer-content" itemprop="text">
+                            <ul>
+                                <li>Если есть готовая оснастка: запуск производства занимает от нескольких дней до 2 недель (в зависимости от загрузки линий).</li>
+                                <li>Если нужна оснастка «с нуля»: процесс занимает от 2 до 4 месяцев (включая проектирование, производство пресс-формы/фильеры и пуско-наладку).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <button class="faq-question" type="button">
+                        <span itemprop="name">Какие виды финишной обработки доступны?</span>
+                        <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                        <div class="faq-answer-content" itemprop="text">
+                            <p>Мы предлагаем нарезку в размер, сверление отверстий, фрезеровку пазов, нанесение двухстороннего скотча и маркировку. По запросу возможно изготовление профилей с заданным цветом по шкале RAL.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <button class="faq-question" type="button">
+                        <span itemprop="name">Кому принадлежит пресс-форма или фильера после изготовления?</span>
+                        <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                        <div class="faq-answer-content" itemprop="text">
+                            <p>Если вы оплачиваете изготовление оснастки, она является вашей 100% собственностью. Мы берем её на ответственное хранение и проводим бесплатное техническое обслуживание (чистку, смазку, консервацию) на протяжении всего срока сотрудничества. Вы в любой момент можете забрать оснастку.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <button class="faq-question" type="button">
+                        <span itemprop="name">Предоставляете ли вы образцы продукции?</span>
+                        <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                        <div class="faq-answer-content" itemprop="text">
+                            <p>Да. При запуске нового изделия мы обязательно предоставляем опытные образцы (отливки или метры профиля) для утверждения геометрии и качества перед запуском серии. Образцы стандартной продукции могут быть предоставлены по запросу.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <button class="faq-question" type="button">
+                        <span itemprop="name">Как осуществляется контроль качества?</span>
+                        <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                        <div class="faq-answer-content" itemprop="text">
+                            <p>На производстве внедрена многоступенчатая система контроля. Мы проверяем входное сырье, контролируем геометрию первых изделий при запуске линии и проводим выборочную проверку партии в процессе производства. При необходимости предоставляем паспорт качества на партию.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <button class="faq-question" type="button">
+                        <span itemprop="name">Есть ли у вас доставка?</span>
+                        <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                        <div class="faq-answer-content" itemprop="text">
+                            <p>Наше производство находится в Московской области. Мы отгружаем продукцию по всей России и странам СНГ через транспортные компании (Деловые Линии, ПЭК и др.) или отдельными машинами. Возможен самовывоз со склада готовой продукции.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- CTA Section -->
     <section class="section bg-light">
         <div class="container">
