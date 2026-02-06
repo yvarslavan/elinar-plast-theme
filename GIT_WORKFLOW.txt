@@ -1,0 +1,17 @@
+Рабочая папка для Git
+- C:\Users\VARSLAVAN\Local Sites\elinarplast\app\public\wp-content\themes\elinar-plast
+- Репозиторий: https://github.com/yvarslavan/elinar-plast-theme
+
+Быстрый рабочий цикл
+1) Проверка статуса:
+   git status -s -b
+2) Добавить изменения:
+   git add -A
+3) Коммит:
+   git commit -m "описание правок"
+4) Отправка:
+   git push
+
+Важно
+- Пушим только из папки темы.
+- Видео в assets\video не пушим (они в .gitignore).
