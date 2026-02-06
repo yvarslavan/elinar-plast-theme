@@ -1,14 +1,14 @@
 # Video files (too large for git)
-wp-content/themes/elinar-plast/assets/video/*.mp4
-wp-content/themes/elinar-plast/assets/video/*.mov
-wp-content/themes/elinar-plast/assets/video/*.avi
+assets/video/*.mp4
+assets/video/*.mov
+assets/video/*.avi
 
 # Oracle JDK (should not be in repository)
 wp-content/themes/elinar-plast/oracleJdk-25/
 
 # Contact form log file
-wp-content/themes/elinar-plast/contact-form-log.txt
-wp-content/themes/elinar-plast/assets/images/video/*.mp4
+contact-form-log.txt
+assets/images/video/*.mp4
 
 # WordPress backups (All-in-One WP Migration)
 wp-content/ai1wm-backups/
@@ -23,14 +23,14 @@ playwright/.cache/
 
 # Executable files
 *.exe
-wp-content/themes/elinar-plast/tailwind.exe
+tailwind.exe
 
 # Log files
 logs/
 *.log
 
 # Debug files
-app/public/.cursor/
+.cursor/
 
 # Large files and directories
 *.sql
@@ -58,6 +58,6 @@ node_modules/
 
 # Additional directories
 conf/
-app/logs/
-app/sql/
-app/public/
+logs/
+sql/
+public/
