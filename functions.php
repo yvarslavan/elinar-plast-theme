@@ -2825,7 +2825,13 @@ if (defined('WP_DEBUG') && WP_DEBUG || current_user_can('manage_options') || $_S
 add_action('wp_enqueue_scripts', 'elinar_enqueue_scroll_down_assets');
 function elinar_enqueue_scroll_down_assets() {
     // Load solely on relevant pages
-    if (is_front_page() || is_page_template('page-about.php') || is_page_template('page-technologies-production.php')) {
+    if (
+        is_front_page()
+        || is_page_template('page-about.php')
+        || is_page_template('page-technologies-production.php')
+        || is_page_template('page-services.php')
+        || is_page('services')
+    ) {
 
         wp_enqueue_style(
             'elinar-scroll-down',

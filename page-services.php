@@ -52,11 +52,11 @@ get_header();
    ============================================ */
 .services-hero {
     position: relative;
-    min-height: 70vh;
+    min-height: 85vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+    background: #0f172a;
     color: #fff;
     overflow: hidden;
     padding: 160px 24px 100px;
@@ -76,7 +76,7 @@ get_header();
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.3;
+    opacity: 0.75;
 }
 
 .services-hero__overlay {
@@ -85,7 +85,7 @@ get_header();
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(15,23,42,0.85) 0%, rgba(30,58,95,0.7) 100%);
+    background: linear-gradient(135deg, rgba(0, 25, 50, 0.5) 0%, rgba(0, 25, 50, 0.5) 100%);
     z-index: 2;
 }
 
@@ -99,17 +99,25 @@ get_header();
 .services-hero__title {
     font-size: clamp(2rem, 5vw, 3.5rem);
     font-weight: 800;
-    color: #fff;
+    color: #ffffff !important;
     margin-bottom: 1.5rem;
-    line-height: 1.1;
+    line-height: 1.15;
     letter-spacing: -0.02em;
+    text-transform: none;
+    font-family: 'Manrope', sans-serif;
+    text-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
+.services-hero__title .text-accent {
+    color: #F39C12;
 }
 
 .services-hero__subtitle {
     font-size: 1.25rem;
-    color: rgba(255,255,255,0.9);
+    color: #ffffff !important;
     margin-bottom: 2.5rem;
     line-height: 1.6;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
 }
 
 .services-hero__cta {
@@ -129,6 +137,138 @@ get_header();
     background: #d97706;
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(245,158,11,0.5);
+}
+
+.services-hero .scroll-down-wrapper {
+    bottom: 90px;
+}
+
+/* ============================================
+   OVERLAP INFO BLOCK
+   ============================================ */
+.services-overlap {
+    position: relative;
+    padding: 0 24px 90px;
+    --overlap-offset: 100px;
+}
+
+.services-overlap::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--overlap-offset);
+    bottom: 0;
+    background: #E9EDF3;
+    z-index: 0;
+}
+
+.services-overlap .services-container {
+    position: relative;
+    z-index: 1;
+}
+
+.services-overlap__card {
+    background: #ffffff;
+    padding: 60px 80px;
+    margin-top: calc(var(--overlap-offset) * -1);
+    position: relative;
+    z-index: 10;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    will-change: opacity, transform;
+}
+
+.services-overlap__card.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.services-overlap__grid {
+    display: grid;
+    grid-template-columns: 35% 1fr;
+    gap: 48px;
+    align-items: start;
+}
+
+.services-overlap__title h2 {
+    font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.services-overlap__title .text-accent {
+    color: #f59e0b;
+}
+
+.services-overlap__content p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #475569;
+    margin: 0 0 1rem 0;
+}
+
+.services-overlap__content p:last-of-type {
+    margin-bottom: 0;
+}
+
+.services-overlap__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.services-overlap__tag {
+    background: #f3f4f6;
+    color: #1f2937;
+    border-radius: 4px;
+    padding: 5px 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+@media (max-width: 1024px) {
+    .services-overlap {
+        --overlap-offset: 80px;
+    }
+
+    .services-overlap__card {
+        padding: 48px 48px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .services-overlap__card {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .services-overlap {
+        padding: 0 16px 64px;
+        --overlap-offset: 60px;
+    }
+
+    .services-overlap__card {
+        padding: 36px 28px;
+    }
+
+    .services-overlap__grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
 }
 
 /* ============================================
@@ -209,6 +349,19 @@ get_header();
 .services-timeline-section {
     padding: 80px 24px;
     background: #f8fafc;
+}
+
+.process-timeline-section .timeline-content {
+    background: linear-gradient(135deg, rgba(30, 40, 60, 0.55) 0%, rgba(30, 40, 60, 0.18) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.process-timeline-section .timeline-item:hover .timeline-content {
+    background: linear-gradient(135deg, rgba(30, 40, 60, 0.65) 0%, rgba(30, 40, 60, 0.25) 100%);
+    border-color: rgba(249, 115, 22, 0.25);
 }
 
 .services-section-header {
@@ -426,16 +579,19 @@ get_header();
 .faq-card {
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border-left: 4px solid #124E5B;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #124E5B;
 }
 
 .faq-card-header {
     width: 100%;
     text-align: left;
-    padding: 20px 24px;
-    background: #fff;
+    padding: 22px 24px;
+    background: #f8fafc;
     border: none;
     display: flex;
     justify-content: space-between;
@@ -446,68 +602,73 @@ get_header();
 
 .faq-card-title {
     font-weight: 700;
-    color: #1e293b;
-    font-size: 1.1rem;
+    color: #111827;
+    font-size: 1.125rem;
     line-height: 1.4;
     transition: color 0.3s ease;
     padding-right: 16px;
     font-family: 'Manrope', sans-serif;
+    letter-spacing: -0.01em;
 }
 
 .faq-icon-wrapper {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #f1f5f9;
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: background-color 0.3s ease;
+    transition: none;
     cursor: pointer;
 }
 
 .faq-arrow {
     width: 20px;
     height: 20px;
-    stroke: #64748b;
+    stroke: #F29F05;
     stroke-width: 2.5;
     fill: none;
-    transition: stroke 0.3s ease, transform 0.3s ease;
+    transition: transform 0.3s ease;
 }
 
 /* Active State */
 .faq-item[aria-expanded="true"] .faq-card-header {
-    background-color: #0f4c5c;
+    background-color: #f8fafc;
 }
 
 .faq-item[aria-expanded="true"] .faq-card-title {
-    color: #ffffff;
+    color: #111827;
 }
 
 .faq-item[aria-expanded="true"] .faq-icon-wrapper {
-    background-color: #f59e0b;
+    transform: none;
 }
 
 .faq-item[aria-expanded="true"] .faq-arrow {
-    stroke: #ffffff;
     transform: rotate(180deg);
 }
 
 .faq-card-body {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.4s ease-in-out;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: max-height 0.5s ease, opacity 0.35s ease, transform 0.35s ease;
+    will-change: max-height, opacity, transform;
     background: #fff;
 }
 
 .faq-item[aria-expanded="true"] .faq-card-body {
     max-height: 1000px;
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .faq-answer-content {
-    padding: 0 24px 24px 24px;
-    color: #334155;
+    padding: 20px 40px 30px 20px;
+    color: #475569;
     line-height: 1.6;
 }
 
@@ -517,6 +678,11 @@ get_header();
 
 .faq-answer-content p:last-child {
     margin-bottom: 0;
+}
+
+.faq-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
 }
 
 .faq-answer-content ul {
@@ -621,13 +787,44 @@ get_header();
     <!-- Блок 1: Hero-секция -->
     <section class="services-hero">
         <div class="services-hero__bg">
-            <img src="https://via.placeholder.com/1920x800/1e3a5f/1e3a5f?text=+" alt="Hero background" class="services-hero__placeholder">
+            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/contract-plastic-manufacturing-hero.webp" alt="Контрактное производство изделий из пластмасс" class="services-hero__placeholder" loading="eager" decoding="sync">
             <div class="services-hero__overlay"></div>
         </div>
         <div class="services-hero__content">
-            <h1 class="services-hero__title">Контрактное производство изделий из пластмасс полного цикла</h1>
-            <p class="services-hero__subtitle">Литье под давлением и экструзия. От разработки чертежа и пресс-формы до серийной партии.</p>
-            <a href="#contact-form" class="services-hero__cta">Рассчитать проект</a>
+            <h1 class="services-hero__title">
+                Контрактное производство полимерных изделий <span class="text-accent">полного цикла</span>
+            </h1>
+            <p class="services-hero__subtitle">Литье под давлением и экструзия. Берем на себя всё: от проектирования пресс-форм до выпуска серийной партии.</p>
+            <a href="#contact-form" class="services-hero__cta">Рассчитать стоимость проекта</a>
+        </div>
+
+        <?php get_template_part('template-parts/scroll-down-btn'); ?>
+    </section>
+
+    <!-- Overlap Info Block -->
+    <section class="services-overlap">
+        <div class="services-container">
+            <div class="services-overlap__card">
+                <div class="services-overlap__grid">
+                    <div class="services-overlap__title">
+                        <h2>Производство полимерных изделий <span class="text-accent">любой формы и назначения</span> — ключевая компетенция «Элинар Пласт»</h2>
+                    </div>
+                    <div class="services-overlap__content">
+                        <p>Мы выполняем заказы любой сложности: от серийных комплектующих для бытовой техники до высокоточных профилей для светотехники и строительства. Парк современного экструзионного и литьевого оборудования позволяет нам выдерживать строгие допуски и гарантировать стабильную геометрию изделий.</p>
+                        <p>Для решения задач заказчика мы работаем с широким спектром полимеров. Сегодня мы выпускаем: сложные технические профили, термовставки, элементы для световых шинопроводов, комплектующие для спецтранспорта, а также фаскообразователи и втулки.</p>
+                        <div class="services-overlap__tags" aria-label="Материалы">
+                            <span class="services-overlap__tag">ПВХ</span>
+                            <span class="services-overlap__tag">АБС-пластик</span>
+                            <span class="services-overlap__tag">Полиэтилен (PE)</span>
+                            <span class="services-overlap__tag">Полипропилен (PP)</span>
+                            <span class="services-overlap__tag">Поликарбонат (PC)</span>
+                            <span class="services-overlap__tag">Полистирол (PS)</span>
+                            <span class="services-overlap__tag">Полиамид (PA)</span>
+                            <span class="services-overlap__tag">ТЭП</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -1071,6 +1268,23 @@ get_header();
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         });
+    }
+
+    // Overlap block reveal on scroll
+    const overlapCard = document.querySelector('.services-overlap__card');
+    if (overlapCard && 'IntersectionObserver' in window) {
+        const overlapObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.2 });
+
+        overlapObserver.observe(overlapCard);
+    } else if (overlapCard) {
+        overlapCard.classList.add('is-visible');
     }
 </script>
 
