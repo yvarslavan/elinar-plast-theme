@@ -14,8 +14,6 @@ assets/images/video/*.mp4
 wp-content/ai1wm-backups/
 *.wpress
 
-# Markdown documentation files
-*.md
 
 test-results/
 playwright-report/
