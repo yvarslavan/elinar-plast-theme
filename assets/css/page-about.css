@@ -1434,6 +1434,7 @@
 .section-clients-trust {
     padding: 100px 0;
     background-color: #ffffff;
+    overflow: visible;
 }
 
 .section-header-modern {
@@ -1462,27 +1463,33 @@
     padding: 100px 0 60px;
     position: relative;
     width: 100%;
-    overflow: hidden;
+    overflow: visible;
+}
+
+/* Viewport to clip ticker horizontally while allowing tooltips to overflow vertically */
+.logo-ticker-viewport {
+    position: relative;
+    overflow: visible;
 }
 
 /* Fade effect using pseudo-elements instead of mask-image (to prevent tooltip clipping) */
-.logo-ticker-container::before,
-.logo-ticker-container::after {
+.logo-ticker-viewport::before,
+.logo-ticker-viewport::after {
     content: "";
     position: absolute;
     top: 0;
     bottom: 0;
     width: 150px;
-    z-index: 5;
+    z-index: 1;
     pointer-events: none;
 }
 
-.logo-ticker-container::before {
+.logo-ticker-viewport::before {
     left: 0;
     background: linear-gradient(to right, #ffffff, transparent);
 }
 
-.logo-ticker-container::after {
+.logo-ticker-viewport::after {
     right: 0;
     background: linear-gradient(to left, #ffffff, transparent);
 }
@@ -1492,6 +1499,8 @@
     width: fit-content;
     animation: ticker-slide 40s linear infinite;
     overflow: visible;
+    position: relative;
+    z-index: 2;
 }
 
 /* Pause on hover */
@@ -1519,6 +1528,8 @@
     position: relative;
     cursor: default;
     transition: transform 0.3s ease;
+    overflow: visible;
+    z-index: 2;
 }
 
 /* Hit Area for Tooltip and Hover */
@@ -1557,19 +1568,22 @@
     position: absolute;
     bottom: 100%;
     left: 50%;
-    transform: translateX(-50%) translateY(-10px);
+    transform: translateX(-50%) translateY(-2px);
     background: #1e293b;
     color: #ffffff;
-    padding: 10px 16px;
+    padding: 18px 16px 12px;
     border-radius: 8px;
     font-size: 0.85rem;
     font-weight: 500;
     width: 200px;
     text-align: center;
+    line-height: 1.5;
+    box-sizing: border-box;
+    white-space: normal;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
-    z-index: 100;
+    z-index: 1000;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
@@ -1590,14 +1604,14 @@
 .ticker-item.tooltip-active[data-tooltip]::before {
     opacity: 1;
     visibility: visible;
-    transform: translateX(-50%) translateY(-15px);
+    transform: translateX(-50%) translateY(-8px);
 }
 
 .ticker-item:hover[data-tooltip]::after,
 .ticker-item.tooltip-active[data-tooltip]::after {
     opacity: 1;
     visibility: visible;
-    transform: translateX(-50%) translateY(-5px);
+    transform: translateX(-50%) translateY(-2px);
 }
 
 /* Footer Note */

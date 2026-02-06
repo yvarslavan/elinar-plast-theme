@@ -1015,11 +1015,11 @@ get_header();
                 $certificates = [
                     [
                         'url' => $cert_uri . 'Благодарность.jpg',
-                        'caption' => 'Благодарность Губернатора Московской области Генеральному директору Ураковой С.А.'
+                        'caption' => 'Благодарность Губернатора Московской области директору Ураковой С.А.'
                     ],
                     [
                         'url' => $cert_uri . 'Почетная Грамота.jpg',
-                        'caption' => 'Почетная грамота Московской областной Думы коллективу общества'
+                        'caption' => 'Почетная грамота Московской областной Думы коллективу Общества'
                     ],
                     [
                         'url' => $cert_uri . 'Благодарственное письмо.jpg',
@@ -1062,7 +1062,7 @@ get_header();
                 <div class="testimonial-card">
                     <div class="testimonial-header">
                         <div class="testimonial-avatar">
-                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=400&h=400&fit=crop"
+                            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/testimonials/client-1.jpg"
                                 alt="Артем Ковальчук"
                                 loading="lazy"
                                 onerror="this.src='<?php echo get_template_directory_uri(); ?>/assets/images/avatar-placeholder.svg'">
@@ -1086,7 +1086,7 @@ get_header();
                 <div class="testimonial-card">
                     <div class="testimonial-header">
                         <div class="testimonial-avatar">
-                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&h=400&fit=crop"
+                            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/testimonials/client-2.jpg"
                                 alt="Наталья Верещагина"
                                 loading="lazy"
                                 onerror="this.src='<?php echo get_template_directory_uri(); ?>/assets/images/avatar-placeholder.svg'">
@@ -1110,7 +1110,7 @@ get_header();
                 <div class="testimonial-card">
                     <div class="testimonial-header">
                         <div class="testimonial-avatar">
-                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400&h=400&fit=crop"
+                            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/testimonials/client-3.jpg"
                                 alt="Игорь Данилов"
                                 loading="lazy"
                                 onerror="this.src='<?php echo get_template_directory_uri(); ?>/assets/images/avatar-placeholder.svg'">
@@ -1144,7 +1144,8 @@ get_header();
     </div>
 
     <div class="logo-ticker-container">
-        <div class="logo-ticker-track">
+        <div class="logo-ticker-viewport">
+            <div class="logo-ticker-track">
             <!-- First Group -->
             <div class="ticker-item" data-tooltip="Профили для стеклянных полок холодильников LG Electronics">
                 <img src="<?php echo get_template_directory_uri(); ?>/assets/images/LG_Electronic.webp" alt="LG Electronics">
@@ -1189,6 +1190,7 @@ get_header();
             </div>
             <div class="ticker-item" data-tooltip="Отделочные профили для строительной отрасли">
                 <img src="<?php echo get_template_directory_uri(); ?>/assets/images/sb.webp" alt="SB">
+            </div>
             </div>
         </div>
     </div>

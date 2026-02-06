@@ -2867,14 +2867,14 @@ li.menu-services:hover ul.sub-menu,
 /* Custom Yandex Map Pin */
 .elinar-map-pin {
     position: relative;
-    width: 50px;
-    height: 60px;
+    width: 90px;
+    height: 108px;
     cursor: pointer;
 }
 
 .elinar-map-pin-inner {
-    width: 50px;
-    height: 50px;
+    width: 90px;
+    height: 90px;
     background: #fff;
     border-radius: 50%;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -2892,8 +2892,8 @@ li.menu-services:hover ul.sub-menu,
 }
 
 .elinar-map-pin-inner img {
-    width: 36px;
-    height: 36px;
+    width: 68px;
+    height: 68px;
     object-fit: contain;
 }
 
@@ -2904,9 +2904,9 @@ li.menu-services:hover ul.sub-menu,
     transform: translateX(-50%);
     width: 0;
     height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 12px solid #1e3a5f;
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+    border-top: 20px solid #1e3a5f;
     filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
 }
 

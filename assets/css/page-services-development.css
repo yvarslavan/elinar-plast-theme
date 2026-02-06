@@ -1,0 +1,194 @@
+/* ============================================
+   PAGE SERVICES DEVELOPMENT STYLES
+   ============================================ */
+
+/* ============================================
+   HERO SECTION - Increased Height & Lightened Overlay
+   ============================================ */
+
+/* Увеличиваем высоту hero-секции на странице Development & Production */
+.page-hero-development {
+    min-height: 700px !important;
+    max-height: 90vh !important;
+    padding: 5rem 0 !important;
+    padding-top: calc(5rem + var(--header-height)) !important;
+}
+
+@media (min-width: 1024px) {
+    .page-hero-development {
+        min-height: 800px !important;
+        max-height: 95vh !important;
+        padding: 6rem 0 !important;
+        padding-top: calc(6rem + var(--header-height)) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-hero-development {
+        min-height: 700px !important;
+        max-height: none !important;
+        padding: 4rem 0 !important;
+        padding-bottom: 3rem !important;
+        /* Увеличен отступ: header (80px) + breadcrumbs (~50px) + spacing (4rem) */
+        padding-top: calc(4rem + var(--header-height) + 50px) !important;
+        /* Отключаем вертикальное центрирование на мобильных */
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-hero-development {
+        min-height: 800px !important;
+        max-height: none !important;
+        padding: 3rem 0 !important;
+        padding-bottom: 3rem !important;
+        /* Увеличен отступ: header (80px) + breadcrumbs (~50px) + spacing (3rem) */
+        padding-top: calc(3rem + var(--header-height) + 50px) !important;
+        /* Отключаем вертикальное центрирование на мобильных */
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+    }
+}
+
+/* Осветляем overlay для hero-секции на странице Development & Production */
+.page-hero-development .hero-overlay {
+    background: linear-gradient(rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.4)) !important;
+}
+
+/* Увеличиваем размеры шрифтов в hero-секции на странице Development & Production */
+.page-hero-development h1 {
+    font-size: 3rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+}
+
+.page-hero-development .lead {
+    font-size: 1.4rem !important;
+    line-height: 1.6 !important;
+}
+
+@media (min-width: 1024px) {
+    .page-hero-development h1 {
+        font-size: 3.5rem !important;
+    }
+
+    .page-hero-development .lead {
+        font-size: 1.5rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-hero-development h1 {
+        font-size: 2.5rem !important;
+        margin-top: 1rem !important;
+    }
+
+    .page-hero-development .lead {
+        font-size: 1.25rem !important;
+    }
+
+    .page-hero-development .hero-text-block {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+        position: relative !important;
+        z-index: 2 !important;
+    }
+
+    /* Контейнер должен быть относительно позиционирован */
+    .page-hero-development .container {
+        position: relative !important;
+        z-index: 2 !important;
+        width: 100% !important;
+        align-self: flex-start !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-hero-development h1 {
+        font-size: 1.65rem !important;
+        margin-top: 0.5rem !important;
+        line-height: 1.25 !important;
+        margin-bottom: 0.75rem !important;
+    }
+
+    .page-hero-development .lead {
+        font-size: 0.95rem !important;
+        line-height: 1.5 !important;
+        margin-bottom: 0.75rem !important;
+    }
+
+    .page-hero-development .hero-text-block {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+        position: relative !important;
+        z-index: 2 !important;
+    }
+
+    /* Контейнер должен быть относительно позиционирован */
+    .page-hero-development .container {
+        position: relative !important;
+        z-index: 2 !important;
+        width: 100% !important;
+        align-self: flex-start !important;
+    }
+}
+
+/* ============================================
+   CTA SECTION - Left Alignment
+   ============================================ */
+
+/* Выравниваем CTA секцию по левому краю */
+.section-services~.section .cta-wrapper>div {
+    text-align: left !important;
+}
+
+.section-services~.section .cta-wrapper h2 {
+    text-align: left !important;
+}
+
+.section-services~.section .cta-wrapper p {
+    text-align: left !important;
+    margin-left: 0 !important;
+    margin-right: auto !important;
+}
+
+.section-services~.section .cta-wrapper>div>div[style*="display: flex"] {
+    justify-content: flex-start !important;
+}
+
+/* ============================================
+   HERO BACKGROUND - Mobile Height Fix
+   ============================================ */
+
+@media (max-width: 768px) {
+    /* Фоновое изображение должно покрывать всю высоту hero на мобильных */
+    .page-hero-development .hero-bg-picture,
+    .page-hero-development .hero-bg-img,
+    .page-hero-development .hero-overlay {
+        min-height: 100% !important;
+        height: 100% !important;
+    }
+}
+
+/* ============================================
+   HEADINGS COLOR - Dark Blue Industrial (#1E293B)
+   ============================================ */
+
+/* Все заголовки контента на странице Development & Production */
+/* Переопределяем text-primary и другие классы для заголовков */
+.section-title h2,
+.section-title h2.text-primary,
+.injection-card-title,
+.tab-content-title,
+.tab-title,
+.production-vision-preamble h2,
+section h2,
+section h2.text-primary,
+section h3,
+section h4,
+h2.text-primary,
+h3.text-primary,
+h4.text-primary {
+    color: #1E293B !important;
+}

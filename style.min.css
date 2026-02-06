@@ -2183,8 +2183,7 @@ li.menu-services:hover ul.sub-menu,
 }
 
 .step-number {
-    width: 50px;
-    height: 50px;
+    width: 90px;    height: 90px;
     background: var(--color-primary);
     color: #fff;
     border-radius: 50%;
@@ -2839,8 +2838,7 @@ li.menu-services:hover ul.sub-menu,
     .yandex-map-modal-close {
         top: 0.75rem;
         right: 0.75rem;
-        width: 36px;
-        height: 36px;
+        width: 68px;    height: 68px;
         font-size: 20px;
     }
 }
@@ -2862,14 +2860,12 @@ li.menu-services:hover ul.sub-menu,
 /* Custom Yandex Map Pin */
 .elinar-map-pin {
     position: relative;
-    width: 50px;
-    height: 60px;
+    width: 90px;    height: 108px;
     cursor: pointer;
 }
 
 .elinar-map-pin-inner {
-    width: 50px;
-    height: 50px;
+    width: 90px;    height: 90px;
     background: #fff;
     border-radius: 50%;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -2887,8 +2883,7 @@ li.menu-services:hover ul.sub-menu,
 }
 
 .elinar-map-pin-inner img {
-    width: 36px;
-    height: 36px;
+    width: 68px;    height: 68px;
     object-fit: contain;
 }
 
@@ -2899,9 +2894,7 @@ li.menu-services:hover ul.sub-menu,
     transform: translateX(-50%);
     width: 0;
     height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 12px solid #1e3a5f;
+    border-left: 14px solid transparent;    border-right: 14px solid transparent;    border-top: 20px solid #1e3a5f;
     filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
 }
 
@@ -3420,8 +3413,7 @@ li.menu-services:hover ul.sub-menu,
     .step-number {
         margin: 0;
         flex-shrink: 0;
-        width: 50px;
-        height: 50px;
+        width: 90px;    height: 90px;
         min-width: 50px;
     }
 
@@ -4396,8 +4388,7 @@ tr:nth-child(even) {
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: #fff;
-    width: 36px;
-    height: 36px;
+    width: 68px;    height: 68px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -4568,8 +4559,7 @@ tr:nth-child(even) {
 }
 
 .fab-item {
-    width: 50px;
-    height: 50px;
+    width: 90px;    height: 90px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -4601,8 +4591,7 @@ tr:nth-child(even) {
     }
 
     .fab-trigger {
-        width: 50px;
-        height: 50px;
+        width: 90px;    height: 90px;
         touch-action: manipulation;
         /* Improve touch responsiveness */
         -webkit-tap-highlight-color: transparent;
@@ -4623,8 +4612,7 @@ tr:nth-child(even) {
     /* Aligned with FAB */
     right: 110px;
     /* Moved left of FAB */
-    width: 50px;
-    height: 50px;
+    width: 90px;    height: 90px;
     border-radius: 50%;
     background: #0066cc;
     /* Blue background to match fab-trigger */
@@ -6597,8 +6585,7 @@ body[class*="page-id-"] .messengers-block {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 68px;    height: 68px;
     border: none;
     background: transparent;
     color: #0066cc;
@@ -7884,8 +7871,7 @@ body.page-template-technologies-production .page-hero>.container {
     }
 
     .material-badge {
-        width: 50px;
-        height: 50px;
+        width: 90px;    height: 90px;
         font-size: 1rem;
     }
 
@@ -8803,8 +8789,7 @@ body.page-template-technologies-production .page-hero>.container {
     }
 
     .zigzag-slider .slider-nav {
-        width: 36px;
-        height: 36px;
+        width: 68px;    height: 68px;
     }
 
     .zigzag-slider .slider-nav svg {
@@ -9724,8 +9709,7 @@ section[id] {
     }
 
     .testimonial-avatar {
-        width: 50px;
-        height: 50px;
+        width: 90px;    height: 90px;
     }
 }
 
@@ -10039,8 +10023,7 @@ body.page-template-page-technologies-production h4.text-primary {
     }
 
     .nav-arrow {
-        width: 36px;
-        height: 36px;
+        width: 68px;    height: 68px;
         font-size: 14px;
     }
 
@@ -11010,3 +10993,5 @@ body.page-template-page-technologies-production h4.text-primary {
         margin-bottom: 0.5rem;
     }
 }
+
+
