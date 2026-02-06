@@ -59,7 +59,7 @@ get_header();
     background: #0f172a;
     color: #fff;
     overflow: hidden;
-    padding: 160px 24px 100px;
+    padding: 160px 24px 130px;
     margin-top: -80px;
 }
 
@@ -94,6 +94,7 @@ get_header();
     z-index: 3;
     max-width: 800px;
     text-align: center;
+    transform: translateY(-30px);
 }
 
 .services-hero__title {
@@ -140,7 +141,7 @@ get_header();
 }
 
 .services-hero .scroll-down-wrapper {
-    bottom: 90px;
+    bottom: 130px;
 }
 
 /* ============================================
