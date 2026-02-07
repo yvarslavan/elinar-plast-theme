@@ -1260,8 +1260,13 @@ get_header();
                     <article class="steps-slide is-active" id="step-slide-1" role="tabpanel" aria-labelledby="step-tab-1" aria-hidden="false">
                         <div class="steps-text">
                             <div class="steps-number">01</div>
-                            <h3 class="steps-title">Техническое задание и расчет</h3>
-                            <p class="steps-desc">Вы присылаете нам чертеж, 3D-модель или физический образец изделия. Инженеры проводят аудит конструкции на технологичность (DFM-анализ), подбирают оптимальный полимер и рассчитывают точную смету проекта.</p>
+                            <h3 class="steps-title">ТЗ и расчет</h3>
+                            <ul class="steps-desc">
+                                <li>Принимаем чертеж/3D-модель и проверяем технологичность изделия.</li>
+                                <li>Согласовываем требования по ГОСТ/ТУ и условия эксплуатации: УФ, мороз, химические среды.</li>
+                                <li>Рассчитываем не только стоимость, но и оптимальный тираж.</li>
+                                <li>По плановому объему определяем гнездность формы и фиксируем смету.</li>
+                            </ul>
                         </div>
                         <div class="steps-visual">
                             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/stages_work_1.webp" alt="Иллюстрация: Техническое задание и расчет" width="600" height="400" loading="lazy">
@@ -1272,7 +1277,12 @@ get_header();
                         <div class="steps-text">
                             <div class="steps-number">02</div>
                             <h3 class="steps-title">Подготовка оснастки</h3>
-                            <p class="steps-desc">Если у вас нет своей пресс-формы (или фильеры), мы проектируем и изготавливаем её «с нуля». Если оснастка есть — проводим её дефектовку и обслуживание перед запуском.</p>
+                            <ul class="steps-desc">
+                                <li>Для экструзии проектируем и изготавливаем фильеры и калибраторы.</li>
+                                <li>Для литья под давлением разрабатываем и изготавливаем пресс-формы.</li>
+                                <li>Проводим инженерную проверку размеров и сопряжений, выполняем дефектовку.</li>
+                                <li>Перед запуском делаем балансировку оснастки и подтверждаем готовность к T1.</li>
+                            </ul>
                         </div>
                         <div class="steps-visual">
                             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/stages_work_2.webp" alt="Иллюстрация: Подготовка оснастки" width="600" height="400" loading="lazy">
@@ -1282,8 +1292,13 @@ get_header();
                     <article class="steps-slide" id="step-slide-3" role="tabpanel" aria-labelledby="step-tab-3" aria-hidden="true">
                         <div class="steps-text">
                             <div class="steps-number">03</div>
-                            <h3 class="steps-title">Опытные образцы (T1)</h3>
-                            <p class="steps-desc">Перед запуском серии мы делаем тестовые отливки (или пробный прокат профиля). Вы получаете эталонные образцы для проверки геометрии, собираемости и физических свойств.</p>
+                            <h3 class="steps-title">Опытные образцы T1</h3>
+                            <ul class="steps-desc">
+                                <li>Выпускаем тестовую серию T1 и передаем эталонные образцы: обычно 5-10 шт. или 5-10 м профиля.</li>
+                                <li>Выполняем входной контроль по геометрии, внешнему виду и стабильности размеров.</li>
+                                <li>Проверяем собираемость с ответными деталями заказчика.</li>
+                                <li>По результатам согласуем корректировки и утверждаем эталон.</li>
+                            </ul>
                         </div>
                         <div class="steps-visual">
                             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/stages_work_3.webp" alt="Иллюстрация: Опытные образцы (T1)" width="600" height="400" loading="lazy">
@@ -1294,7 +1309,12 @@ get_header();
                         <div class="steps-text">
                             <div class="steps-number">04</div>
                             <h3 class="steps-title">Серийное производство</h3>
-                            <p class="steps-desc">После утверждения образцов запускаем промышленную партию. Процесс включает автоматизированное литье/экструзию, контроль качества ОТК, маркировку и упаковку согласно ТЗ.</p>
+                            <ul class="steps-desc">
+                                <li>Запускаем серию по утвержденной оснастке и технологической карте.</li>
+                                <li>При запуске выполняем 100% контроль первых изделий.</li>
+                                <li>В ходе партии ведем выборочный контроль ОТК по критическим параметрам.</li>
+                                <li>На партию оформляем паспорт качества (при необходимости - паспорт плавки).</li>
+                            </ul>
                         </div>
                         <div class="steps-visual">
                             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/stages_work_4.webp" alt="Иллюстрация: Серийное производство" width="600" height="400" loading="lazy">
@@ -1305,7 +1325,12 @@ get_header();
                         <div class="steps-text">
                             <div class="steps-number">05</div>
                             <h3 class="steps-title">Отгрузка и логистика</h3>
-                            <p class="steps-desc">Передаем готовую партию вместе с закрывающими документами и паспортами качества. Организуем доставку до вашего склада в любой регион РФ или готовим груз к самовывозу.</p>
+                            <ul class="steps-desc">
+                                <li>Готовим закрывающие документы: УПД, сертификаты на сырье, протоколы испытаний.</li>
+                                <li>Маркируем партию и обеспечиваем прослеживаемость по отгрузочным данным.</li>
+                                <li>Упаковываем продукцию в транспортную тару с фиксацией, исключающей бой и деформацию.</li>
+                                <li>Передаем груз и комплект документов по согласованной схеме доставки.</li>
+                            </ul>
                         </div>
                         <div class="steps-visual">
                             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/stages_work_5.webp" alt="Иллюстрация: Отгрузка и логистика" width="600" height="400" loading="lazy">
