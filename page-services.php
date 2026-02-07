@@ -763,6 +763,305 @@ get_header();
 }
 
 /* ============================================
+   BLOCK 2.6: PRODUCT PORTFOLIO (BENTO GRID)
+   ============================================ */
+.services-portfolio {
+    padding: 90px 24px;
+    background: radial-gradient(1200px 500px at 20% -5%, rgba(245, 158, 11, 0.08), rgba(245, 158, 11, 0) 60%), #ffffff;
+}
+
+.services-portfolio-header {
+    text-align: center;
+    margin-bottom: 42px;
+    max-width: 920px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.services-portfolio-title {
+    margin: 0;
+    font-size: clamp(1.8rem, 4vw, 2.7rem);
+    font-weight: 800;
+    color: #1e293b;
+    letter-spacing: -0.02em;
+}
+
+.services-portfolio-subtitle {
+    margin: 12px auto 0;
+    max-width: 780px;
+    color: #64748b;
+    font-size: 1.02rem;
+    line-height: 1.75;
+    text-align: center;
+}
+
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: repeat(4, clamp(145px, 10.5vw, 210px));
+    gap: 18px;
+}
+
+.portfolio-card {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    isolation: isolate;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.portfolio-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.05) 35%, rgba(15, 23, 42, 0.55) 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.portfolio-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.55s ease;
+}
+
+.portfolio-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 30px 56px rgba(15, 23, 42, 0.28);
+}
+
+.portfolio-card:hover img {
+    transform: scale(1.05);
+}
+
+.portfolio-card__info {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+    z-index: 2;
+    border-radius: 16px;
+    background: rgba(15, 23, 42, 0.38);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 14px 14px 13px;
+    transition: background 0.35s ease, border-color 0.35s ease;
+}
+
+.portfolio-card:hover .portfolio-card__info {
+    background: rgba(15, 23, 42, 0.58);
+    border-color: rgba(255, 255, 255, 0.36);
+}
+
+.portfolio-card__tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    margin-bottom: 8px;
+    border-radius: 999px;
+    background: rgba(245, 158, 11, 0.86);
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.portfolio-card__title {
+    margin: 0;
+    color: #ffffff !important;
+    font-size: clamp(1rem, 1.2vw, 1.2rem);
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.portfolio-card__material {
+    margin-top: 6px;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.portfolio-card--large {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+.portfolio-card--medium {
+    grid-column: span 2;
+    grid-row: span 1;
+}
+
+.portfolio-card--small {
+    grid-column: span 1;
+    grid-row: span 1;
+}
+
+.portfolio-card--1 {
+    grid-column: 1 / span 2;
+    grid-row: 1 / span 2;
+}
+
+.portfolio-card--2 {
+    grid-column: 3 / span 2;
+    grid-row: 1 / span 1;
+}
+
+.portfolio-card--3 {
+    grid-column: 3 / span 1;
+    grid-row: 2 / span 1;
+}
+
+.portfolio-card--4 {
+    grid-column: 4 / span 1;
+    grid-row: 2 / span 1;
+}
+
+.portfolio-card--5 {
+    grid-column: 1 / span 2;
+    grid-row: 3 / span 1;
+}
+
+.portfolio-card--6 {
+    grid-column: 3 / span 2;
+    grid-row: 3 / span 2;
+}
+
+.prod-card {
+    cursor: zoom-in;
+    will-change: opacity;
+}
+
+.prod-card:focus-visible {
+    outline: 3px solid rgba(245, 158, 11, 0.85);
+    outline-offset: 2px;
+}
+
+body.lightbox-open {
+    overflow: hidden;
+}
+
+.lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 2200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    background: rgba(15, 23, 42, 0);
+    backdrop-filter: blur(0);
+    -webkit-backdrop-filter: blur(0);
+    transition: opacity 0.3s ease, backdrop-filter 0.3s ease, background-color 0.3s ease;
+    will-change: opacity, backdrop-filter;
+}
+
+.lightbox.active {
+    opacity: 1;
+    pointer-events: all;
+    background: rgba(15, 23, 42, 0.58);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.lightbox__image {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    transform: translate3d(0, 0, 0) scale(1);
+    border-radius: 18px;
+    box-shadow: 0 24px 56px rgba(2, 6, 23, 0.5);
+    opacity: 0;
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    will-change: transform, opacity;
+    cursor: zoom-in;
+}
+
+.lightbox__image.is-visible {
+    opacity: 1;
+}
+
+.lightbox.is-zoomed .lightbox__image {
+    cursor: grab;
+    touch-action: none;
+}
+
+.lightbox.is-zoomed.is-dragging .lightbox__image {
+    cursor: grabbing;
+}
+
+.lightbox__close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 46px;
+    height: 46px;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    background: rgba(15, 23, 42, 0.72);
+    color: #ffffff;
+    font-size: 28px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.lightbox__close:hover {
+    background: rgba(245, 158, 11, 0.96);
+    transform: scale(1.05);
+}
+
+.lightbox-ghost {
+    position: fixed;
+    z-index: 2147483647;
+    margin: 0;
+    object-fit: cover;
+    pointer-events: none;
+    box-shadow: 0 20px 45px rgba(2, 6, 23, 0.42);
+    transition: all 0.4s cubic-bezier(0.22, 0.8, 0.2, 1);
+    will-change: transform, opacity, left, top, width, height;
+}
+
+@media (max-width: 767px) {
+    .services-portfolio {
+        padding: 70px 16px;
+    }
+
+    .portfolio-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: none;
+        gap: 14px;
+    }
+
+    .portfolio-card,
+    .portfolio-card--large,
+    .portfolio-card--medium,
+    .portfolio-card--small,
+    .portfolio-card--1,
+    .portfolio-card--2,
+    .portfolio-card--3,
+    .portfolio-card--4,
+    .portfolio-card--5,
+    .portfolio-card--6 {
+        grid-column: auto;
+        grid-row: auto;
+        min-height: 280px;
+    }
+}
+
+/* ============================================
    BLOCK 3: TIMELINE / PROCESS
    ============================================ */
 .services-timeline-section {
@@ -1503,6 +1802,77 @@ get_header();
         </div>
     </section>
 
+    <!-- Блок 2.6: Примеры продукции (Portfolio) -->
+    <section class="services-portfolio" id="product-portfolio">
+        <div class="services-container">
+            <div class="services-portfolio-header">
+                <h2 class="services-portfolio-title">Примеры продукции</h2>
+                <p class="services-portfolio-subtitle">Серийные изделия, которые мы выпускаем на экструзионных и литьевых линиях под требования B2B-клиентов.</p>
+            </div>
+
+            <div class="portfolio-grid">
+                <article class="portfolio-card prod-card portfolio-card--large portfolio-card--1" data-full-img="<?php echo get_template_directory_uri(); ?>/assets/images/termovstavki_full.webp" role="button" tabindex="0">
+                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/termovstavki_small.webp" alt="Термовставки из полиамида" loading="lazy">
+                    <div class="portfolio-card__info">
+                        <span class="portfolio-card__tag">PA 6.6</span>
+                        <h3 class="portfolio-card__title">Термовставки из полиамида</h3>
+                        <p class="portfolio-card__material">Материал: полиамид PA 6.6</p>
+                    </div>
+                </article>
+
+                <article class="portfolio-card prod-card portfolio-card--medium portfolio-card--2" data-full-img="https://source.unsplash.com/random/2400x1600?white,plastic,profile,isometric&sig=102" role="button" tabindex="0">
+                    <img src="https://source.unsplash.com/random/1600x900?white,plastic,profile,isometric&sig=102" alt="Профили для шинопровода" loading="lazy">
+                    <div class="portfolio-card__info">
+                        <span class="portfolio-card__tag">ПВХ/ABS</span>
+                        <h3 class="portfolio-card__title">Профили для шинопровода</h3>
+                        <p class="portfolio-card__material">Материал: ПВХ и АБС</p>
+                    </div>
+                </article>
+
+                <article class="portfolio-card prod-card portfolio-card--small portfolio-card--3" data-full-img="https://source.unsplash.com/random/1800x1800?construction,profile,pvc,triangle&sig=103" role="button" tabindex="0">
+                    <img src="https://source.unsplash.com/random/900x900?construction,profile,pvc,triangle&sig=103" alt="Фаскообразователи" loading="lazy">
+                    <div class="portfolio-card__info">
+                        <span class="portfolio-card__tag">ПВХ</span>
+                        <h3 class="portfolio-card__title">Фаскообразователи</h3>
+                        <p class="portfolio-card__material">Материал: ПВХ</p>
+                    </div>
+                </article>
+
+                <article class="portfolio-card prod-card portfolio-card--small portfolio-card--4" data-full-img="https://source.unsplash.com/random/1800x1800?polymer,sleeves,plastic,parts&sig=104" role="button" tabindex="0">
+                    <img src="https://source.unsplash.com/random/900x900?polymer,sleeves,plastic,parts&sig=104" alt="Полимерные втулки" loading="lazy">
+                    <div class="portfolio-card__info">
+                        <span class="portfolio-card__tag">ПЭ</span>
+                        <h3 class="portfolio-card__title">Полимерные втулки</h3>
+                        <p class="portfolio-card__material">Материал: полиэтилен</p>
+                    </div>
+                </article>
+
+                <article class="portfolio-card prod-card portfolio-card--medium portfolio-card--5" data-full-img="https://source.unsplash.com/random/2400x1600?white,glossy,plastic,appliance,parts&sig=105" role="button" tabindex="0">
+                    <img src="https://source.unsplash.com/random/1600x900?white,glossy,plastic,appliance,parts&sig=105" alt="Детали бытовой техники" loading="lazy">
+                    <div class="portfolio-card__info">
+                        <span class="portfolio-card__tag">ПС</span>
+                        <h3 class="portfolio-card__title">Детали бытовой техники</h3>
+                        <p class="portfolio-card__material">Материал: полистирол</p>
+                    </div>
+                </article>
+
+                <article class="portfolio-card prod-card portfolio-card--large portfolio-card--6" data-full-img="https://source.unsplash.com/random/2400x2400?truck,industrial,rubber,profile,protection&sig=106" role="button" tabindex="0">
+                    <img src="https://source.unsplash.com/random/1600x1600?truck,industrial,rubber,profile,protection&sig=106" alt="Профили для фургонов" loading="lazy">
+                    <div class="portfolio-card__info">
+                        <span class="portfolio-card__tag">ТЭП</span>
+                        <h3 class="portfolio-card__title">Профили для фургонов</h3>
+                        <p class="portfolio-card__material">Материал: термоэластопласт</p>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <div class="lightbox" id="portfolio-lightbox" aria-hidden="true">
+        <button class="lightbox__close" type="button" aria-label="Закрыть">&times;</button>
+        <img class="lightbox__image" src="" alt="">
+    </div>
+
     <!-- Блок 3: Таймлайн (Premium Timeline from Products Page) -->
     <section class="process-timeline-section" id="process-timeline">
         <div class="container">
@@ -1988,6 +2358,428 @@ get_header();
     window.addEventListener('load', () => {
         window.setTimeout(scrollToFaqHash, 120);
     });
+
+    // Portfolio lightbox with FLIP animation and zoom/pan
+    const productCards = Array.from(document.querySelectorAll('.prod-card'));
+    const lightbox = document.getElementById('portfolio-lightbox');
+    const lightboxImage = lightbox ? lightbox.querySelector('.lightbox__image') : null;
+    const lightboxCloseBtn = lightbox ? lightbox.querySelector('.lightbox__close') : null;
+    const lightboxState = {
+        activeCard: null,
+        activeThumb: null,
+        activeToken: 0,
+        animating: false,
+        open: false,
+        zoomed: false,
+        zoomScale: 2,
+        panDamping: 0.8,
+        panX: 0,
+        panY: 0,
+        targetPanX: 0,
+        targetPanY: 0,
+        dragging: false,
+        dragMoved: false,
+        dragStartX: 0,
+        dragStartY: 0,
+        dragBaseX: 0,
+        dragBaseY: 0,
+        activePointerId: null,
+        panRaf: null
+    };
+
+    function clamp(value, min, max) {
+        return Math.min(max, Math.max(min, value));
+    }
+
+    function getCenteredRect(aspectRatio) {
+        const maxWidth = window.innerWidth * 0.9;
+        const maxHeight = window.innerHeight * 0.9;
+        let width = maxWidth;
+        let height = width / aspectRatio;
+        if (height > maxHeight) {
+            height = maxHeight;
+            width = height * aspectRatio;
+        }
+        return {
+            width: width,
+            height: height,
+            left: (window.innerWidth - width) / 2,
+            top: (window.innerHeight - height) / 2
+        };
+    }
+
+    function setLightboxTransform() {
+        if (!lightboxImage) {
+            return;
+        }
+        const scale = lightboxState.zoomed ? lightboxState.zoomScale : 1;
+        lightboxImage.style.transform = `translate3d(${lightboxState.panX}px, ${lightboxState.panY}px, 0) scale(${scale})`;
+    }
+
+    function getPanLimits() {
+        if (!lightboxImage) {
+            return { maxX: 0, maxY: 0 };
+        }
+        const scale = lightboxState.zoomed ? lightboxState.zoomScale : 1;
+        const scaledWidth = lightboxImage.offsetWidth * scale;
+        const scaledHeight = lightboxImage.offsetHeight * scale;
+        return {
+            maxX: Math.max(0, (scaledWidth - window.innerWidth) / 2),
+            maxY: Math.max(0, (scaledHeight - window.innerHeight) / 2)
+        };
+    }
+
+    function clampPanTargets() {
+        const limits = getPanLimits();
+        lightboxState.targetPanX = clamp(lightboxState.targetPanX, -limits.maxX, limits.maxX);
+        lightboxState.targetPanY = clamp(lightboxState.targetPanY, -limits.maxY, limits.maxY);
+    }
+
+    function queuePanAnimation() {
+        if (lightboxState.panRaf) {
+            return;
+        }
+
+        function animatePan() {
+            const deltaX = lightboxState.targetPanX - lightboxState.panX;
+            const deltaY = lightboxState.targetPanY - lightboxState.panY;
+            lightboxState.panX += deltaX * 0.22;
+            lightboxState.panY += deltaY * 0.22;
+
+            if (Math.abs(deltaX) < 0.35 && Math.abs(deltaY) < 0.35) {
+                lightboxState.panX = lightboxState.targetPanX;
+                lightboxState.panY = lightboxState.targetPanY;
+                setLightboxTransform();
+                lightboxState.panRaf = null;
+                return;
+            }
+
+            setLightboxTransform();
+            lightboxState.panRaf = window.requestAnimationFrame(animatePan);
+        }
+
+        lightboxState.panRaf = window.requestAnimationFrame(animatePan);
+    }
+
+    function stopDrag(event) {
+        if (!lightboxState.dragging) {
+            return;
+        }
+        if (
+            event &&
+            lightboxState.activePointerId !== null &&
+            event.pointerId !== undefined &&
+            event.pointerId !== lightboxState.activePointerId
+        ) {
+            return;
+        }
+        lightboxState.dragging = false;
+        if (lightbox) {
+            lightbox.classList.remove('is-dragging');
+        }
+        if (
+            lightboxImage &&
+            lightboxState.activePointerId !== null &&
+            lightboxImage.hasPointerCapture &&
+            lightboxImage.hasPointerCapture(lightboxState.activePointerId)
+        ) {
+            lightboxImage.releasePointerCapture(lightboxState.activePointerId);
+        }
+        lightboxState.activePointerId = null;
+    }
+
+    function startDrag(event) {
+        if (!lightboxState.zoomed || lightboxState.animating || !lightboxState.open) {
+            return;
+        }
+        event.preventDefault();
+        lightboxState.dragging = true;
+        lightboxState.dragMoved = false;
+        lightboxState.dragStartX = event.clientX;
+        lightboxState.dragStartY = event.clientY;
+        lightboxState.dragBaseX = lightboxState.targetPanX;
+        lightboxState.dragBaseY = lightboxState.targetPanY;
+        if (lightbox) {
+            lightbox.classList.add('is-dragging');
+        }
+        if (event.pointerId !== undefined && lightboxImage && lightboxImage.setPointerCapture) {
+            lightboxState.activePointerId = event.pointerId;
+            lightboxImage.setPointerCapture(event.pointerId);
+        }
+    }
+
+    function dragMove(event) {
+        if (!lightboxState.dragging) {
+            return;
+        }
+        if (
+            lightboxState.activePointerId !== null &&
+            event.pointerId !== undefined &&
+            event.pointerId !== lightboxState.activePointerId
+        ) {
+            return;
+        }
+
+        event.preventDefault();
+        const diffX = event.clientX - lightboxState.dragStartX;
+        const diffY = event.clientY - lightboxState.dragStartY;
+
+        if (Math.abs(diffX) > 2 || Math.abs(diffY) > 2) {
+            lightboxState.dragMoved = true;
+        }
+
+        lightboxState.targetPanX = lightboxState.dragBaseX + diffX * lightboxState.panDamping;
+        lightboxState.targetPanY = lightboxState.dragBaseY + diffY * lightboxState.panDamping;
+        clampPanTargets();
+        queuePanAnimation();
+    }
+
+    function resetZoomState() {
+        if (!lightbox || !lightboxImage) {
+            return;
+        }
+        stopDrag();
+        lightboxState.zoomed = false;
+        lightboxState.panX = 0;
+        lightboxState.panY = 0;
+        lightboxState.targetPanX = 0;
+        lightboxState.targetPanY = 0;
+        lightbox.classList.remove('is-zoomed');
+        lightbox.classList.remove('is-dragging');
+        setLightboxTransform();
+    }
+
+    function createGhost(source, altText, rect, radiusPx, objectFit) {
+        const ghost = document.createElement('img');
+        ghost.className = 'lightbox-ghost';
+        ghost.src = source;
+        ghost.alt = altText || '';
+        ghost.style.left = `${rect.left}px`;
+        ghost.style.top = `${rect.top}px`;
+        ghost.style.width = `${rect.width}px`;
+        ghost.style.height = `${rect.height}px`;
+        ghost.style.borderRadius = `${radiusPx}px`;
+        ghost.style.objectFit = objectFit || 'cover';
+        return ghost;
+    }
+
+    function cleanupAfterClose() {
+        if (lightboxState.activeThumb) {
+            lightboxState.activeThumb.style.opacity = '';
+        }
+        document.body.classList.remove('lightbox-open');
+        lightboxState.activeCard = null;
+        lightboxState.activeThumb = null;
+        lightboxState.open = false;
+        lightboxState.animating = false;
+        lightboxState.panX = 0;
+        lightboxState.panY = 0;
+        lightboxState.targetPanX = 0;
+        lightboxState.targetPanY = 0;
+        lightboxState.dragMoved = false;
+        lightbox.classList.remove('is-zoomed');
+        lightbox.classList.remove('is-dragging');
+        if (lightboxState.panRaf) {
+            cancelAnimationFrame(lightboxState.panRaf);
+            lightboxState.panRaf = null;
+        }
+    }
+
+    function closeLightbox() {
+        if (!lightbox || !lightboxImage || !lightboxState.open || lightboxState.animating) {
+            return;
+        }
+
+        lightboxState.animating = true;
+        lightboxState.activeToken += 1;
+        resetZoomState();
+
+        const thumb = lightboxState.activeThumb;
+        const startRect = lightboxImage.getBoundingClientRect();
+        const endRect = thumb ? thumb.getBoundingClientRect() : null;
+
+        const ghost = createGhost(
+            lightboxImage.currentSrc || lightboxImage.src,
+            lightboxImage.alt,
+            startRect,
+            18,
+            'contain'
+        );
+        document.body.appendChild(ghost);
+
+        lightboxImage.classList.remove('is-visible');
+        lightbox.classList.remove('active');
+        lightbox.setAttribute('aria-hidden', 'true');
+
+        if (!endRect || !endRect.width || !endRect.height) {
+            ghost.style.opacity = '0';
+            ghost.addEventListener('transitionend', () => {
+                ghost.remove();
+                cleanupAfterClose();
+            }, { once: true });
+            return;
+        }
+
+        const cardRadius = lightboxState.activeCard ?
+            parseFloat(window.getComputedStyle(lightboxState.activeCard).borderRadius) || 24 :
+            24;
+
+        requestAnimationFrame(() => {
+            ghost.style.left = `${endRect.left}px`;
+            ghost.style.top = `${endRect.top}px`;
+            ghost.style.width = `${endRect.width}px`;
+            ghost.style.height = `${endRect.height}px`;
+            ghost.style.borderRadius = `${cardRadius}px`;
+        });
+
+        ghost.addEventListener('transitionend', () => {
+            ghost.remove();
+            cleanupAfterClose();
+        }, { once: true });
+    }
+
+    function openLightbox(card) {
+        if (!lightbox || !lightboxImage || lightboxState.animating || lightboxState.open) {
+            return;
+        }
+
+        const thumb = card.querySelector('img');
+        if (!thumb) {
+            return;
+        }
+
+        const startRect = thumb.getBoundingClientRect();
+        if (!startRect.width || !startRect.height) {
+            return;
+        }
+
+        lightboxState.animating = true;
+        lightboxState.activeCard = card;
+        lightboxState.activeThumb = thumb;
+        const openToken = lightboxState.activeToken + 1;
+        lightboxState.activeToken = openToken;
+        resetZoomState();
+
+        const cardRadius = parseFloat(window.getComputedStyle(card).borderRadius) || 24;
+        const aspect = thumb.naturalWidth && thumb.naturalHeight ?
+            thumb.naturalWidth / thumb.naturalHeight :
+            startRect.width / startRect.height;
+        const endRect = getCenteredRect(aspect);
+        const previewSrc = thumb.currentSrc || thumb.src;
+        const fullSrc = card.dataset.fullImg || previewSrc;
+
+        const ghost = thumb.cloneNode(true);
+        ghost.classList.add('lightbox-ghost');
+        ghost.style.left = `${startRect.left}px`;
+        ghost.style.top = `${startRect.top}px`;
+        ghost.style.width = `${startRect.width}px`;
+        ghost.style.height = `${startRect.height}px`;
+        ghost.style.borderRadius = `${cardRadius}px`;
+        document.body.appendChild(ghost);
+
+        thumb.style.opacity = '0';
+        document.body.classList.add('lightbox-open');
+
+        lightboxImage.classList.remove('is-visible');
+        lightboxImage.src = previewSrc;
+        lightboxImage.alt = thumb.alt || '';
+        lightbox.setAttribute('aria-hidden', 'false');
+        setLightboxTransform();
+
+        requestAnimationFrame(() => {
+            ghost.style.left = `${endRect.left}px`;
+            ghost.style.top = `${endRect.top}px`;
+            ghost.style.width = `${endRect.width}px`;
+            ghost.style.height = `${endRect.height}px`;
+            ghost.style.borderRadius = '18px';
+        });
+
+        ghost.addEventListener('transitionend', () => {
+            ghost.remove();
+
+            if (lightboxState.activeToken !== openToken) {
+                return;
+            }
+
+            lightbox.classList.add('active');
+            lightboxImage.classList.add('is-visible');
+            lightboxState.animating = false;
+            lightboxState.open = true;
+
+            if (fullSrc && fullSrc !== previewSrc) {
+                const hdImage = new Image();
+                hdImage.decoding = 'async';
+                hdImage.src = fullSrc;
+                hdImage.onload = () => {
+                    if (lightboxState.open && lightboxState.activeToken === openToken) {
+                        lightboxImage.src = fullSrc;
+                        setLightboxTransform();
+                    }
+                };
+            }
+        }, { once: true });
+    }
+
+    if (productCards.length && lightbox && lightboxImage) {
+        productCards.forEach((card) => {
+            card.addEventListener('click', () => openLightbox(card));
+            card.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    openLightbox(card);
+                }
+            });
+        });
+
+        if (lightboxCloseBtn) {
+            lightboxCloseBtn.addEventListener('click', closeLightbox);
+        }
+
+        lightboxImage.addEventListener('click', (event) => {
+            event.stopPropagation();
+            if (lightboxState.animating || !lightboxState.open) {
+                return;
+            }
+            if (lightboxState.dragMoved) {
+                lightboxState.dragMoved = false;
+                return;
+            }
+            if (lightboxState.zoomed) {
+                resetZoomState();
+            } else {
+                lightboxState.zoomed = true;
+                lightbox.classList.add('is-zoomed');
+                lightboxState.targetPanX = 0;
+                lightboxState.targetPanY = 0;
+                queuePanAnimation();
+                setLightboxTransform();
+            }
+        });
+
+        lightboxImage.addEventListener('pointerdown', startDrag);
+        window.addEventListener('pointermove', dragMove, { passive: false });
+        window.addEventListener('pointerup', stopDrag);
+        window.addEventListener('pointercancel', stopDrag);
+        window.addEventListener('resize', () => {
+            if (!lightboxState.zoomed) {
+                return;
+            }
+            clampPanTargets();
+            queuePanAnimation();
+        });
+
+        lightbox.addEventListener('click', (event) => {
+            if (event.target === lightbox) {
+                closeLightbox();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+    }
 </script>
 
 <?php get_footer(); ?>
