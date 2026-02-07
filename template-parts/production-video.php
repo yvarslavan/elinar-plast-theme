@@ -29,8 +29,8 @@ $poster_url = get_template_directory_uri() . '/assets/video/poster_elinar_plast.
     z-index: 2;
   }
 
-  /* Main Grid - Shifted balance towards video (40/60) */
-  .pv-grid {
+  /* Top floor: intro + video */
+  .pv-top-row {
     display: grid;
     grid-template-columns: 40% 60%;
     gap: 60px;
@@ -38,16 +38,14 @@ $poster_url = get_template_directory_uri() . '/assets/video/poster_elinar_plast.
     width: 100%;
   }
 
-  /* Text Column */
-  .pv-text-col {
+  /* Intro Column */
+  .pv-intro-col {
     background: #ffffff;
     padding: 50px;
     border-radius: 24px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
-    z-index: 3;
     position: relative;
-    margin-right: -40px;
-    /* Overlap onto video background */
+    z-index: 2;
   }
 
   .pv-accent-line {
@@ -73,27 +71,42 @@ $poster_url = get_template_directory_uri() . '/assets/video/poster_elinar_plast.
     font-size: 16px;
     line-height: 1.7;
     color: #475569;
-    margin: 0 0 32px 0;
+    margin: 0;
+  }
+
+  /* Bottom floor: technologies */
+  .pv-tech-floor {
+    margin-top: 36px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 36px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
   }
 
   .pv-subtitle {
     font-family: 'Inter', sans-serif;
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 700;
     color: #1e293b;
-    margin: 0 0 20px 0;
+    margin: 0 0 24px 0;
   }
 
   .pv-tech-list {
     list-style: none;
     padding: 0;
     margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
   }
 
   .pv-tech-list li {
+    background: #f8fbff;
+    border: 1px solid #dbeafe;
+    border-radius: 16px;
     position: relative;
-    padding-left: 36px;
-    margin-bottom: 18px;
+    padding: 20px 20px 20px 56px;
     font-size: 15px;
     line-height: 1.6;
     color: #475569;
@@ -102,8 +115,8 @@ $poster_url = get_template_directory_uri() . '/assets/video/poster_elinar_plast.
   .pv-tech-list li::before {
     content: '';
     position: absolute;
-    left: 0;
-    top: 2px;
+    left: 20px;
+    top: 20px;
     width: 24px;
     height: 24px;
     background: #eff6ff;
@@ -113,8 +126,8 @@ $poster_url = get_template_directory_uri() . '/assets/video/poster_elinar_plast.
   .pv-tech-list li::after {
     content: '';
     position: absolute;
-    left: 7px;
-    top: 8px;
+    left: 27px;
+    top: 26px;
     width: 10px;
     height: 6px;
     border-left: 2.5px solid #0052D4;
@@ -134,8 +147,8 @@ $poster_url = get_template_directory_uri() . '/assets/video/poster_elinar_plast.
   /* Video Column - PROMINENT Effects */
   .pv-video-col {
     position: relative;
-    z-index: 2;
-    padding: 24px 24px 24px 48px;
+    z-index: 1;
+    padding: 24px;
   }
 
   .pv-video-col::before {
@@ -180,20 +193,27 @@ $poster_url = get_template_directory_uri() . '/assets/video/poster_elinar_plast.
        RESPONSIVE
        ============================================ */
   @media (max-width: 1024px) {
-    .pv-grid {
+    .pv-top-row {
       grid-template-columns: 1fr;
-      gap: 50px;
+      gap: 28px;
     }
 
-    .pv-text-col {
+    .pv-intro-col {
       padding: 40px;
-      order: 2;
-      margin-right: 0;
+      border-radius: 20px;
     }
 
     .pv-video-col {
-      order: 1;
       padding: 0;
+    }
+
+    .pv-tech-floor {
+      padding: 28px;
+      margin-top: 28px;
+    }
+
+    .pv-tech-list {
+      grid-template-columns: 1fr;
     }
   }
 
@@ -211,20 +231,42 @@ $poster_url = get_template_directory_uri() . '/assets/video/poster_elinar_plast.
       border-radius: 15px;
     }
 
-    .pv-text-col {
+    .pv-intro-col {
       padding: 30px 20px;
       border-radius: 20px;
-      margin-right: 0;
+    }
+
+    .pv-tech-floor {
+      padding: 24px 20px;
+      border-radius: 20px;
+    }
+
+    .pv-subtitle {
+      font-size: 20px;
+    }
+
+    .pv-tech-list li {
+      padding: 18px 16px 18px 50px;
+    }
+
+    .pv-tech-list li::before {
+      left: 16px;
+      top: 18px;
+    }
+
+    .pv-tech-list li::after {
+      left: 23px;
+      top: 24px;
     }
   }
 </style>
 
 <section class="pv-section" id="production-video-tour">
   <div class="pv-container">
-    <div class="pv-grid">
+    <div class="pv-top-row">
 
-      <!-- Text Column (Left) -->
-      <div class="pv-text-col">
+      <!-- Intro Column (Left) -->
+      <div class="pv-intro-col">
         <div class="pv-accent-line"></div>
 
         <h2 class="pv-title">Видеоэкскурсия по производству</h2>
@@ -232,17 +274,6 @@ $poster_url = get_template_directory_uri() . '/assets/video/poster_elinar_plast.
         <p class="pv-lead">
           За многолетний опыт работы компания «Элинар Пласт» объединила под одной крышей передовые методы переработки пластмасс. Комплексный подход и различные виды декоративной отделки позволяют нам создавать стильные, качественные изделия, точно соответствующие требованиям заказчика, и сохранять при этом оптимальную стоимость.
         </p>
-
-        <h3 class="pv-subtitle">Ключевые технологии производства:</h3>
-
-        <ul class="pv-tech-list">
-          <li>
-            <strong>Экструзия.</strong> <span class="pv-tech-desc">Метод непрерывного формования, позволяющий получать изделия или полуфабрикаты из полимерных материалов неограниченной длины. Процесс происходит путем выдавливания расплава полимера через формующую головку (фильеру).</span>
-          </li>
-          <li>
-            <strong>Литье под давлением.</strong> <span class="pv-tech-desc">Высокопроизводительный процесс изготовления деталей сложной формы. Заключается во впрыске расплавленного материала под высоким давлением в пресс-форму с последующим охлаждением и затвердеванием.</span>
-          </li>
-        </ul>
       </div>
 
       <!-- Video Column (Right) -->
@@ -262,6 +293,19 @@ $poster_url = get_template_directory_uri() . '/assets/video/poster_elinar_plast.
         </div>
       </div>
 
+    </div>
+
+    <div class="pv-tech-floor">
+      <h3 class="pv-subtitle">Ключевые технологии производства:</h3>
+
+      <ul class="pv-tech-list">
+        <li>
+          <strong>Экструзия.</strong> <span class="pv-tech-desc">Метод непрерывного формования, позволяющий получать изделия или полуфабрикаты из полимерных материалов неограниченной длины. Процесс происходит путем выдавливания расплава полимера через формующую головку (фильеру).</span>
+        </li>
+        <li>
+          <strong>Литье под давлением.</strong> <span class="pv-tech-desc">Высокопроизводительный процесс изготовления деталей сложной формы. Заключается во впрыске расплавленного материала под высоким давлением в пресс-форму с последующим охлаждением и затвердеванием.</span>
+        </li>
+      </ul>
     </div>
   </div>
 </section>
