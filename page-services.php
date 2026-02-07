@@ -788,11 +788,12 @@ get_header();
 
 .services-portfolio-subtitle {
     margin: 12px auto 0;
-    max-width: 780px;
+    max-width: 920px;
     color: #64748b;
     font-size: 1.02rem;
     line-height: 1.75;
     text-align: center;
+    text-wrap: balance;
 }
 
 .portfolio-grid {
