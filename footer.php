@@ -157,15 +157,6 @@ $privacy_url = get_privacy_policy_url() ?: '#';
                         Запросить расчёт
                     </a>
 
-                    <!-- Messengers -->
-                    <div class="footer-messengers-label">Быстрая связь:</div>
-                    <div class="footer-messengers">
-                        <a href="https://t.me/+79169785814" target="_blank" class="footer-messenger-btn footer-messenger-telegram" title="Telegram">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.361 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
-                            </svg>
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -643,21 +634,515 @@ $privacy_url = get_privacy_policy_url() ?: '#';
     <div id="lightbox-caption"></div>
 </div>
 
-<!-- Floating Action Button - Glassmorphism Style -->
-<div class="fab-container">
-    <div class="fab-menu">
-        <a href="https://t.me/+79169785814" target="_blank" class="fab-item-new fab-telegram" title="Telegram">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.361 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+<!-- Contact Multi-button Widget -->
+<style>
+    .contact-multi {
+        position: fixed;
+        right: 24px;
+        bottom: 96px;
+        z-index: 6000;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+    }
+
+    .contact-multi__actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(12px) scale(0.96);
+        transition: opacity 0.24s ease, transform 0.24s ease;
+    }
+
+    .contact-multi__item {
+        width: 52px;
+        height: 52px;
+        min-width: 44px;
+        min-height: 44px;
+        border: 0;
+        border-radius: 50%;
+        color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        cursor: pointer;
+        opacity: 0;
+        transform: translateY(8px) scale(0.9);
+        transition: transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.22s ease, box-shadow 0.22s ease;
+        box-shadow: 0 12px 26px rgba(0, 123, 255, 0.26);
+    }
+
+    .contact-multi__item:hover {
+        transform: translateY(-2px) scale(1.04);
+        box-shadow: 0 18px 32px rgba(0, 123, 255, 0.36);
+    }
+
+    .contact-multi__item svg {
+        width: 24px;
+        height: 24px;
+        display: block;
+    }
+
+    .contact-multi__item--telegram {
+        background: #27a7e7;
+    }
+
+    .contact-multi__item--call {
+        background: linear-gradient(145deg, #34d399, #16a34a);
+        box-shadow: 0 12px 26px rgba(34, 197, 94, 0.26);
+    }
+
+    .contact-multi__item--mail {
+        background: #ffffff;
+        color: #007bff;
+    }
+
+    .contact-multi__main {
+        width: 62px;
+        height: 62px;
+        min-width: 44px;
+        min-height: 44px;
+        border: 0;
+        border-radius: 50%;
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(140deg, #27b2ff, #007bff);
+        color: #ffffff;
+        cursor: pointer;
+        box-shadow: 0 16px 36px rgba(0, 123, 255, 0.42);
+        transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .contact-multi__main:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 22px 40px rgba(0, 123, 255, 0.5);
+    }
+
+    .contact-multi__main::before,
+    .contact-multi__main::after {
+        content: "";
+        position: absolute;
+        inset: -5px;
+        border-radius: 50%;
+        border: 2px solid rgba(33, 150, 243, 0.45);
+        animation: contactMultiPulse 2.2s linear infinite;
+        pointer-events: none;
+    }
+
+    .contact-multi__main::after {
+        animation-delay: 1.1s;
+    }
+
+    .contact-multi__icon {
+        width: 28px;
+        height: 28px;
+        display: block;
+        transition: transform 0.26s ease, opacity 0.2s ease;
+    }
+
+    .contact-multi__icon--close {
+        position: absolute;
+        opacity: 0;
+        transform: scale(0.6) rotate(-100deg);
+    }
+
+    .contact-multi.is-open .contact-multi__actions {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0) scale(1);
+    }
+
+    .contact-multi.is-open .contact-multi__item {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        transition-delay: calc(var(--item-index, 1) * 45ms);
+    }
+
+    .contact-multi.is-open .contact-multi__main::before,
+    .contact-multi.is-open .contact-multi__main::after {
+        animation-play-state: paused;
+        opacity: 0;
+    }
+
+    .contact-multi.is-open .contact-multi__icon--chat {
+        opacity: 0;
+        transform: scale(0.65) rotate(95deg);
+    }
+
+    .contact-multi.is-open .contact-multi__icon--close {
+        opacity: 1;
+        transform: scale(1) rotate(0);
+    }
+
+    @keyframes contactMultiPulse {
+        0% {
+            transform: scale(1);
+            opacity: 0.55;
+        }
+
+        100% {
+            transform: scale(1.38);
+            opacity: 0;
+        }
+    }
+
+    .feedback-modal {
+        display: none;
+        position: fixed;
+        z-index: 10001;
+        inset: 0;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+
+    .feedback-modal.show {
+        display: flex;
+    }
+
+    .feedback-modal-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.68);
+        backdrop-filter: blur(2px);
+    }
+
+    .feedback-modal-content {
+        position: relative;
+        z-index: 1;
+        width: min(740px, calc(100vw - 32px));
+        max-height: calc(100vh - 32px);
+        overflow-y: auto;
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 26px 65px rgba(15, 23, 42, 0.32);
+    }
+
+    .feedback-modal-close {
+        position: absolute;
+        top: 10px;
+        right: 12px;
+        border: 0;
+        background: none;
+        color: #6b7280;
+        font-size: 30px;
+        line-height: 1;
+        cursor: pointer;
+        padding: 4px;
+    }
+
+    .feedback-modal-close:hover {
+        color: #111827;
+    }
+
+    .feedback-modal-title {
+        margin: 0 0 18px;
+        font-size: clamp(1.45rem, 2.2vw, 2rem);
+        font-weight: 800;
+        line-height: 1.2;
+        text-align: left;
+        color: #0f172a;
+    }
+
+    .feedback-modal-form {
+        display: grid;
+        gap: 10px;
+    }
+
+    .feedback-modal-field {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: #ffffff;
+        padding: 12px 14px;
+        font-size: 1.125rem;
+        line-height: 1.3;
+        color: #0f172a;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .feedback-modal-field:focus {
+        outline: none;
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+    }
+
+    .feedback-modal-field::placeholder {
+        color: #94a3b8;
+    }
+
+    .feedback-modal-field--textarea {
+        min-height: 104px;
+        resize: vertical;
+    }
+
+    .feedback-modal-submit {
+        width: 100%;
+        border: 0;
+        border-radius: 8px;
+        background: #ff6600;
+        color: #ffffff;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        font-size: 1.25rem;
+        line-height: 1;
+        padding: 16px 14px;
+        cursor: pointer;
+        transition: filter 0.2s ease, transform 0.2s ease;
+    }
+
+    .feedback-modal-submit:hover {
+        filter: brightness(0.95);
+    }
+
+    .feedback-modal-submit:active {
+        transform: translateY(1px);
+    }
+
+    .feedback-modal-consent {
+        margin-top: 4px;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        color: #5b718a;
+        font-size: 1rem;
+        line-height: 1.45;
+    }
+
+    .feedback-modal-consent input[type="checkbox"] {
+        margin-top: 4px;
+        flex-shrink: 0;
+        width: 16px;
+        height: 16px;
+    }
+
+    .feedback-modal-consent a {
+        color: inherit;
+        text-decoration: underline;
+    }
+
+    @media (max-width: 767px) {
+        .contact-multi {
+            right: 16px;
+            bottom: 84px;
+            gap: 8px;
+        }
+
+        .contact-multi__main {
+            width: 56px;
+            height: 56px;
+        }
+
+        .contact-multi__item {
+            width: 50px;
+            height: 50px;
+        }
+
+        .feedback-modal-content {
+            width: calc(100vw - 20px);
+            max-height: calc(100vh - 20px);
+            padding: 18px 14px 16px;
+            border-radius: 9px;
+        }
+
+        .feedback-modal-title {
+            margin-bottom: 14px;
+            font-size: 1.9rem;
+        }
+
+        .feedback-modal-field {
+            font-size: 1.1875rem;
+            padding: 12px;
+        }
+
+        .feedback-modal-submit {
+            font-size: 1.3125rem;
+            padding: 14px 12px;
+        }
+
+        .feedback-modal-consent {
+            font-size: 0.9375rem;
+        }
+    }
+</style>
+
+<div class="contact-multi" id="contact-multi">
+    <div class="contact-multi__actions" aria-hidden="true">
+        <a href="https://t.me/+79169785814" target="_blank" rel="noopener noreferrer" class="contact-multi__item contact-multi__item--telegram" style="--item-index: 1;" title="Telegram" aria-label="Открыть Telegram">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M9.78 15.42l-.41 4.07c.59 0 .84-.25 1.15-.56l2.76-2.64 5.72 4.19c1.05.58 1.79.28 2.07-.97l3.75-17.6.01-.01c.33-1.53-.55-2.13-1.57-1.75L1.2 8.63c-1.48.58-1.46 1.41-.25 1.79l5.64 1.76L19.68 4c.62-.4 1.19-.18.73.22L9.78 15.42z" />
             </svg>
         </a>
+        <button type="button" class="contact-multi__item contact-multi__item--call" data-contact-action="callback" style="--item-index: 2;" title="Заказать звонок" aria-label="Открыть окно заказа звонка">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M6.62 10.79a15.46 15.46 0 006.59 6.59l2.2-2.2a1 1 0 011.02-.24 11.2 11.2 0 003.57.57 1 1 0 011 1V20a1 1 0 01-1 1C10.61 21 3 13.39 3 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.24.2 2.45.57 3.57a1 1 0 01-.24 1.02l-2.21 2.2z" />
+            </svg>
+        </button>
+        <button type="button" class="contact-multi__item contact-multi__item--mail" data-contact-action="feedback" style="--item-index: 3;" title="Написать письмо" aria-label="Открыть форму обратной связи">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+            </svg>
+        </button>
     </div>
-    <div class="fab-trigger" id="fab-trigger" aria-label="Открыть меню связи">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-            <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H6L4 18V4H20V16Z" fill="currentColor" />
+
+    <button type="button" class="contact-multi__main" id="contact-multi-toggle" aria-label="Открыть меню связи" aria-expanded="false">
+        <svg class="contact-multi__icon contact-multi__icon--chat" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 4h16v11H7l-3 3V4z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="9" cy="10" r="1.2" fill="currentColor" />
+            <circle cx="12" cy="10" r="1.2" fill="currentColor" />
+            <circle cx="15" cy="10" r="1.2" fill="currentColor" />
         </svg>
+        <svg class="contact-multi__icon contact-multi__icon--close" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+        </svg>
+    </button>
+</div>
+
+<!-- Feedback Modal (Написать письмо) -->
+<div id="feedback-modal" class="feedback-modal" aria-hidden="true">
+    <div class="feedback-modal-overlay"></div>
+    <div class="feedback-modal-content" role="dialog" aria-modal="true" aria-labelledby="feedback-modal-title">
+        <button class="feedback-modal-close" type="button" aria-label="Закрыть">&times;</button>
+        <h2 id="feedback-modal-title" class="feedback-modal-title">Обратная связь, замечания и предложения</h2>
+        <form class="simple-form contacts-form feedback-modal-form" action="#" method="post">
+            <input class="feedback-modal-field" type="text" name="name" placeholder="Имя (необязательно)">
+            <input class="feedback-modal-field" type="email" name="email" placeholder="Ваш E-mail">
+            <input class="feedback-modal-field" type="tel" name="phone" placeholder="Контактный номер телефона *" required>
+            <textarea class="feedback-modal-field feedback-modal-field--textarea" name="question" placeholder="Ваш вопрос *" rows="4" required></textarea>
+
+            <div class="form-buttons">
+                <button type="submit" class="feedback-modal-submit">ОТПРАВИТЬ</button>
+            </div>
+
+            <label class="feedback-modal-consent">
+                <input type="checkbox" name="consent" required>
+                <span>Нажимая на кнопку «Отправить», я даю согласие на обработку своих <a href="<?php echo esc_url($privacy_url); ?>">персональных данных</a>.</span>
+            </label>
+        </form>
     </div>
 </div>
+
+<script>
+    (function () {
+        const widget = document.getElementById('contact-multi');
+        const toggle = document.getElementById('contact-multi-toggle');
+        const feedbackModal = document.getElementById('feedback-modal');
+        const feedbackModalOverlay = feedbackModal ? feedbackModal.querySelector('.feedback-modal-overlay') : null;
+        const feedbackModalClose = feedbackModal ? feedbackModal.querySelector('.feedback-modal-close') : null;
+
+        if (!widget || !toggle) return;
+
+        const openClass = 'is-open';
+        const actionsContainer = widget.querySelector('.contact-multi__actions');
+
+        const setOpenState = function (isOpen) {
+            widget.classList.toggle(openClass, isOpen);
+            toggle.setAttribute('aria-expanded', String(isOpen));
+            toggle.setAttribute('aria-label', isOpen ? 'Закрыть меню связи' : 'Открыть меню связи');
+            if (actionsContainer) {
+                actionsContainer.setAttribute('aria-hidden', String(!isOpen));
+            }
+        };
+
+        const closeWidget = function () {
+            setOpenState(false);
+        };
+
+        const unlockBodyIfNoOpenModal = function () {
+            const openedModals = document.querySelector('.feedback-modal.show, .callback-modal.show, .yandex-map-modal.show');
+            if (!openedModals) {
+                document.body.style.overflow = '';
+            }
+        };
+
+        const openFeedbackModal = function () {
+            if (!feedbackModal) return;
+            feedbackModal.classList.add('show');
+            feedbackModal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            const firstField = feedbackModal.querySelector('input, textarea');
+            if (firstField) {
+                setTimeout(function () {
+                    firstField.focus();
+                }, 120);
+            }
+        };
+
+        const closeFeedbackModal = function () {
+            if (!feedbackModal) return;
+            feedbackModal.classList.remove('show');
+            feedbackModal.setAttribute('aria-hidden', 'true');
+            unlockBodyIfNoOpenModal();
+        };
+
+        toggle.addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            setOpenState(!widget.classList.contains(openClass));
+        });
+
+        document.addEventListener('click', function (event) {
+            if (!widget.contains(event.target)) {
+                closeWidget();
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeWidget();
+                closeFeedbackModal();
+            }
+        });
+
+        if (feedbackModalClose) {
+            feedbackModalClose.addEventListener('click', closeFeedbackModal);
+        }
+
+        if (feedbackModalOverlay) {
+            feedbackModalOverlay.addEventListener('click', closeFeedbackModal);
+        }
+
+        widget.addEventListener('click', function (event) {
+            const actionButton = event.target.closest('[data-contact-action]');
+            if (!actionButton) return;
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            const actionType = actionButton.getAttribute('data-contact-action');
+            closeWidget();
+
+            if (actionType === 'callback') {
+                const callBackModal = document.getElementById('call-back-modal');
+                if (callBackModal) {
+                    callBackModal.classList.add('show');
+                    document.body.style.overflow = 'hidden';
+
+                    const mainNav = document.getElementById('main-nav');
+                    const menuToggle = document.querySelector('.menu-toggle');
+                    if (mainNav && mainNav.classList.contains('active')) {
+                        mainNav.classList.remove('active');
+                        if (menuToggle) menuToggle.classList.remove('active');
+                    }
+                }
+                return;
+            }
+
+            if (actionType === 'feedback') {
+                openFeedbackModal();
+            }
+        });
+    })();
+</script>
 
 <!-- Scroll To Top Button - Minimal Circle -->
 <button id="scroll-top" class="scroll-top-btn" aria-label="Вернуться наверх">

@@ -1362,7 +1362,14 @@ li.menu-services:hover ul.sub-menu,
     width: 32px;
     height: 32px;
     color: #64748b;
-    transition: all 0.3s ease;
+    position: relative;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.social-icon svg {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .social-icon:hover {
@@ -1381,16 +1388,50 @@ li.menu-services:hover ul.sub-menu,
 .social-icon.telegram-icon {
     color: #ffffff;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    overflow: visible;
+}
+
+.social-icon.telegram-icon .telegram-plane-wrap {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: block;
+}
+
+.social-icon.telegram-icon .telegram-plane {
+    position: absolute;
+    inset: 0;
+    will-change: transform, opacity;
+}
+
+.social-icon.telegram-icon .telegram-plane.plane-primary {
+    transform: translate(0, 0);
+    opacity: 1;
+}
+
+.social-icon.telegram-icon .telegram-plane.plane-ghost {
+    transform: translate(-5px, 5px);
+    opacity: 0;
 }
 
 .social-icon.telegram-icon:hover {
-    color: #0088cc;
+    color: #2aa9eb;
+}
+
+.social-icon.telegram-icon:hover .telegram-plane.plane-primary {
+    transform: translate(5px, -5px);
+    opacity: 0;
+}
+
+.social-icon.telegram-icon:hover .telegram-plane.plane-ghost {
+    transform: translate(0, 0);
+    opacity: 1;
 }
 
 /* WhatsApp styles removed by client request */
 
 .site-header.scrolled .social-icon.telegram-icon:hover {
-    color: #0088cc !important;
+    color: #2aa9eb !important;
 }
 
 .social-icon.phone-icon {
@@ -1398,8 +1439,42 @@ li.menu-services:hover ul.sub-menu,
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
+.social-icon.phone-icon svg {
+    transform-origin: 58% 72%;
+}
+
 .social-icon.phone-icon:hover {
-    color: #ff6b35;
+    color: #22c55e;
+}
+
+.social-icon.phone-icon:hover svg {
+    animation: headerPhoneWiggle 0.55s ease-in-out;
+}
+
+@keyframes headerPhoneWiggle {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    18% {
+        transform: rotate(-16deg);
+    }
+
+    36% {
+        transform: rotate(14deg);
+    }
+
+    54% {
+        transform: rotate(-10deg);
+    }
+
+    72% {
+        transform: rotate(8deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
 }
 
 /* При скролле: темные цвета иконок */
@@ -1411,11 +1486,11 @@ li.menu-services:hover ul.sub-menu,
 
 /* При скролле: hover эффекты с цветами */
 .site-header.scrolled .social-icon.telegram-icon:hover {
-    color: #0088cc !important;
+    color: #2aa9eb !important;
 }
 
 .site-header.scrolled .social-icon.phone-icon:hover {
-    color: #ff6b35 !important;
+    color: #22c55e !important;
 }
 
 .main-nav {
