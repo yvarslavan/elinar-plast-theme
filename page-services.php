@@ -273,75 +273,493 @@ get_header();
 }
 
 /* ============================================
-   BLOCK 2: TECHNOLOGIES GRID
+   BLOCK 2: HOW IT WORKS SLIDER
    ============================================ */
-.services-tech {
-    padding: 80px 24px;
-    background: #fff;
+.services-steps {
+    padding: 90px 24px;
+    background:
+        radial-gradient(900px 320px at 90% 0%, rgba(245, 158, 11, 0.16) 0%, rgba(245, 158, 11, 0.02) 55%, transparent 65%),
+        linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 }
 
-.services-tech .services-container {
-    max-width: 1000px;
+.services-section-header {
+    text-align: center;
+    margin-bottom: 60px;
 }
 
-.services-grid {
+.services-section-header__title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.services-section-header__title .highlight {
+    color: #f59e0b;
+}
+
+.services-section-header__desc {
+    font-size: 1.1rem;
+    color: #64748b;
+    margin-top: 12px;
+}
+
+.steps-slider {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 48px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+}
+
+.steps-slides {
+    position: relative;
+}
+
+.steps-slide {
+    display: none;
+    gap: 48px;
+    align-items: center;
+}
+
+.steps-slide.is-active {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 32px;
+    grid-template-columns: minmax(0, 40%) minmax(0, 60%);
+    animation: stepsFade 0.45s ease;
 }
 
-@media (max-width: 768px) {
-    .services-grid {
-        grid-template-columns: 1fr;
+@keyframes stepsFade {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-.tech-card {
+.steps-text {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.steps-number {
+    font-size: clamp(2.8rem, 6vw, 4.5rem);
+    font-weight: 800;
+    color: rgba(245, 158, 11, 0.25);
+    letter-spacing: -0.04em;
+}
+
+.steps-title {
+    font-size: clamp(1.4rem, 2.6vw, 2rem);
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+}
+
+.steps-desc {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #475569;
+    margin: 0;
+}
+
+.steps-visual {
     background: #f8fafc;
-    border: 2px solid #e2e8f0;
     border-radius: 20px;
-    padding: 48px 32px;
-    text-align: center;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.tech-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 25px 50px rgba(0,0,0,0.1);
-    border-color: #f59e0b;
-}
-
-.tech-card__icon {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 24px;
-    background: linear-gradient(135deg, #0f4c5c 0%, #1e3a5f 100%);
-    border-radius: 50%;
+    padding: 24px;
+    min-height: 320px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    border: 1px solid #e2e8f0;
 }
 
-.tech-card__icon svg {
-    width: 40px;
-    height: 40px;
-    stroke: #fff;
-    fill: none;
+.steps-visual img {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+    object-fit: contain;
+    display: block;
 }
 
-.tech-card__title {
-    font-size: 1.5rem;
+.steps-nav {
+    margin-top: 28px;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 12px;
+    justify-content: center;
+}
+
+.steps-nav-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 18px;
+    min-width: 84px;
+    background: #e2e8f0;
+    color: #475569;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.85rem;
     font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 16px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%);
 }
 
-.tech-card__text {
+.steps-nav-btn:focus-visible {
+    outline: 2px solid rgba(245, 158, 11, 0.6);
+    outline-offset: 2px;
+}
+
+.steps-nav-btn:hover {
+    transform: translateY(-2px);
+}
+
+.steps-nav-btn.is-complete {
+    background: #fde68a;
+    color: #92400e;
+}
+
+.steps-nav-btn.is-active {
+    background: #f59e0b;
+    color: #ffffff;
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.35);
+}
+
+.steps-nav-icon svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+}
+
+.steps-cta {
+    margin-top: 32px;
+    text-align: center;
+}
+
+.steps-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 36px;
+    background: #f59e0b;
+    color: #ffffff;
+    border-radius: 10px;
     font-size: 1rem;
-    color: #64748b;
-    line-height: 1.7;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    box-shadow: 0 8px 22px rgba(245, 158, 11, 0.3);
+}
+
+.steps-cta-btn:hover {
+    background: #d97706;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(245, 158, 11, 0.4);
+}
+
+@media (max-width: 991px) {
+    .steps-slider {
+        padding: 32px;
+    }
+
+    .steps-slide.is-active {
+        grid-template-columns: 1fr;
+    }
+
+    .steps-visual {
+        order: -1;
+        min-height: 260px;
+    }
+}
+
+@media (max-width: 767px) {
+    .services-steps {
+        padding: 70px 16px;
+    }
+
+    .steps-slider {
+        padding: 24px;
+    }
+
+    .steps-nav {
+        gap: 6px;
+    }
+
+    .steps-nav-btn {
+        min-width: 36px;
+        min-height: 36px;
+        padding: 0;
+        border-radius: 999px;
+        background: transparent;
+        box-shadow: none;
+        clip-path: none;
+    }
+
+    .steps-nav-btn::after {
+        content: '';
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: #cbd5e1;
+        display: block;
+    }
+
+    .steps-nav-btn.is-complete::after {
+        background: #fde68a;
+    }
+
+    .steps-nav-btn.is-active::after {
+        background: #f59e0b;
+    }
+
+    .steps-nav-btn span {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .steps-slide.is-active {
+        animation: none;
+    }
+
+    .steps-nav-btn,
+    .steps-cta-btn {
+        transition: none;
+    }
+}
+
+/* ============================================
+   BLOCK 2.5: TECHNOLOGICAL CAPABILITIES
+   ============================================ */
+.services-tech-capabilities {
+    padding: 90px 24px;
+    background: #ffffff;
+}
+
+.tech-capabilities-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+}
+
+.tech-capability {
+    display: grid;
+    grid-template-columns: minmax(0, 46%) minmax(0, 54%);
+    gap: 48px;
+    align-items: center;
+}
+
+.tech-capability--reverse {
+    grid-template-columns: minmax(0, 54%) minmax(0, 46%);
+}
+
+.tech-capability--reverse .tech-capability__text {
+    order: 2;
+}
+
+.tech-capability--reverse .tech-capability__visual {
+    order: 1;
+}
+
+.tech-capability__visual {
+    background: #f8fafc;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tech-capability__visual img {
+    width: 100%;
+    height: auto;
+    max-height: 420px;
+    object-fit: contain;
+    display: block;
+}
+
+.tech-capability__visual--stack {
+    align-items: flex-start;
+}
+
+.tech-visual-stack {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.tech-visual-logo {
+    width: 100%;
+    max-width: none;
+    height: auto;
+    margin-bottom: 20px;
+    object-fit: contain;
+}
+
+.tech-visual-logo--compact {
+    width: 60%;
+    max-width: 200px;
+}
+
+.tech-visual-photo {
+    width: 100%;
+    height: auto;
+    border-radius: 20px;
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+}
+
+.tech-capability__title {
+    font-size: clamp(1.4rem, 2.6vw, 2rem);
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 16px;
+}
+
+.tech-capability__desc {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #475569;
+    margin: 0 0 20px;
+}
+
+.tech-capability__benefits {
+    list-style: none;
+    padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tech-capability__benefits li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: #334155;
+}
+
+.tech-check-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    stroke: #f59e0b;
+}
+
+.tech-service-card {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.04), rgba(245, 158, 11, 0.08));
+    border-radius: 24px;
+    padding: 40px 48px;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 36px;
+    align-items: center;
+}
+
+.tech-service-card__title {
+    font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 12px;
+}
+
+.tech-service-card__desc {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #475569;
+    margin: 0;
+}
+
+.tech-service-card__benefits {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tech-service-card__benefits li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: #334155;
+}
+
+.tech-capabilities-cta {
+    margin-top: 36px;
+    text-align: center;
+}
+
+.tech-capabilities-cta a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 36px;
+    background: #f59e0b;
+    color: #ffffff;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    box-shadow: 0 10px 24px rgba(15, 76, 92, 0.25);
+}
+
+.tech-capabilities-cta a:hover {
+    background: #d97706;
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(245, 158, 11, 0.35);
+}
+
+@media (max-width: 991px) {
+    .tech-capability,
+    .tech-capability--reverse {
+        grid-template-columns: 1fr;
+    }
+
+    .tech-capability--reverse .tech-capability__text,
+    .tech-capability--reverse .tech-capability__visual {
+        order: initial;
+    }
+
+    .tech-service-card {
+        grid-template-columns: 1fr;
+        padding: 32px;
+    }
+}
+
+@media (max-width: 767px) {
+    .services-tech-capabilities {
+        padding: 70px 16px;
+    }
+
+    .tech-capabilities-grid {
+        gap: 40px;
+    }
+
+    .tech-capability__visual {
+        padding: 18px;
+    }
+
+    .tech-service-card {
+        padding: 28px 24px;
+    }
 }
 
 /* ============================================
@@ -829,39 +1247,229 @@ get_header();
         </div>
     </section>
 
-    <!-- Блок 2: Технологии -->
-    <section class="services-tech">
+    <!-- Блок 2: Этапы работы -->
+    <section class="services-steps" id="how-it-works">
         <div class="services-container">
-            <div class="services-grid">
-                <!-- Литье под давлением -->
-                <div class="tech-card">
-                    <div class="tech-card__icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                            <path d="M12 22V7"></path>
-                            <path d="M12 7V2"></path>
-                            <path d="M7 7V4"></path>
-                            <path d="M17 7V4"></path>
-                        </svg>
-                    </div>
-                    <h3 class="tech-card__title">Литье под давлением</h3>
-                    <p class="tech-card__text">Для сложных корпусных деталей, тар и штучных изделий тиражом от 1000 шт.</p>
+            <div class="services-section-header">
+                <h2 class="services-section-header__title">Этапы работы <span class="highlight">под ключ</span></h2>
+                <p class="services-section-header__desc">Прозрачный процесс от инженерной проверки до логистики готовой партии.</p>
+            </div>
+
+            <div class="steps-slider" data-steps-slider>
+                <div class="steps-slides">
+                    <article class="steps-slide is-active" id="step-slide-1" role="tabpanel" aria-labelledby="step-tab-1" aria-hidden="false">
+                        <div class="steps-text">
+                            <div class="steps-number">01</div>
+                            <h3 class="steps-title">Техническое задание и расчет</h3>
+                            <p class="steps-desc">Вы присылаете нам чертеж, 3D-модель или физический образец изделия. Инженеры проводят аудит конструкции на технологичность (DFM-анализ), подбирают оптимальный полимер и рассчитывают точную смету проекта.</p>
+                        </div>
+                        <div class="steps-visual">
+                            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/stages_work_1.webp" alt="Иллюстрация: Техническое задание и расчет" width="600" height="400" loading="lazy">
+                        </div>
+                    </article>
+
+                    <article class="steps-slide" id="step-slide-2" role="tabpanel" aria-labelledby="step-tab-2" aria-hidden="true">
+                        <div class="steps-text">
+                            <div class="steps-number">02</div>
+                            <h3 class="steps-title">Подготовка оснастки</h3>
+                            <p class="steps-desc">Если у вас нет своей пресс-формы (или фильеры), мы проектируем и изготавливаем её «с нуля». Если оснастка есть — проводим её дефектовку и обслуживание перед запуском.</p>
+                        </div>
+                        <div class="steps-visual">
+                            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/stages_work_2.webp" alt="Иллюстрация: Подготовка оснастки" width="600" height="400" loading="lazy">
+                        </div>
+                    </article>
+
+                    <article class="steps-slide" id="step-slide-3" role="tabpanel" aria-labelledby="step-tab-3" aria-hidden="true">
+                        <div class="steps-text">
+                            <div class="steps-number">03</div>
+                            <h3 class="steps-title">Опытные образцы (T1)</h3>
+                            <p class="steps-desc">Перед запуском серии мы делаем тестовые отливки (или пробный прокат профиля). Вы получаете эталонные образцы для проверки геометрии, собираемости и физических свойств.</p>
+                        </div>
+                        <div class="steps-visual">
+                            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/stages_work_3.webp" alt="Иллюстрация: Опытные образцы (T1)" width="600" height="400" loading="lazy">
+                        </div>
+                    </article>
+
+                    <article class="steps-slide" id="step-slide-4" role="tabpanel" aria-labelledby="step-tab-4" aria-hidden="true">
+                        <div class="steps-text">
+                            <div class="steps-number">04</div>
+                            <h3 class="steps-title">Серийное производство</h3>
+                            <p class="steps-desc">После утверждения образцов запускаем промышленную партию. Процесс включает автоматизированное литье/экструзию, контроль качества ОТК, маркировку и упаковку согласно ТЗ.</p>
+                        </div>
+                        <div class="steps-visual">
+                            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/stages_work_4.webp" alt="Иллюстрация: Серийное производство" width="600" height="400" loading="lazy">
+                        </div>
+                    </article>
+
+                    <article class="steps-slide" id="step-slide-5" role="tabpanel" aria-labelledby="step-tab-5" aria-hidden="true">
+                        <div class="steps-text">
+                            <div class="steps-number">05</div>
+                            <h3 class="steps-title">Отгрузка и логистика</h3>
+                            <p class="steps-desc">Передаем готовую партию вместе с закрывающими документами и паспортами качества. Организуем доставку до вашего склада в любой регион РФ или готовим груз к самовывозу.</p>
+                        </div>
+                        <div class="steps-visual">
+                            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/stages_work_5.webp" alt="Иллюстрация: Отгрузка и логистика" width="600" height="400" loading="lazy">
+                        </div>
+                    </article>
                 </div>
 
-                <!-- Экструзия -->
-                <div class="tech-card">
-                    <div class="tech-card__icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 12h16"></path>
-                            <path d="M4 6h16"></path>
-                            <path d="M4 18h16"></path>
-                            <path d="M20 4v16"></path>
-                            <path d="M4 4v16"></path>
-                        </svg>
-                    </div>
-                    <h3 class="tech-card__title">Экструзия</h3>
-                    <p class="tech-card__text">Для профилей, труб, рассеивателей и погонажных изделий.</p>
+                <div class="steps-nav" role="tablist" aria-label="Этапы работы">
+                    <button class="steps-nav-btn is-active" id="step-tab-1" role="tab" aria-selected="true" aria-controls="step-slide-1" data-step="0" type="button">
+                        <span class="steps-nav-label">01</span>
+                        <span class="steps-nav-icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 12h14"></path>
+                                <path d="M13 6l6 6-6 6"></path>
+                            </svg>
+                        </span>
+                    </button>
+                    <button class="steps-nav-btn" id="step-tab-2" role="tab" aria-selected="false" aria-controls="step-slide-2" data-step="1" type="button" tabindex="-1">
+                        <span class="steps-nav-label">02</span>
+                        <span class="steps-nav-icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 12h14"></path>
+                                <path d="M13 6l6 6-6 6"></path>
+                            </svg>
+                        </span>
+                    </button>
+                    <button class="steps-nav-btn" id="step-tab-3" role="tab" aria-selected="false" aria-controls="step-slide-3" data-step="2" type="button" tabindex="-1">
+                        <span class="steps-nav-label">03</span>
+                        <span class="steps-nav-icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 12h14"></path>
+                                <path d="M13 6l6 6-6 6"></path>
+                            </svg>
+                        </span>
+                    </button>
+                    <button class="steps-nav-btn" id="step-tab-4" role="tab" aria-selected="false" aria-controls="step-slide-4" data-step="3" type="button" tabindex="-1">
+                        <span class="steps-nav-label">04</span>
+                        <span class="steps-nav-icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 12h14"></path>
+                                <path d="M13 6l6 6-6 6"></path>
+                            </svg>
+                        </span>
+                    </button>
+                    <button class="steps-nav-btn" id="step-tab-5" role="tab" aria-selected="false" aria-controls="step-slide-5" data-step="4" type="button" tabindex="-1">
+                        <span class="steps-nav-label">05</span>
+                        <span class="steps-nav-icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 12h14"></path>
+                                <path d="M13 6l6 6-6 6"></path>
+                            </svg>
+                        </span>
+                    </button>
                 </div>
+            </div>
+
+            <div class="steps-cta">
+                <a href="#contact-form" class="steps-cta-btn">Начать работу над проектом</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Блок 2.5: Технологические возможности -->
+    <section class="services-tech-capabilities" id="tech-capabilities">
+        <div class="services-container">
+            <div class="services-section-header">
+                <h2 class="services-section-header__title">Технологическая база для реализации <span class="highlight">ваших проектов</span></h2>
+                <p class="services-section-header__desc">Оборудование не ради характеристик, а ради результата — изделий, которые готовы к сборке и серийному выпуску.</p>
+            </div>
+
+            <div class="tech-capabilities-grid">
+                <!-- Блок 1: Экструзия -->
+                <article class="tech-capability">
+                    <div class="tech-capability__visual tech-capability__visual--stack">
+                        <div class="tech-visual-stack">
+                            <img class="tech-visual-logo" src="<?php echo get_template_directory_uri(); ?>/assets/images/bernhard-ide-logo.webp" alt="Логотип IDE" width="200" height="80" loading="lazy">
+                            <img class="tech-visual-photo" src="<?php echo get_template_directory_uri(); ?>/assets/images/bernhard-ide-plastic-extruder.webp" alt="Экструзионная линия IDE" width="600" height="400" loading="lazy">
+                        </div>
+                    </div>
+                    <div class="tech-capability__text">
+                        <h3 class="tech-capability__title">Выпуск профилей сложного сечения (ПВХ, АБС, ПЭ)</h3>
+                        <p class="tech-capability__desc">Используем немецкие комплексы IDE, чтобы гарантировать стабильность геометрии на всей длине изделия. Это критично для строительных и монтажных профилей.</p>
+                        <ul class="tech-capability__benefits">
+                            <li>
+                                <svg class="tech-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                Без «волн» и деформаций: гусеничная протяжка исключает проскальзывание профиля.
+                            </li>
+                            <li>
+                                <svg class="tech-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                Сразу в размер: встроенный пильный узел делает чистый рез без заусенцев — деталь готова к сборке.
+                            </li>
+                            <li>
+                                <svg class="tech-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                Сложная форма: вакуумная калибровка позволяет отливать многокамерные профили с тонкими перегородками.
+                            </li>
+                        </ul>
+                    </div>
+                </article>
+
+                <!-- Блок 2: Литье -->
+                <article class="tech-capability tech-capability--reverse">
+                    <div class="tech-capability__text">
+                        <h3 class="tech-capability__title">Высокоточное литье серийных партий</h3>
+                        <p class="tech-capability__desc">Работаем на станках Union (Тайвань) с сервоприводами. Это оборудование класса "Precision", которое позволяет лить как массивные корпуса, так и миниатюрные детали весом в несколько грамм.</p>
+                        <ul class="tech-capability__benefits">
+                            <li>
+                                <svg class="tech-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                100% повторяемость: первая и тысячная деталь в партии идентичны до 0.01 мм.
+                            </li>
+                            <li>
+                                <svg class="tech-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                Эстетика: работаем с лицевыми деталями (корпуса приборов), где недопустимы утяжины и облой.
+                            </li>
+                            <li>
+                                <svg class="tech-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                Экономия: сервоприводы снижают себестоимость цикла, что делает нашу цену конкурентной.
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="tech-capability__visual tech-capability__visual--stack">
+                        <div class="tech-visual-stack">
+                            <img class="tech-visual-logo tech-visual-logo--compact" src="<?php echo get_template_directory_uri(); ?>/assets/images/un_m711_logo.webp" alt="Логотип Union" width="200" height="80" loading="lazy">
+                            <img class="tech-visual-photo" src="<?php echo get_template_directory_uri(); ?>/assets/images/un_m711.webp" alt="Термопластавтомат Union" width="600" height="400" loading="lazy">
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Блок 3: Сервис оснастки -->
+                <article class="tech-service-card">
+                    <div>
+                        <h3 class="tech-service-card__title">Оперативная адаптация и обслуживание оснастки</h3>
+                        <p class="tech-service-card__desc">Наличие собственного слесарного участка с ЧПУ позволяет нам не отправлять форму подрядчикам при малейшей поломке.</p>
+                    </div>
+                    <ul class="tech-service-card__benefits">
+                        <li>
+                            <svg class="tech-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            Быстрый старт: если вашу пресс-форму нужно «подогнать» под наши станки — сделаем это на месте.
+                        </li>
+                        <li>
+                            <svg class="tech-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            Бесплатный уход: чистка, смазка и консервация вашей оснастки — за наш счет.
+                        </li>
+                    </ul>
+                </article>
+            </div>
+
+            <div class="tech-capabilities-cta">
+                <a href="#contact-form">Узнать, подходит ли ваше изделие под наши технологии</a>
             </div>
         </div>
     </section>
@@ -1208,6 +1816,44 @@ get_header();
 </main>
 
 <script>
+    // Steps slider (How it works)
+    const stepsSlider = document.querySelector('[data-steps-slider]');
+    if (stepsSlider) {
+        const slides = Array.from(stepsSlider.querySelectorAll('.steps-slide'));
+        const tabs = Array.from(stepsSlider.querySelectorAll('.steps-nav-btn'));
+
+        const setActiveStep = (index) => {
+            slides.forEach((slide, i) => {
+                const isActive = i === index;
+                slide.classList.toggle('is-active', isActive);
+                slide.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+            });
+
+            tabs.forEach((tab, i) => {
+                const isActive = i === index;
+                tab.classList.toggle('is-active', isActive);
+                tab.classList.toggle('is-complete', i < index);
+                tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                tab.setAttribute('tabindex', isActive ? '0' : '-1');
+            });
+        };
+
+        tabs.forEach((tab, index) => {
+            tab.addEventListener('click', () => setActiveStep(index));
+            tab.addEventListener('keydown', (event) => {
+                if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+                    event.preventDefault();
+                    const direction = event.key === 'ArrowRight' ? 1 : -1;
+                    const nextIndex = (index + direction + tabs.length) % tabs.length;
+                    tabs[nextIndex].focus();
+                    setActiveStep(nextIndex);
+                }
+            });
+        });
+
+        setActiveStep(0);
+    }
+
     // 3. Кнопка "Развернуть все" для FAQ
     const expandAllBtn = document.getElementById('faq-expand-all');
     if (expandAllBtn) {
