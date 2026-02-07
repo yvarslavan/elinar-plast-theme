@@ -144,8 +144,8 @@ get_header();
                 <h3 class="faq-hero-teaser-title">Есть вопросы по контрактному производству?</h3>
                 <p class="faq-hero-teaser-subtitle">Собрали готовые ответы на типовые запросы клиентов</p>
             </div>
-            <a href="#faq" class="faq-hero-teaser-btn" data-faq-teaser="hero">
-                Смотреть 8 ответов
+            <a href="<?php echo home_url('/services/#faq'); ?>" class="faq-hero-teaser-btn" data-faq-teaser="hero">
+                Смотреть 9 ответов
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                     <polyline points="12 5 19 12 12 19"></polyline>
@@ -451,158 +451,7 @@ get_header();
     <!-- 4.8 PRODUCTION VIDEO - Overlap Design -->
     <?php get_template_part('template-parts/production-video'); ?>
 
-    <!-- 6. FAQ -->
     <style>
-        .faq-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-
-        @media (min-width: 768px) {
-            .faq-grid {
-                grid-template-columns: repeat(2, 1fr);
-                align-items: start;
-            }
-        }
-
-        .faq-card {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .faq-card-header {
-            width: 100%;
-            text-align: left;
-            padding: 20px 24px;
-            background: #fff;
-            border: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .faq-card-title {
-            font-weight: 700;
-            color: #1e293b;
-            font-size: 1.1rem;
-            line-height: 1.4;
-            transition: color 0.3s ease;
-            padding-right: 16px;
-        }
-
-        .faq-icon-wrapper {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: #f1f5f9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: background-color 0.3s ease;
-            cursor: pointer;
-        }
-
-        .faq-arrow {
-            width: 20px;
-            height: 20px;
-            stroke: #64748b;
-            stroke-width: 2.5;
-            transition: stroke 0.3s ease, transform 0.3s ease;
-        }
-
-        /* Active State */
-        .faq-item[aria-expanded="true"] .faq-card-header {
-            background-color: #0f4c5c;
-        }
-
-        .faq-item[aria-expanded="true"] .faq-card-title {
-            color: #ffffff;
-        }
-
-        .faq-item[aria-expanded="true"] .faq-icon-wrapper {
-            background-color: #22c55e;
-        }
-
-        .faq-item[aria-expanded="true"] .faq-arrow {
-            stroke: #ffffff;
-            transform: rotate(180deg);
-        }
-
-        .faq-card-body {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease-in-out;
-            background: #fff;
-        }
-
-        .faq-item[aria-expanded="true"] .faq-card-body {
-            max-height: 1000px;
-            /* Достаточно для длинного текста */
-        }
-
-        .faq-answer-content {
-            padding: 0 24px 24px 24px;
-            color: #334155;
-            line-height: 1.6;
-        }
-
-        .faq-answer-content p {
-            margin-bottom: 0.75rem;
-        }
-
-        .faq-answer-content p:last-child {
-            margin-bottom: 0;
-        }
-
-        /* FAQ Header Styles */
-        .faq-header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .faq-label {
-            display: inline-block;
-            color: #f59e0b;
-            font-size: 0.875rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-        }
-
-        .faq-main-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 1rem;
-            line-height: 1.2;
-        }
-
-        .faq-subtitle {
-            font-size: 1.125rem;
-            color: #64748b;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        @media (max-width: 768px) {
-            .faq-main-title {
-                font-size: 2rem;
-            }
-
-            .faq-subtitle {
-                font-size: 1rem;
-            }
-        }
-
         /* ============================================
            PRODUCTION CAPABILITIES SECTION
            ============================================ */
@@ -946,163 +795,6 @@ get_header();
             }
         }
     </style>
-    <section id="faq" class="section bg-light" itemscope itemtype="https://schema.org/FAQPage">
-        <div class="container">
-            <div class="faq-header">
-                <div class="faq-label">ГОТОВЫЕ ОТВЕТЫ</div>
-                <h2 class="faq-main-title">Самые Популярные Вопросы</h2>
-                <p class="faq-subtitle">Здесь мы собрали вопросы, которые наши заказчики задают чаще всего.</p>
-                <button class="faq-expand-all-btn" id="faq-expand-all" aria-label="Развернуть все вопросы">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="17 11 12 6 7 11"></polyline>
-                        <polyline points="17 18 12 13 7 18"></polyline>
-                    </svg>
-                    <span>Развернуть все</span>
-                </button>
-            </div>
-            <div class="faq-grid faq-accordion">
-                <!-- Карточка 1 -->
-                <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                    <button class="faq-question faq-card-header">
-                        <span class="faq-card-title" itemprop="name">Как быстро вы можете изготовить профиль или деталь?</span>
-                        <div class="faq-icon-wrapper">
-                            <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </div>
-                    </button>
-                    <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div class="faq-answer-content" itemprop="text">
-                            <p>Если у вас уже есть готовая оснастка — запуск производства занимает от нескольких дней до 2 недель (в зависимости от загрузки линий). Если требуется изготовление экструзионной оснастки или пресс-формы «с нуля»,процесс занимает от 2 до 4 месяцев (включая проектирование, производство инструмента и пуско-наладку).</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Карточка 2 -->
-                <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                    <button class="faq-question faq-card-header">
-                        <span class="faq-card-title" itemprop="name">Какие минимальные партии вы берете в работу?</span>
-                        <div class="faq-icon-wrapper">
-                            <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </div>
-                    </button>
-                    <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div class="faq-answer-content" itemprop="text">
-                            <p>Мы ориентированы на серийное промышленное производство.</p>
-                            <p>Для экструзии: оптимальная партия — от 1000–3000 погонных метров (в зависимости от веса профиля).</p>
-                            <p>Для литья: от 1000 единиц изделий.</p>
-                            <p>Для постоянных клиентов и крупных проектов мы готовы обсуждать индивидуальные условия и тестовые партии меньшего объема.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Карточка 3 -->
-                <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                    <button class="faq-question faq-card-header">
-                        <span class="faq-card-title" itemprop="name">Кому принадлежит пресс-форма или фильера после изготовления?</span>
-                        <div class="faq-icon-wrapper">
-                            <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </div>
-                    </button>
-                    <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div class="faq-answer-content" itemprop="text">
-                            <p>Если вы оплачиваете изготовление оснастки, она является вашей собственностью. Мы берем её на ответственное хранение и проводим бесплатное техническое обслуживание (чистку, смазку, консервацию) на протяжении всего срока сотрудничества. Вы в любой момент можете забрать оснастку.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Карточка 4 -->
-                <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                    <button class="faq-question faq-card-header">
-                        <span class="faq-card-title" itemprop="name">С какими видами пластиков вы работаете?</span>
-                        <div class="faq-icon-wrapper">
-                            <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </div>
-                    </button>
-                    <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div class="faq-answer-content" itemprop="text">
-                            <p>Мы перерабатываем широкий спектр полимеров. Основные материалы: жесткий и мягкий ПВХ (PVC), полиэтилен (PE), полипропилен (PP), АБС-пластик (ABS). Если вашему проекту требуется специфический компаунд, наши технологи помогут подобрать сырье с нужными характеристиками (морозостойкость, УФ-стабильность, ударопрочность).</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Карточка 5 -->
-                <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                    <button class="faq-question faq-card-header">
-                        <span class="faq-card-title" itemprop="name">У меня нет чертежа, только образец или идея. Вы поможете?</span>
-                        <div class="faq-icon-wrapper">
-                            <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </div>
-                    </button>
-                    <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div class="faq-answer-content" itemprop="text">
-                            <p>Да. Совместно с разработчиками оснастки оказываем услуги реверс-инжиниринга. Мы можем разработать 3D-модель и чертеж на основе вашего физического образца, эскиза или технического задания, адаптировав изделие под технологии экструзии или литья.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Карточка 6 -->
-                <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                    <button class="faq-question faq-card-header">
-                        <span class="faq-card-title" itemprop="name">Предоставляете ли вы образцы продукции?</span>
-                        <div class="faq-icon-wrapper">
-                            <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </div>
-                    </button>
-                    <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div class="faq-answer-content" itemprop="text">
-                            <p>Да. При запуске нового изделия мы обязательно предоставляем опытные образцы (отливки или метры профиля) для утверждения геометрии и качества перед запуском серии. Образцы стандартной продукции могут быть предоставлены по запросу.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Карточка 7 -->
-                <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                    <button class="faq-question faq-card-header">
-                        <span class="faq-card-title" itemprop="name">Как осуществляется контроль качества?</span>
-                        <div class="faq-icon-wrapper">
-                            <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </div>
-                    </button>
-                    <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div class="faq-answer-content" itemprop="text">
-                            <p>На производстве внедрена многоступенчатая система контроля. Мы проверяем входное сырье, контролируем геометрию первых изделий при запуске линии и проводим выборочную проверку партии в процессе производства. При необходимости предоставляем паспорт качества на партию.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Карточка 8 -->
-                <div class="faq-item faq-card" aria-expanded="false" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                    <button class="faq-question faq-card-header">
-                        <span class="faq-card-title" itemprop="name">Есть ли у вас доставка?</span>
-                        <div class="faq-icon-wrapper">
-                            <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </div>
-                    </button>
-                    <div class="faq-answer faq-card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div class="faq-answer-content" itemprop="text">
-                            <p>Наше производство находится в Московской области. Мы отгружаем продукцию по всей России и странам СНГ через транспортные компании (Деловые Линии, ПЭК и др.) или отдельными машинами. Возможен самовывоз со склада готовой продукции.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- 7. CTA AND CONTACTS -->
     <?php include get_template_directory() . '/template-parts/audit-form-section.php'; ?>
 </main>
@@ -1118,167 +810,28 @@ get_header();
         }
     })();
 
-    // === FAQ TEASERS FUNCTIONALITY ===
+    // === FAQ TEASER CLICK TRACKING ===
     (function() {
         'use strict';
 
-        // 1. Плавная прокрутка к якорю #faq
-        function smoothScrollToFAQ(e) {
-            const targetLink = e.currentTarget.getAttribute('href');
-            if (targetLink && targetLink.includes('#faq')) {
-                e.preventDefault();
-                const faqSection = document.getElementById('faq');
-                if (faqSection) {
-                    const headerOffset = 100; // Отступ для фиксированного хедера
-                    const elementPosition = faqSection.getBoundingClientRect().top;
-                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-                    window.scrollTo({
-                        top: offsetPosition,
-                        behavior: 'smooth'
-                    });
-
-                    // Отслеживание клика для аналитики
-                    const teaserType = e.currentTarget.getAttribute('data-faq-teaser');
-                    if (typeof gtag !== 'undefined') {
-                        gtag('event', 'faq_teaser_click', {
-                            'event_category': 'FAQ Teaser',
-                            'event_label': teaserType,
-                            'value': 1
-                        });
-                    }
-                    if (typeof ym !== 'undefined') {
-                        ym(window.yaCounterId || 0, 'reachGoal', 'faq_teaser_click', {
-                            teaser_type: teaserType
-                        });
-                    }
-                }
-            }
-        }
-
-        // Применяем плавную прокрутку ко всем ссылкам на FAQ
-        const faqLinks = document.querySelectorAll('a[href*="#faq"]');
-        faqLinks.forEach(link => {
-            link.addEventListener('click', smoothScrollToFAQ);
-        });
-
-        // 3. Кнопка "Развернуть все" для FAQ
-        const expandAllBtn = document.getElementById('faq-expand-all');
-        if (expandAllBtn) {
-            let allExpanded = false;
-
-            expandAllBtn.addEventListener('click', function() {
-                const faqItems = document.querySelectorAll('.faq-item');
-                allExpanded = !allExpanded;
-
-                faqItems.forEach(item => {
-                    item.setAttribute('aria-expanded', allExpanded ? 'true' : 'false');
-                });
-
-                // Обновляем текст кнопки
-                const btnText = this.querySelector('span');
-                if (btnText) {
-                    btnText.textContent = allExpanded ? 'Свернуть все' : 'Развернуть все';
-                }
-
-                // Добавляем класс для анимации иконки
-                this.classList.toggle('expanded', allExpanded);
-
-                // Отслеживание для аналитики
+        const teaserLinks = document.querySelectorAll('[data-faq-teaser]');
+        teaserLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                const teaserType = this.getAttribute('data-faq-teaser') || 'unknown';
                 if (typeof gtag !== 'undefined') {
-                    gtag('event', 'faq_expand_all', {
-                        'event_category': 'FAQ',
-                        'event_label': allExpanded ? 'expanded' : 'collapsed',
-                        'value': 1
-                    });
-                }
-            });
-        }
-
-        // 4. Отслеживание раскрытия отдельных вопросов FAQ
-        // Функция для переключения FAQ элемента
-        function toggleFAQItem(faqItem, questionText) {
-            if (!faqItem) return;
-
-            const isExpanded = faqItem.getAttribute('aria-expanded') === 'true';
-            faqItem.setAttribute('aria-expanded', !isExpanded ? 'true' : 'false');
-
-            // Отслеживание для аналитики
-            if (typeof gtag !== 'undefined' && !isExpanded) {
-                gtag('event', 'faq_question_opened', {
-                    'event_category': 'FAQ',
-                    'event_label': questionText || 'Unknown',
-                    'value': 1
-                });
-            }
-            if (typeof ym !== 'undefined' && !isExpanded) {
-                ym(window.yaCounterId || 0, 'reachGoal', 'faq_question_opened', {
-                    question: questionText || 'Unknown'
-                });
-            }
-        }
-
-        // Обработчик для кнопки .faq-question / .faq-card-header (весь заголовок)
-        const faqQuestions = document.querySelectorAll('.faq-question, .faq-card-header');
-        faqQuestions.forEach(question => {
-            // Помечаем, чтобы main.js не обрабатывал
-            question.setAttribute('data-faq-handled', 'true');
-
-            question.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                const faqItem = this.closest('.faq-item');
-                const questionText = this.querySelector('.faq-card-title')?.textContent ||
-                    faqItem?.querySelector('.faq-card-title')?.textContent || 'Unknown';
-
-                toggleFAQItem(faqItem, questionText);
-            });
-        });
-
-        // Дополнительный обработчик для .faq-icon-wrapper (иконка)
-        const faqIconWrappers = document.querySelectorAll('.faq-icon-wrapper');
-        faqIconWrappers.forEach(iconWrapper => {
-            iconWrapper.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                const faqItem = this.closest('.faq-item');
-                const questionText = faqItem?.querySelector('.faq-card-title')?.textContent || 'Unknown';
-
-                toggleFAQItem(faqItem, questionText);
-            });
-        });
-
-        // 5. Отслеживание scroll depth до FAQ
-        let faqScrollTracked = false;
-
-        function trackFAQScroll() {
-            if (faqScrollTracked) return;
-
-            const faqSection = document.getElementById('faq');
-            if (!faqSection) return;
-
-            const faqPosition = faqSection.getBoundingClientRect().top + window.pageYOffset;
-            const scrollPosition = window.pageYOffset + window.innerHeight;
-
-            if (scrollPosition >= faqPosition) {
-                faqScrollTracked = true;
-
-                if (typeof gtag !== 'undefined') {
-                    gtag('event', 'faq_section_reached', {
-                        'event_category': 'Scroll Depth',
-                        'event_label': 'FAQ Section',
+                    gtag('event', 'faq_teaser_click', {
+                        'event_category': 'FAQ Teaser',
+                        'event_label': teaserType,
                         'value': 1
                     });
                 }
                 if (typeof ym !== 'undefined') {
-                    ym(window.yaCounterId || 0, 'reachGoal', 'faq_section_reached');
+                    ym(window.yaCounterId || 0, 'reachGoal', 'faq_teaser_click', {
+                        teaser_type: teaserType
+                    });
                 }
-            }
-        }
-
-        window.addEventListener('scroll', trackFAQScroll);
+            });
+        });
     })();
 </script>
 

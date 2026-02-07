@@ -987,6 +987,10 @@ get_header();
 /* ============================================
    BLOCK 5: FAQ SECTION (Modernized)
    ============================================ */
+#faq {
+    scroll-margin-top: 120px;
+}
+
 .faq-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -1958,6 +1962,32 @@ get_header();
     } else if (overlapCard) {
         overlapCard.classList.add('is-visible');
     }
+
+    // Stable anchor navigation to FAQ from other pages
+    function scrollToFaqHash() {
+        if (window.location.hash !== '#faq' && window.location.hash !== '#questions') {
+            return;
+        }
+
+        const faqTarget = document.getElementById('faq') || document.getElementById('questions');
+        if (!faqTarget) {
+            return;
+        }
+
+        const siteHeader = document.querySelector('header.site-header, .site-header, #site-header');
+        const headerOffset = siteHeader ? siteHeader.offsetHeight + 16 : 120;
+        const faqTop = faqTarget.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: faqTop,
+            behavior: 'smooth'
+        });
+    }
+
+    window.addEventListener('hashchange', scrollToFaqHash);
+    window.addEventListener('load', () => {
+        window.setTimeout(scrollToFaqHash, 120);
+    });
 </script>
 
 <?php get_footer(); ?>
