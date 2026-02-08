@@ -9,6 +9,10 @@
 get_header();
 ?>
 
+<script>
+    document.documentElement.classList.add('js-hero-anim');
+</script>
+
 <style>
     /* ============================================
    SERVICES PAGE - COMPLETE STYLES
@@ -78,6 +82,9 @@ get_header();
         height: 100%;
         object-fit: cover;
         opacity: 0.75;
+        transform: scale(1.01) translate3d(0, 0, 0);
+        transform-origin: center center;
+        will-change: transform;
     }
 
     .services-hero__overlay {
@@ -86,7 +93,7 @@ get_header();
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(135deg, rgba(0, 25, 50, 0.5) 0%, rgba(0, 25, 50, 0.5) 100%);
+        background: linear-gradient(135deg, rgba(0, 25, 50, 0.42) 0%, rgba(0, 25, 50, 0.5) 100%);
         z-index: 2;
     }
 
@@ -95,7 +102,6 @@ get_header();
         z-index: 3;
         max-width: 800px;
         text-align: center;
-        transform: translateY(-30px);
     }
 
     .services-hero__title {
@@ -133,6 +139,28 @@ get_header();
         text-decoration: none;
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+    }
+
+    .services-hero__cta::before {
+        content: '';
+        position: absolute;
+        top: -240%;
+        left: -230%;
+        width: 92%;
+        height: 650%;
+        border-radius: 14px;
+        pointer-events: none;
+        background: linear-gradient(110deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.3) 40%,
+                rgba(255, 255, 255, 1) 50%,
+                rgba(255, 255, 255, 0.4) 60%,
+                rgba(255, 255, 255, 0) 100%);
+        transform: translate3d(-300%, 0, 0) rotate(18deg);
+        mix-blend-mode: screen;
     }
 
     .services-hero__cta:hover {
@@ -143,6 +171,214 @@ get_header();
 
     .services-hero .scroll-down-wrapper {
         bottom: 130px;
+    }
+
+    html:not(.js-hero-anim) .services-hero__placeholder {
+        animation: servicesHeroBackgroundZoom 18s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+    }
+
+    html:not(.js-hero-anim) .services-hero__cta::before {
+        animation: servicesHeroSheen 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    html:not(.js-hero-anim) .services-hero .mouse-icon {
+        animation: servicesHeroMouseBounce 2.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.7s infinite;
+        will-change: transform;
+    }
+
+    .js-hero-anim .services-hero.is-prepared:not(.is-loaded) .services-hero__title {
+        opacity: 0;
+        transform: translate3d(0, 74px, 0) scale(0.95);
+        filter: blur(10px);
+    }
+
+    .js-hero-anim .services-hero.is-prepared:not(.is-loaded) .services-hero__subtitle {
+        opacity: 0;
+        transform: translate3d(0, 58px, 0);
+        filter: blur(7px);
+    }
+
+    .js-hero-anim .services-hero.is-prepared:not(.is-loaded) .services-hero__cta {
+        opacity: 0;
+        transform: translate3d(0, 48px, 0);
+        filter: blur(6px);
+    }
+
+    .js-hero-anim .services-hero.is-prepared:not(.is-loaded) .scroll-down-wrapper {
+        opacity: 0;
+        transform: translate3d(-50%, 34px, 0);
+    }
+
+    .js-hero-anim .services-hero.is-loaded .services-hero__placeholder {
+        animation: servicesHeroBackgroundZoom 18s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+    }
+
+    .js-hero-anim .services-hero.is-loaded .services-hero__title {
+        animation: servicesHeroFadeUpTitle 1.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation-delay: 0s;
+        will-change: transform, opacity, filter;
+    }
+
+    .js-hero-anim .services-hero.is-loaded .services-hero__subtitle {
+        animation: servicesHeroFadeUp 1.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation-delay: 0.35s;
+        will-change: transform, opacity, filter;
+    }
+
+    .js-hero-anim .services-hero.is-loaded .services-hero__cta {
+        animation: servicesHeroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation-delay: 0.62s;
+        will-change: transform, opacity, filter;
+    }
+
+    .js-hero-anim .services-hero.is-loaded .services-hero__cta::before {
+        animation: servicesHeroSheen 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    .js-hero-anim .services-hero.is-loaded .scroll-down-wrapper {
+        animation: servicesHeroScrollReveal 1.15s cubic-bezier(0.16, 1, 0.3, 1) 1.05s forwards;
+        will-change: transform, opacity;
+    }
+
+    .js-hero-anim .services-hero.is-loaded .mouse-icon {
+        animation: servicesHeroMouseBounce 2.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.7s infinite;
+        will-change: transform;
+    }
+
+    @keyframes servicesHeroFadeUpTitle {
+        0% {
+            opacity: 0;
+            transform: translate3d(0, 74px, 0) scale(0.95);
+            filter: blur(10px);
+        }
+
+        68% {
+            opacity: 1;
+            transform: translate3d(0, -6px, 0) scale(1.01);
+            filter: blur(0.8px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) scale(1);
+            filter: blur(0);
+        }
+    }
+
+    @keyframes servicesHeroFadeUp {
+        from {
+            opacity: 0;
+            transform: translate3d(0, 58px, 0);
+            filter: blur(7px);
+        }
+
+        65% {
+            opacity: 1;
+            transform: translate3d(0, -4px, 0);
+            filter: blur(0.6px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+            filter: blur(0);
+        }
+    }
+
+    @keyframes servicesHeroScrollReveal {
+        from {
+            opacity: 0;
+            transform: translate3d(-50%, 34px, 0);
+        }
+
+        to {
+            opacity: 1;
+            transform: translate3d(-50%, 0, 0);
+        }
+    }
+
+    @keyframes servicesHeroBackgroundZoom {
+        from {
+            transform: scale(1.01) translate3d(0, 0, 0);
+        }
+
+        to {
+            transform: scale(1.1) translate3d(-1.8%, -1.1%, 0);
+        }
+    }
+
+    @keyframes servicesHeroSheen {
+
+        0%,
+        74% {
+            opacity: 0;
+            transform: translate3d(-300%, 0, 0) rotate(18deg);
+        }
+
+        79% {
+            opacity: 1;
+        }
+
+        95%,
+        100% {
+            opacity: 0;
+            transform: translate3d(500%, 0, 0) rotate(18deg);
+        }
+    }
+
+    @keyframes servicesHeroMouseBounce {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        40% {
+            transform: translateY(-5px);
+        }
+
+        70% {
+            transform: translateY(7px);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+        .services-hero__placeholder,
+        .services-hero__title,
+        .services-hero__subtitle,
+        .services-hero__cta,
+        .services-hero__cta::before,
+        .services-hero .scroll-down-wrapper,
+        .services-hero .mouse-icon {
+            animation: none !important;
+        }
+
+        .services-hero__title,
+        .services-hero__subtitle,
+        .services-hero__cta {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+            filter: blur(0);
+        }
+
+        .js-hero-anim .services-hero.is-prepared:not(.is-loaded) .services-hero__title,
+        .js-hero-anim .services-hero.is-prepared:not(.is-loaded) .services-hero__subtitle,
+        .js-hero-anim .services-hero.is-prepared:not(.is-loaded) .services-hero__cta {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+            filter: blur(0);
+        }
+
+        .js-hero-anim .services-hero.is-prepared:not(.is-loaded) .scroll-down-wrapper {
+            opacity: 1;
+            transform: translate3d(-50%, 0, 0);
+        }
+
+        .services-hero .scroll-down-wrapper {
+            opacity: 1;
+            transform: translate3d(-50%, 0, 0);
+        }
     }
 
     /* ============================================
@@ -228,25 +464,31 @@ get_header();
         align-items: stretch;
     }
 
-.services-overlap__title h2 {
-    font-size: clamp(2rem, 3vw, 2.95rem);
-    font-weight: 800;
-    color: #0f172a;
-    line-height: 1.12;
-    letter-spacing: -0.024em;
-    margin: 0;
-    max-width: 920px;
-    text-align: center;
-}
+    .services-overlap__title h2 {
+        font-family: 'Manrope', sans-serif;
+        font-size: clamp(1.6rem, 3.2vw, 2.75rem);
+        font-weight: 900;
+        color: #0f172a;
+        line-height: 0.98;
+        letter-spacing: -0.03em;
+        text-transform: none;
+        margin: 0;
+        max-width: 920px;
+        text-align: center;
+    }
 
-.services-overlap__title {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 28px;
-    padding-bottom: 28px;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.36);
-}
+    .services-overlap__title h2 .highlight {
+        color: #f59e0b;
+    }
+
+    .services-overlap__title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 28px;
+        padding-bottom: 28px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.36);
+    }
 
     .services-overlap__badge-image {
         width: 148px;
@@ -352,7 +594,9 @@ get_header();
         }
 
         .services-overlap__title h2 {
-            font-size: clamp(1.8rem, 4vw, 2.4rem);
+            font-size: clamp(1.5rem, 3.8vw, 2.2rem);
+            line-height: 1.02;
+            letter-spacing: -0.03em;
         }
 
         .services-overlap__badge-image {
@@ -401,8 +645,9 @@ get_header();
         }
 
         .services-overlap__title h2 {
-            font-size: clamp(1.42rem, 7vw, 1.95rem);
-            line-height: 1.18;
+            font-size: 1.25rem;
+            line-height: 1.24;
+            letter-spacing: -0.03em;
         }
 
         .services-overlap__badge-image {
@@ -1776,7 +2021,7 @@ get_header();
 
 <main class="services-page">
     <!-- Блок 1: Hero-секция -->
-    <section class="services-hero">
+    <section class="services-hero is-prepared">
         <div class="services-hero__bg">
             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/contract-plastic-manufacturing-hero.webp" alt="Контрактное производство изделий из пластмасс" class="services-hero__placeholder" loading="eager" decoding="sync">
             <div class="services-hero__overlay"></div>
@@ -1799,7 +2044,7 @@ get_header();
                 <div class="services-overlap__grid">
                     <div class="services-overlap__title">
                         <img class="services-overlap__badge-image" src="<?php echo get_template_directory_uri(); ?>/assets/images/20-years-experience-badge.webp" alt="Опыт компании с 2004 года" width="148" height="148" loading="lazy" decoding="async">
-                        <h2>Комплексные решения в производстве пластиковых изделий. Собственные мощности и 20-летний опыт</h2>
+                        <h2><span class="highlight">Комплексные решения</span> в производстве пластиковых изделий</h2>
                     </div>
                     <div class="services-overlap__content">
                         <div class="services-overlap__feature">
@@ -2597,6 +2842,34 @@ get_header();
             toggleFAQItem(faqItem);
         });
     });
+
+    const servicesHero = document.querySelector('.services-hero.is-prepared');
+    if (servicesHero) {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        const revealHeroLevel3 = () => {
+            if (prefersReducedMotion) {
+                servicesHero.classList.add('is-loaded');
+                return;
+            }
+
+            window.requestAnimationFrame(() => {
+                window.requestAnimationFrame(() => {
+                    servicesHero.classList.add('is-loaded');
+                });
+            });
+        };
+
+        if (document.readyState === 'complete') {
+            window.setTimeout(revealHeroLevel3, 80);
+        } else {
+            window.addEventListener('load', () => {
+                window.setTimeout(revealHeroLevel3, 80);
+            }, {
+                once: true
+            });
+        }
+    }
 
     // Smooth scroll for CTA
     const ctaBtn = document.querySelector('.services-hero__cta');
