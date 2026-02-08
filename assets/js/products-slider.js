@@ -351,7 +351,14 @@
             return;
         }
 
-        const galleries = Object.keys(slideDescriptions);
+        // Берем список галерей из DOM, чтобы не зависеть от наличия описаний в slideDescriptions
+        const galleries = Array.from(
+            new Set(
+                Array.from(document.querySelectorAll('.custom-lightbox-trigger[data-gallery]'))
+                    .map(el => el.getAttribute('data-gallery'))
+                    .filter(Boolean)
+            )
+        );
         let initializedCount = 0;
 
         galleries.forEach(galleryId => {
