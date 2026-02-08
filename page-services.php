@@ -176,7 +176,7 @@ get_header();
     position: relative;
     z-index: 10;
     border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
@@ -206,19 +206,94 @@ get_header();
     margin: 0;
 }
 
-.services-overlap__title .text-accent {
-    color: #f59e0b;
+.services-overlap__title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
 }
 
-.services-overlap__content p {
+.services-overlap__badge {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0066CC 0%, #FF6B35 100%);
+    color: #ffffff;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 24px rgba(0, 102, 204, 0.24);
+    line-height: 1;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.services-overlap__badge-value {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+}
+
+.services-overlap__badge-note {
+    font-size: 0.68rem;
+    font-weight: 700;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.services-overlap__content {
+    display: flex;
+    flex-direction: column;
+}
+
+.services-overlap__feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin: 0 0 24px 0;
+    padding: 0 0 24px 0;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.services-overlap__feature:last-of-type {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.services-overlap__feature-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    color: #0066CC;
+    margin-top: 2px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.services-overlap__feature:nth-of-type(2) .services-overlap__feature-icon {
+    transition-delay: 120ms;
+}
+
+.services-overlap__feature-icon svg {
+    width: 48px;
+    height: 48px;
+    display: block;
+}
+
+.services-overlap__card.is-visible .services-overlap__feature-icon {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.services-overlap__feature p {
     font-size: 1rem;
     line-height: 1.7;
     color: #475569;
-    margin: 0 0 1rem 0;
-}
-
-.services-overlap__content p:last-of-type {
-    margin-bottom: 0;
+    margin: 0;
 }
 
 .services-overlap__tags {
@@ -254,6 +329,12 @@ get_header();
         transform: none;
         transition: none;
     }
+
+    .services-overlap__feature-icon {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
 }
 
 @media (max-width: 768px) {
@@ -269,6 +350,11 @@ get_header();
     .services-overlap__grid {
         grid-template-columns: 1fr;
         gap: 24px;
+    }
+
+    .services-overlap__badge {
+        width: 70px;
+        height: 70px;
     }
 }
 
@@ -799,7 +885,7 @@ get_header();
 .portfolio-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    grid-template-rows: repeat(4, clamp(145px, 10.5vw, 210px));
+    grid-template-rows: repeat(4, minmax(300px, auto));
     gap: 18px;
 }
 
@@ -825,6 +911,7 @@ get_header();
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: 50% 20%;
     display: block;
     transition: transform 0.55s ease;
 }
@@ -849,7 +936,7 @@ get_header();
     border: 1px solid rgba(255, 255, 255, 0.24);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    padding: 14px 14px 13px;
+    padding: 10px 12px;
     transition: background 0.35s ease, border-color 0.35s ease;
 }
 
@@ -863,7 +950,7 @@ get_header();
     align-items: center;
     justify-content: center;
     padding: 5px 10px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     border-radius: 999px;
     background: rgba(245, 158, 11, 0.86);
     color: #ffffff;
@@ -882,10 +969,10 @@ get_header();
 }
 
 .portfolio-card__material {
-    margin-top: 6px;
+    margin-top: 4px;
     color: rgba(255, 255, 255, 0.86);
-    font-size: 0.85rem;
-    line-height: 1.4;
+    font-size: 0.82rem;
+    line-height: 1.3;
 }
 
 .portfolio-card--large {
@@ -1530,11 +1617,31 @@ body.lightbox-open {
             <div class="services-overlap__card">
                 <div class="services-overlap__grid">
                     <div class="services-overlap__title">
-                        <h2>Производство полимерных изделий <span class="text-accent">любой формы и назначения</span> — ключевая компетенция «Элинар Пласт»</h2>
+                        <span class="services-overlap__badge" aria-label="Опыт компании с 2004 года">
+                            <span class="services-overlap__badge-value">20+ лет</span>
+                            <span class="services-overlap__badge-note">опыта</span>
+                        </span>
+                        <h2>Производство полимерных изделий любой формы и назначения — компетенция «Элинар Пласт» с 20-летним опытом</h2>
                     </div>
                     <div class="services-overlap__content">
-                        <p>Мы выполняем заказы любой сложности: от серийных комплектующих для бытовой техники до высокоточных профилей для светотехники и строительства. Парк современного экструзионного и литьевого оборудования позволяет нам выдерживать строгие допуски и гарантировать стабильную геометрию изделий.</p>
-                        <p>Для решения задач заказчика мы работаем с широким спектром полимеров. Сегодня мы выпускаем: сложные технические профили, термовставки, элементы для световых шинопроводов, комплектующие для спецтранспорта, а также фаскообразователи и втулки.</p>
+                        <div class="services-overlap__feature">
+                            <span class="services-overlap__feature-icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path d="M19.4 15a1.67 1.67 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.67 1.67 0 0 0-1.82-.33a1.67 1.67 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.67 1.67 0 0 0-1-1.51a1.67 1.67 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.67 1.67 0 0 0 .33-1.82a1.67 1.67 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.67 1.67 0 0 0 1.51-1a1.67 1.67 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.67 1.67 0 0 0 1.82.33h.01a1.67 1.67 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.67 1.67 0 0 0 1 1.51a1.67 1.67 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.67 1.67 0 0 0-.33 1.82v.01a1.67 1.67 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.67 1.67 0 0 0-1.51 1z"></path>
+                                </svg>
+                            </span>
+                            <p>Мы реализуем проекты полного цикла: от проектирования оснастки, 3D-прототипирования и создания чертежей до серийного литья и экструзии. Собственный инструментальный цех и обширный резерв сырья позволяют нам выполнять заказы любой сложности, поддерживая цены прямого производителя без посреднических наценок.</p>
+                        </div>
+                        <div class="services-overlap__feature">
+                            <span class="services-overlap__feature-icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="6" height="6" rx="1"></rect>
+                                    <path d="M5 9h2M5 15h2M17 9h2M17 15h2M9 5v2M15 5v2M9 17v2M15 17v2M12 5v4M12 15v4M5 12h4M15 12h4"></path>
+                                </svg>
+                            </span>
+                            <p>Автоматизированные линии и строгий контроль качества гарантируют высокую прочность и износостойкость изделий. Сегодня мы выпускаем: сложные технические профили, термовставки, элементы для световых шинопроводов, комплектующие для транспорта и фаскообразователи.</p>
+                        </div>
                         <div class="services-overlap__tags" aria-label="Материалы">
                             <span class="services-overlap__tag">ПВХ</span>
                             <span class="services-overlap__tag">АБС-пластик</span>
@@ -1821,8 +1928,8 @@ body.lightbox-open {
                     </div>
                 </article>
 
-                <article class="portfolio-card prod-card portfolio-card--medium portfolio-card--2" data-full-img="https://source.unsplash.com/random/2400x1600?white,plastic,profile,isometric&sig=102" role="button" tabindex="0">
-                    <img src="https://source.unsplash.com/random/1600x900?white,plastic,profile,isometric&sig=102" alt="Профили для шинопровода" loading="lazy">
+                <article class="portfolio-card prod-card portfolio-card--medium portfolio-card--2" data-full-img="<?php echo get_template_directory_uri(); ?>/assets/images/lighting-track-busbar-profile-cross-section_full.webp" role="button" tabindex="0">
+                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/lighting-track-busbar-profile-cross-section_small.webp" alt="Профили для шинопровода" loading="lazy">
                     <div class="portfolio-card__info">
                         <span class="portfolio-card__tag">ПВХ/ABS</span>
                         <h3 class="portfolio-card__title">Профили для шинопровода</h3>
