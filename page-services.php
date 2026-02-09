@@ -93,7 +93,7 @@ get_header();
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(135deg, rgba(0, 25, 50, 0.42) 0%, rgba(0, 25, 50, 0.5) 100%);
+        background: linear-gradient(135deg, rgba(0, 25, 50, 0.26) 0%, rgba(0, 25, 50, 0.34) 100%);
         z-index: 2;
     }
 
@@ -170,7 +170,12 @@ get_header();
     }
 
     .services-hero .scroll-down-wrapper {
-        bottom: 130px;
+        bottom: 115px;
+    }
+
+    .services-hero .mouse-icon,
+    .services-hero .wheel {
+        animation: none !important;
     }
 
     html:not(.js-hero-anim) .services-hero__placeholder {
@@ -181,9 +186,9 @@ get_header();
         animation: servicesHeroSheen 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     }
 
-    html:not(.js-hero-anim) .services-hero .mouse-icon {
-        animation: servicesHeroMouseBounce 2.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.7s infinite;
-        will-change: transform;
+    html:not(.js-hero-anim) .services-hero .mouse-icon,
+    html:not(.js-hero-anim) .services-hero .wheel {
+        animation: none !important;
     }
 
     .js-hero-anim .services-hero.is-prepared:not(.is-loaded) .services-hero__title {
@@ -240,9 +245,9 @@ get_header();
         will-change: transform, opacity;
     }
 
-    .js-hero-anim .services-hero.is-loaded .mouse-icon {
-        animation: servicesHeroMouseBounce 2.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.7s infinite;
-        will-change: transform;
+    .js-hero-anim .services-hero.is-loaded .mouse-icon,
+    .js-hero-anim .services-hero.is-loaded .wheel {
+        animation: none !important;
     }
 
     @keyframes servicesHeroFadeUpTitle {
@@ -387,7 +392,7 @@ get_header();
     .services-overlap {
         position: relative;
         padding: 0 24px 90px;
-        --overlap-offset: 100px;
+        --overlap-offset: 72px;
     }
 
     .services-overlap::before {
