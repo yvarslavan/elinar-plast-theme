@@ -132,7 +132,7 @@ get_header();
                         <div class="form-consent">
                             <label>
                                 <input type="checkbox" name="consent" required>
-                                <span>Нажимая на кнопку «Отправить», я даю согласие на обработку своих <a href="#" style="color: inherit; text-decoration: underline;">персональных данных</a>.</span>
+                                <span>Я даю <a href="<?php echo esc_url(home_url('/privacy-policy/#consent-processing')); ?>" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline;">согласие</a> на обработку <a href="<?php echo esc_url(home_url('/privacy-policy/')); ?>" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline;">моих персональных данных</a>.</span>
                             </label>
                         </div>
                     </form>

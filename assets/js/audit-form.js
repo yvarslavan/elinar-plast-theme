@@ -279,9 +279,30 @@
 
     const projectForm = document.getElementById('project-form');
     const submitBtn = document.getElementById('submit-btn');
+    const consentCheckbox = document.getElementById('privacy_agreement');
+
+    function syncAuditSubmitState() {
+        if (!submitBtn) return;
+        if (submitBtn.classList.contains('is-submitting')) return;
+
+        const consentAllowed = !consentCheckbox || consentCheckbox.checked;
+        submitBtn.disabled = !consentAllowed;
+        submitBtn.setAttribute('aria-disabled', consentAllowed ? 'false' : 'true');
+    }
 
     if (projectForm && submitBtn) {
+        if (consentCheckbox) {
+            syncAuditSubmitState();
+            consentCheckbox.addEventListener('change', syncAuditSubmitState);
+        }
+
         projectForm.addEventListener('submit', function (e) {
+            if (consentCheckbox && !consentCheckbox.checked) {
+                e.preventDefault();
+                consentCheckbox.reportValidity();
+                return;
+            }
+
             // Проверяем валидность формы перед показом индикации
             if (!projectForm.checkValidity()) {
                 return; // Браузер покажет стандартные ошибки валидации
@@ -331,8 +352,8 @@
                         console.error('Error:', error);
                         // Restore button
                         submitBtn.classList.remove('is-submitting');
-                        submitBtn.disabled = false;
                         submitBtn.innerHTML = originalContent;
+                        syncAuditSubmitState();
                         if (fileError) {
                             fileError.textContent = 'Ошибка отправки. Попробуйте снова.';
                         }
@@ -354,11 +375,11 @@
         window.addEventListener('pageshow', function (e) {
             if (e.persisted && submitBtn.classList.contains('is-submitting')) {
                 submitBtn.classList.remove('is-submitting');
-                submitBtn.disabled = false;
                 const originalContent = submitBtn.getAttribute('data-original-content');
                 if (originalContent) {
                     submitBtn.innerHTML = originalContent;
                 }
+                syncAuditSubmitState();
             }
         });
     }

@@ -1184,10 +1184,6 @@ function elinar_scripts()
     wp_add_inline_script('elinar-script', 'console.log("ELINAR: Loading main.js v2.1.3");', 'before');
     wp_enqueue_script('elinar-script', $main_js_path, array(), $main_js_ver, true);
 
-    wp_add_inline_script('elinar-script', "(function(){document.addEventListener('DOMContentLoaded',function(){var b=document.getElementById('cookie-banner');if(!b){return;}var p=b.querySelector('.cookie-banner-settings');if(p){p.hidden=true;}});})();", 'after');
-
-    wp_add_inline_script('elinar-script', "(function(){if(window.elinarCookieConsentInitialized){return;}window.elinarCookieConsentInitialized=true;function init(){var b=document.getElementById('cookie-banner');if(!b){return;}var a=document.getElementById('cookie-accept-all');var s=document.getElementById('cookie-settings');var d=document.getElementById('cookie-decline');var p=b?b.querySelector('.cookie-banner-settings'):null;var an=document.getElementById('cookie-analytics');var pe=document.getElementById('cookie-personalization');var sv=document.getElementById('cookie-save-settings');var cn=document.getElementById('cookie-cancel-settings');var k='elinar_cookie_preferences';var lk='elinar_cookie_consent';if(typeof window.elinarInitAnalytics!=='function'){window.elinarInitAnalytics=function(){};}function r(){try{var raw=localStorage.getItem(k);if(raw){var o=JSON.parse(raw);if(o&&typeof o==='object'){return {necessary:true,analytics:o.analytics!==false,personalization:o.personalization!==false};}}if(localStorage.getItem(lk)==='accepted'){return {necessary:true,analytics:true,personalization:true};}}catch(e){}return null;}function w(x){var o={necessary:true,analytics:!!(x&&x.analytics),personalization:!!(x&&x.personalization),ts:Date.now()};try{localStorage.setItem(k,JSON.stringify(o));}catch(e){}try{window.dispatchEvent(new CustomEvent('elinar:cookie-consent',{detail:o}));}catch(e){}try{window.elinarInitAnalytics(o);}catch(e){} }function show(){var prefs=r();if(!prefs){setTimeout(function(){b.classList.add('show');},500);return;}w(prefs);b.style.display='none';}function hide(){b.classList.remove('show');setTimeout(function(){b.style.display='none';},300);}function open(){if(!p){return;}p.hidden=false;var prefs=r()||{necessary:true,analytics:true,personalization:true};if(an){an.checked=!!prefs.analytics;}if(pe){pe.checked=!!prefs.personalization;}}function close(){if(!p){return;}p.hidden=true;}if(!a||!s||!d){return;}show();a.addEventListener('click',function(e){e.preventDefault();w({analytics:true,personalization:true});hide();});d.addEventListener('click',function(e){e.preventDefault();w({analytics:false,personalization:false});hide();});s.addEventListener('click',function(e){e.preventDefault();open();});if(sv){sv.addEventListener('click',function(e){e.preventDefault();w({analytics:an?an.checked:true,personalization:pe?pe.checked:true});close();hide();});}if(cn){cn.addEventListener('click',function(e){e.preventDefault();close();});}}if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}})();", 'after');
-
     // Локализация для AJAX
     wp_localize_script('elinar-script', 'elinarAjax', array(
         'ajaxurl' => admin_url('admin-ajax.php'),
@@ -2667,68 +2663,99 @@ function elinar_yandex_metrika()
 ?>
     <!-- Yandex.Metrika counter (Consent-gated) -->
     <script type="text/javascript">
-        var metrikaLoaded = false;
+        (function() {
+            var metrikaLoaded = false;
+            var metrikaBlocked = false;
+            var metrikaScriptSelector = 'script[src*="mc.yandex.ru/metrika/tag.js"]';
 
-        function loadMetrika() {
-            if (metrikaLoaded) return;
-            metrikaLoaded = true;
+            function blockMetrikaRuntime() {
+                metrikaBlocked = true;
+                metrikaLoaded = false;
 
-            (function(m, e, t, r, i, k, a) {
-                m[i] = m[i] || function() {
-                    (m[i].a = m[i].a || []).push(arguments)
-                };
-                m[i].l = 1 * new Date();
-                k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
-            })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=106098510', 'ym');
-
-            ym(106098510, 'init', {
-                clickmap: true,
-                trackLinks: true,
-                accurateTrackBounce: true,
-                webvisor: true
-            });
-        }
-
-        function readConsent() {
-            try {
-                var raw = localStorage.getItem('elinar_cookie_preferences');
-                if (raw) {
-                    var prefs = JSON.parse(raw);
-                    if (prefs && typeof prefs === 'object') {
-                        return prefs.analytics === true;
+                try {
+                    var scripts = document.querySelectorAll(metrikaScriptSelector);
+                    for (var i = 0; i < scripts.length; i++) {
+                        if (scripts[i] && scripts[i].parentNode) {
+                            scripts[i].parentNode.removeChild(scripts[i]);
+                        }
                     }
-                }
+                } catch (e) {}
 
-                if (localStorage.getItem('elinar_cookie_consent') === 'accepted') {
-                    return true;
-                }
-            } catch (e) {}
+                try {
+                    window.ym = undefined;
+                } catch (e) {}
 
-            return null;
-        }
-
-        function onConsentChanged(detail) {
-            var allowed = !!(detail && detail.analytics);
-            if (allowed) {
-                loadMetrika();
+                try {
+                    window['yaCounter106098510'] = undefined;
+                } catch (e) {}
             }
-        }
 
-        // 1) If consent already exists, respect it.
-        var consent = readConsent();
-        if (consent === true) {
-            // Small delay to avoid impacting initial render
-            setTimeout(loadMetrika, 500);
-        }
+            function loadMetrika() {
+                if (metrikaLoaded || metrikaBlocked) return;
+                metrikaLoaded = true;
+                window.yaCounterId = 106098510;
 
-        // 2) Listen for future consent changes from the cookie banner
-        window.addEventListener('elinar:cookie-consent', function(e) {
-            onConsentChanged(e && e.detail ? e.detail : null);
-        });
+                (function(m, e, t, r, i, k, a) {
+                    m[i] = m[i] || function() {
+                        (m[i].a = m[i].a || []).push(arguments);
+                    };
+                    m[i].l = 1 * new Date();
+                    k = e.createElement(t);
+                    a = e.getElementsByTagName(t)[0];
+                    k.async = 1;
+                    k.src = r;
+                    a.parentNode.insertBefore(k, a);
+                })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=106098510', 'ym');
+
+                ym(106098510, 'init', {
+                    clickmap: true,
+                    trackLinks: true,
+                    accurateTrackBounce: true,
+                    webvisor: true
+                });
+            }
+
+            function readConsent() {
+                try {
+                    var raw = localStorage.getItem('elinar_cookie_preferences');
+                    if (raw) {
+                        var prefs = JSON.parse(raw);
+                        if (prefs && typeof prefs === 'object') {
+                            return prefs.analytics === true;
+                        }
+                    }
+
+                    if (localStorage.getItem('elinar_cookie_consent') === 'accepted') {
+                        return true;
+                    }
+                } catch (e) {}
+
+                return null;
+            }
+
+            function onConsentChanged(detail) {
+                var allowed = !!(detail && detail.analytics);
+                if (allowed) {
+                    metrikaBlocked = false;
+                    loadMetrika();
+                    return;
+                }
+
+                blockMetrikaRuntime();
+            }
+
+            var consent = readConsent();
+            if (consent === true) {
+                setTimeout(loadMetrika, 500);
+            } else if (consent === false) {
+                blockMetrikaRuntime();
+            }
+
+            window.addEventListener('elinar:cookie-consent', function(e) {
+                onConsentChanged(e && e.detail ? e.detail : null);
+            });
+        })();
     </script>
-    <noscript>
-        <div><img src="https://mc.yandex.ru/watch/106098510" style="position:absolute; left:-9999px;" alt="" /></div>
-    </noscript>
     <!-- /Yandex.Metrika counter -->
 <?php
 }

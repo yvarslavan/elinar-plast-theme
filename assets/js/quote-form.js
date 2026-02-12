@@ -25,6 +25,7 @@
     // DOM Elements
     let form, steps, progressBar, progressSteps;
     let prevBtn, nextBtn, submitBtn;
+    let consentCheckbox;
     let fileDropzone, fileInput, fileList;
     let autosaveIndicator, loadingOverlay, successMessage;
 
@@ -42,6 +43,7 @@
         prevBtn = document.getElementById('quote-prev');
         nextBtn = document.getElementById('quote-next');
         submitBtn = document.getElementById('quote-submit');
+        consentCheckbox = form.querySelector('input[name="consent"]');
         fileDropzone = document.getElementById('quote-file-dropzone');
         fileInput = document.getElementById('quote-files');
         fileList = document.getElementById('quote-file-list');
@@ -58,6 +60,9 @@
         // Start autosave
         startAutosave();
 
+        // Sync submit state with consent checkbox
+        updateSubmitButtonState();
+
         // Update progress bar
         updateProgressBar();
     }
@@ -72,6 +77,7 @@
 
         // Form submission
         if (form) form.addEventListener('submit', handleSubmit);
+        if (consentCheckbox) consentCheckbox.addEventListener('change', updateSubmitButtonState);
 
         // Technology selection
         const techCards = document.querySelectorAll('.quote-tech-card input[type="radio"]');
@@ -122,6 +128,14 @@
         // Phone input mask handled globally in main.js
     }
 
+    function updateSubmitButtonState() {
+        if (!submitBtn) return;
+
+        const consentAllowed = !consentCheckbox || consentCheckbox.checked;
+        submitBtn.disabled = !consentAllowed;
+        submitBtn.setAttribute('aria-disabled', consentAllowed ? 'false' : 'true');
+    }
+
     /**
      * Navigation: Go to previous step
      */
@@ -170,6 +184,7 @@
         prevBtn.style.display = stepIndex === 0 ? 'none' : 'flex';
         nextBtn.style.display = stepIndex === CONFIG.totalSteps - 1 ? 'none' : 'flex';
         submitBtn.style.display = stepIndex === CONFIG.totalSteps - 1 ? 'flex' : 'none';
+        updateSubmitButtonState();
 
         // Update progress bar
         updateProgressBar();
@@ -523,8 +538,7 @@
         }
 
         // Check consent
-        const consent = form.querySelector('input[name="consent"]');
-        if (consent && !consent.checked) {
+        if (consentCheckbox && !consentCheckbox.checked) {
             showError('Необходимо согласие на обработку персональных данных');
             return;
         }
@@ -676,6 +690,7 @@
     function resetForm() {
         // Clear form
         form.reset();
+        updateSubmitButtonState();
 
         // Clear uploaded files
         uploadedFiles = [];
@@ -782,6 +797,7 @@
             // Restore step (but start from beginning for better UX)
             currentStep = 0;
             showStep(currentStep);
+            updateSubmitButtonState();
 
         } catch (e) {
             console.warn('Could not load saved form data:', e);

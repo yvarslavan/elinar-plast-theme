@@ -167,13 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
         (function () {
             const cookieBanner = document.getElementById('cookie-banner');
             const cookieAcceptAllBtn = document.getElementById('cookie-accept-all');
-            const cookieSettingsBtn = document.getElementById('cookie-settings');
             const cookieDeclineBtn = document.getElementById('cookie-decline');
-            const cookieSettingsPanel = cookieBanner ? cookieBanner.querySelector('.cookie-banner-settings') : null;
-            const cookieAnalytics = document.getElementById('cookie-analytics');
-            const cookiePersonalization = document.getElementById('cookie-personalization');
-            const cookieSaveSettingsBtn = document.getElementById('cookie-save-settings');
-            const cookieCancelSettingsBtn = document.getElementById('cookie-cancel-settings');
 
             const cookiePrefsKey = 'elinar_cookie_preferences';
             const cookieLegacyKey = 'elinar_cookie_consent';
@@ -190,8 +184,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (parsed && typeof parsed === 'object') {
                             return {
                                 necessary: true,
-                                analytics: parsed.analytics !== false,
-                                personalization: parsed.personalization !== false
+                                analytics: parsed.analytics === true,
+                                personalization: parsed.personalization === true
                             };
                         }
                     }
@@ -217,8 +211,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 } catch (e) {
                 }
 
-                const event = new CustomEvent('elinar:cookie-consent', { detail: safe });
-                window.dispatchEvent(event);
+                try {
+                    localStorage.removeItem(cookieLegacyKey);
+                } catch (e) {
+                }
+
+                try {
+                    const event = new CustomEvent('elinar:cookie-consent', { detail: safe });
+                    window.dispatchEvent(event);
+                } catch (e) {
+                }
+
                 if (typeof window.elinarInitAnalytics === 'function') {
                     window.elinarInitAnalytics(safe);
                 }
@@ -229,11 +232,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 const prefs = readPrefs();
                 if (!prefs) {
-                    // Ensure settings panel is hidden initially
-                    if (cookieSettingsPanel) {
-                        cookieSettingsPanel.hidden = true;
-                    }
-
                     setTimeout(function () {
                         cookieBanner.classList.add('show');
                     }, 500);
@@ -252,20 +250,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }, 400);
             }
 
-            function openSettings() {
-                if (!cookieSettingsPanel) return;
-                cookieSettingsPanel.hidden = false;
-                const prefs = readPrefs() || { necessary: true, analytics: true, personalization: true };
-                if (cookieAnalytics) cookieAnalytics.checked = !!prefs.analytics;
-                if (cookiePersonalization) cookiePersonalization.checked = !!prefs.personalization;
-            }
-
-            function closeSettings() {
-                if (!cookieSettingsPanel) return;
-                cookieSettingsPanel.hidden = true;
-            }
-
-            if (cookieBanner && cookieAcceptAllBtn && cookieSettingsBtn && cookieDeclineBtn) {
+            if (cookieBanner && cookieAcceptAllBtn && cookieDeclineBtn) {
                 showCookieBanner();
 
                 cookieAcceptAllBtn.addEventListener('click', function (e) {
@@ -279,30 +264,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     writePrefs({ analytics: false, personalization: false });
                     hideCookieBanner();
                 });
-
-                cookieSettingsBtn.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    openSettings();
-                });
-
-                if (cookieSaveSettingsBtn) {
-                    cookieSaveSettingsBtn.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        writePrefs({
-                            analytics: cookieAnalytics ? cookieAnalytics.checked : true,
-                            personalization: cookiePersonalization ? cookiePersonalization.checked : true
-                        });
-                        closeSettings();
-                        hideCookieBanner();
-                    });
-                }
-
-                if (cookieCancelSettingsBtn) {
-                    cookieCancelSettingsBtn.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        closeSettings();
-                    });
-                }
             }
         })();
     }
@@ -2204,11 +2165,27 @@ document.addEventListener('DOMContentLoaded', function () {
     const contactForms = document.querySelectorAll('.simple-form');
 
     contactForms.forEach(function (form) {
+        const consentCheckbox = form.querySelector('input[name="consent"]');
+        const submitButton = form.querySelector('button[type="submit"]');
+
+        function syncSubmitStateByConsent() {
+            if (!submitButton) return;
+            const consentAllowed = !consentCheckbox || consentCheckbox.checked;
+            submitButton.disabled = !consentAllowed;
+            submitButton.setAttribute('aria-disabled', consentAllowed ? 'false' : 'true');
+            submitButton.style.opacity = consentAllowed ? '' : '0.65';
+            submitButton.style.cursor = consentAllowed ? '' : 'not-allowed';
+        }
+
+        if (consentCheckbox) {
+            syncSubmitStateByConsent();
+            consentCheckbox.addEventListener('change', syncSubmitStateByConsent);
+        }
+
         form.addEventListener('submit', function (e) {
             e.preventDefault();
 
             // Проверка чекбокса согласия на обработку персональных данных
-            const consentCheckbox = form.querySelector('input[name="consent"]');
             if (consentCheckbox && !consentCheckbox.checked) {
                 // Удаляем предыдущие сообщения
                 const existingMessage = form.querySelector('.form-message');
@@ -2246,7 +2223,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             const formData = new FormData(form);
-            const submitButton = form.querySelector('button[type="submit"]');
             const originalButtonText = submitButton ? submitButton.textContent : '';
 
             // Добавляем nonce для безопасности
@@ -2289,6 +2265,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         // Очищаем форму при успешной отправке
                         form.reset();
+                        syncSubmitStateByConsent();
 
                         // Автоматически скрываем сообщение через 5 секунд
                         setTimeout(function () {
@@ -2315,8 +2292,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // Восстанавливаем кнопку
                     if (submitButton) {
-                        submitButton.disabled = false;
                         submitButton.textContent = originalButtonText;
+                        syncSubmitStateByConsent();
                     }
                 })
                 .catch(function (error) {
@@ -2336,8 +2313,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // Восстанавливаем кнопку
                     if (submitButton) {
-                        submitButton.disabled = false;
                         submitButton.textContent = originalButtonText;
+                        syncSubmitStateByConsent();
                     }
                 });
         });

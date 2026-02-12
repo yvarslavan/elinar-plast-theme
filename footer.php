@@ -1,5 +1,7 @@
 <?php
-$privacy_url = get_privacy_policy_url() ?: '#';
+$privacy_url = get_privacy_policy_url() ?: home_url('/privacy-policy/');
+$consent_url = home_url('/privacy-policy/#consent-processing');
+$requisites_url = home_url('/privacy-policy/#operator-details');
 ?>
 
 <!-- ============================================
@@ -169,13 +171,12 @@ $privacy_url = get_privacy_policy_url() ?: '#';
                 <div class="footer-bottom-left">
                     <a href="<?php echo esc_url($privacy_url); ?>" class="footer-bottom-link">Политика конфиденциальности</a>
                     <span class="footer-bottom-sep">•</span>
-                    <span class="footer-bottom-text">Работаем с НДС</span>
+                    <a href="<?php echo esc_url($consent_url); ?>" class="footer-bottom-link">Согласие на обработку ПДн</a>
+                    <span class="footer-bottom-sep">•</span>
+                    <a href="<?php echo esc_url($requisites_url); ?>" class="footer-bottom-link">Реквизиты (ИНН 5030041433, ОГРН 1025003751068)</a>
                 </div>
                 <div class="footer-bottom-right">
                     <span class="footer-copyright">&copy; <?php echo date('Y'); ?> ООО «Элинар Пласт». Все права защищены.</span>
-                </div>
-                <div class="footer-bottom-right">
-                    <span class="footer-copyright">ИНН 5030039170</span>
                 </div>
             </div>
         </div>
@@ -908,6 +909,13 @@ $privacy_url = get_privacy_policy_url() ?: '#';
         transform: translateY(1px);
     }
 
+    .feedback-modal-submit:disabled {
+        cursor: not-allowed;
+        opacity: 0.65;
+        filter: grayscale(10%);
+        transform: none;
+    }
+
     .feedback-modal-consent {
         margin-top: 4px;
         display: flex;
@@ -1025,7 +1033,7 @@ $privacy_url = get_privacy_policy_url() ?: '#';
 
             <label class="feedback-modal-consent">
                 <input type="checkbox" name="consent" required>
-                <span>Нажимая на кнопку «Отправить», я даю согласие на обработку своих <a href="<?php echo esc_url($privacy_url); ?>">персональных данных</a>.</span>
+                <span>Я даю <a href="<?php echo esc_url($consent_url); ?>" target="_blank" rel="noopener">согласие</a> на обработку <a href="<?php echo esc_url($privacy_url); ?>" target="_blank" rel="noopener">моих персональных данных</a>.</span>
             </label>
         </form>
     </div>
@@ -1224,48 +1232,13 @@ $privacy_url = get_privacy_policy_url() ?: '#';
         <div class="cookie-banner-main">
             <div class="cookie-banner-text">
                 <h3 class="cookie-banner-title">Мы используем cookies</h3>
-                <p>Мы используем файлы cookie и инструменты аналитики для улучшения работы сайта, сбора статистики и персонализации предложений.</p>
-                <div class="cookie-banner-links">
-                    <a href="<?php echo esc_url(get_privacy_policy_url() ?: '#'); ?>" class="cookie-banner-link">Политика конфиденциальности</a>
-                </div>
+                <p>Мы используем cookie-файлы и сервисы аналитики (Яндекс.Метрика), чтобы сайт работал лучше. Оставаясь на сайте или нажимая «Согласен», вы подтверждаете, что ознакомлены с <a href="<?php echo esc_url($privacy_url); ?>" class="cookie-banner-link">Политикой конфиденциальности</a> и даете <a href="<?php echo esc_url($consent_url); ?>" class="cookie-banner-link">Согласие на обработку данных</a>.</p>
             </div>
 
             <div class="cookie-banner-actions">
-                <button id="cookie-accept-all" class="cookie-banner-btn cookie-banner-btn--primary" type="button">Принять</button>
-                <button id="cookie-settings" class="cookie-banner-btn cookie-banner-btn--outline" type="button">Настроить</button>
+                <button id="cookie-accept-all" class="cookie-banner-btn cookie-banner-btn--primary" type="button">Согласен</button>
                 <button id="cookie-decline" class="cookie-banner-btn cookie-banner-btn--secondary" type="button">Отклонить</button>
             </div>
-        </div>
-    </div>
-
-    <div class="cookie-banner-settings" hidden>
-        <div class="cookie-settings-row">
-            <div class="cookie-settings-item">
-                <div class="cookie-settings-label">Обязательные cookie</div>
-                <div class="cookie-settings-note">Всегда включены</div>
-            </div>
-            <input type="checkbox" checked disabled aria-label="Обязательные cookie (всегда включены)">
-        </div>
-
-        <div class="cookie-settings-row">
-            <label class="cookie-settings-item" for="cookie-analytics">
-                <div class="cookie-settings-label">Аналитика</div>
-                <div class="cookie-settings-note">Yandex.Metrica</div>
-            </label>
-            <input id="cookie-analytics" type="checkbox" checked>
-        </div>
-
-        <div class="cookie-settings-row">
-            <label class="cookie-settings-item" for="cookie-personalization">
-                <div class="cookie-settings-label">Персонализация</div>
-                <div class="cookie-settings-note">Рекомендации и предложения</div>
-            </label>
-            <input id="cookie-personalization" type="checkbox" checked>
-        </div>
-
-        <div class="cookie-settings-actions">
-            <button id="cookie-save-settings" class="cookie-banner-btn cookie-banner-btn--primary" type="button">Сохранить</button>
-            <button id="cookie-cancel-settings" class="cookie-banner-btn cookie-banner-btn--outline" type="button">Отмена</button>
         </div>
     </div>
 </div>

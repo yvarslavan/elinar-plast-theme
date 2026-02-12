@@ -453,7 +453,7 @@
                 <div class="quote-consent">
                     <label class="quote-checkbox">
                         <input type="checkbox" name="consent" required>
-                        <span>Я согласен на обработку персональных данных в соответствии с <a href="<?php echo esc_url(get_privacy_policy_url() ?: '#'); ?>" target="_blank">Политикой конфиденциальности</a></span>
+                        <span>Я даю <a href="<?php echo esc_url(home_url('/privacy-policy/#consent-processing')); ?>" target="_blank" rel="noopener">согласие</a> на обработку <a href="<?php echo esc_url(home_url('/privacy-policy/')); ?>" target="_blank" rel="noopener">моих персональных данных</a></span>
                     </label>
                 </div>
             </div>
