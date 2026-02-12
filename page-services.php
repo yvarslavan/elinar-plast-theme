@@ -170,7 +170,7 @@ get_header();
     }
 
     .services-hero .scroll-down-wrapper {
-        bottom: 115px;
+        bottom: 88px;
     }
 
     .services-hero .mouse-icon,
