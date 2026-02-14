@@ -2388,7 +2388,7 @@ get_header();
                 <article class="portfolio-card prod-card portfolio-card--large portfolio-card--1" data-full-img="<?php echo get_template_directory_uri(); ?>/assets/images/termovstavki_full.webp" role="button" tabindex="0">
                     <img src="<?php echo get_template_directory_uri(); ?>/assets/images/termovstavki_small.webp" alt="Термовставки из ПВХ" loading="lazy">
                     <div class="portfolio-card__info">
-                        <span class="portfolio-card__tag">PA 6.6</span>
+                        <span class="portfolio-card__tag">ПВХ</span>
                         <h3 class="portfolio-card__title">Термовставки из ПВХ</h3>
                         <p class="portfolio-card__material">Материал: ПВХ</p>
                     </div>
