@@ -98,7 +98,7 @@ $requisites_url = home_url('/privacy-policy/#operator-details');
                         <li><a href="#" id="profiles-modal-trigger-footer">Профили для осветительного шинопровода</a></li>
                         <li><a href="#" id="injection-modal-trigger-footer">Профили для бытовой техники</a></li>
                         <li><a href="#" id="extruded-modal-trigger-footer">Полимерные втулки</a></li>
-                        <li><a href="#" id="truck-profile-modal-trigger-footer">Профили для фургонов</a></li>
+                        <li><a href="#" id="truck-profile-modal-trigger-footer">Профили для автофургонов</a></li>
                         <li><a href="<?php echo home_url('/products'); ?>">Все решения</a></li>
                     </ul>
                 </div>

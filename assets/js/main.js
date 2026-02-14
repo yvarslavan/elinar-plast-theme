@@ -787,7 +787,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Truck Profile Modal (Профили для фургонов)
+    // Truck Profile Modal (Профили для автофургонов)
     const truckProfileModal = document.getElementById('truck-profile-modal');
     if (truckProfileModal) {
         const truckProfileClose = truckProfileModal.querySelector('.modal-close');
@@ -882,7 +882,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        // Truck Profile Modal from footer (Профили для фургонов)
+        // Truck Profile Modal from footer (Профили для автофургонов)
         if (footerTruckProfileLink && truckProfileModal) {
             footerTruckProfileLink.addEventListener('click', function (e) {
                 e.preventDefault();

@@ -562,9 +562,19 @@ get_header();
         margin: 0;
     }
 
+    .services-overlap__feature-subtitle {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 1.12em;
+        line-height: 1.35;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
     .services-overlap__tags {
         display: flex;
         flex-wrap: wrap;
+        justify-content: center;
         gap: 10px;
         margin-top: 6px;
         padding-top: 20px;
@@ -1037,6 +1047,34 @@ get_header();
         box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
     }
 
+    .tech-visual-photo-wrap {
+        position: relative;
+        width: 100%;
+    }
+
+    .tech-visual-disclaimer {
+        position: absolute;
+        right: 10px;
+        bottom: 8px;
+        margin: 0;
+        padding: 2px 6px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.45);
+        font-family: 'Montserrat', sans-serif;
+        font-size: 10.5px;
+        font-weight: 300;
+        line-height: 1.25;
+        color: #666;
+        opacity: 0.7;
+        transition: opacity 0.2s ease, color 0.2s ease;
+        pointer-events: none;
+    }
+
+    .tech-visual-photo-wrap:hover .tech-visual-disclaimer {
+        opacity: 0.92;
+        color: #555;
+    }
+
     .tech-capability__title {
         font-size: clamp(1.4rem, 2.6vw, 2rem);
         font-weight: 800;
@@ -1175,6 +1213,12 @@ get_header();
 
         .tech-capability__visual {
             padding: 18px;
+        }
+
+        .tech-visual-disclaimer {
+            right: 8px;
+            bottom: 7px;
+            font-size: 10px;
         }
 
         .tech-service-card {
@@ -2035,7 +2079,7 @@ get_header();
             <h1 class="services-hero__title">
                 Контрактное производство полимерных изделий <span class="text-accent">полного цикла</span>
             </h1>
-            <p class="services-hero__subtitle">Литье под давлением и экструзия. Берем на себя всё: от проектирования пресс-форм до выпуска серийной партии.</p>
+            <p class="services-hero__subtitle">Экструзия и литье под давлением. Берем на себя всё: от проектирования оснастки до выпуска серийной партии.</p>
             <a href="#contact-form" class="services-hero__cta">Рассчитать стоимость проекта</a>
         </div>
 
@@ -2059,7 +2103,7 @@ get_header();
                                     <path d="M19.4 15a1.67 1.67 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.67 1.67 0 0 0-1.82-.33a1.67 1.67 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.67 1.67 0 0 0-1-1.51a1.67 1.67 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.67 1.67 0 0 0 .33-1.82a1.67 1.67 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.67 1.67 0 0 0 1.51-1a1.67 1.67 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.67 1.67 0 0 0 1.82.33h.01a1.67 1.67 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.67 1.67 0 0 0 1 1.51a1.67 1.67 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.67 1.67 0 0 0-.33 1.82v.01a1.67 1.67 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.67 1.67 0 0 0-1.51 1z"></path>
                                 </svg>
                             </span>
-                            <p>Мы реализуем проекты полного цикла: от проектирования оснастки, 3D-прототипирования и создания чертежей до серийного литья и экструзии. Собственный инструментальный цех и обширный резерв сырья позволяют нам выполнять заказы любой сложности, поддерживая цены прямого производителя без посреднических наценок.</p>
+                            <p><span class="services-overlap__feature-subtitle">Производство полного цикла</span>Реализация проектов начинается с проектирования оснастки и разработки чертежей, завершаясь серийным выпуском методами экструзии или литья. Особое внимание уделяется точности параметров и скорости выполнения заказов. Гарантией качества служит строгое соответствие готовых изделий согласованному техническому заданию.</p>
                         </div>
                         <div class="services-overlap__feature">
                             <span class="services-overlap__feature-icon" aria-hidden="true">
@@ -2068,17 +2112,10 @@ get_header();
                                     <path d="M5 9h2M5 15h2M17 9h2M17 15h2M9 5v2M15 5v2M9 17v2M15 17v2M12 5v4M12 15v4M5 12h4M15 12h4"></path>
                                 </svg>
                             </span>
-                            <p>Автоматизированные линии и строгий контроль качества гарантируют высокую прочность и износостойкость изделий. Сегодня мы выпускаем: сложные технические профили, термовставки, элементы для световых шинопроводов, комплектующие для транспорта и фаскообразователи.</p>
+                            <p><span class="services-overlap__feature-subtitle">Контроль и ассортимент</span>Современные автоматизированные линии и строгий контроль качества гарантируют высокую прочность и износостойкость продукции. Текущий ассортимент включает: сложные технические профили, термовставки, элементы для осветительных шинопроводов, комплектующие для автофургонов и фаскообразователи.</p>
                         </div>
                         <div class="services-overlap__tags" aria-label="Материалы">
-                            <span class="services-overlap__tag">ПВХ</span>
-                            <span class="services-overlap__tag">АБС-пластик</span>
-                            <span class="services-overlap__tag">Полиэтилен (PE)</span>
-                            <span class="services-overlap__tag">Полипропилен (PP)</span>
-                            <span class="services-overlap__tag">Поликарбонат (PC)</span>
-                            <span class="services-overlap__tag">Полистирол (PS)</span>
-                            <span class="services-overlap__tag">Полиамид (PA)</span>
-                            <span class="services-overlap__tag">ТЭП</span>
+                            <span class="services-overlap__tag">ПВХ (PVC) • АБС-пластик (ABS) • Полиэтилен (PE) • Полипропилен (PP) • Полистирол (PS) • ТПЭ (TPE)</span>
                         </div>
                     </div>
                 </div>
@@ -2104,7 +2141,7 @@ get_header();
                                 <li>Принимаем чертеж/3D-модель и проверяем технологичность изделия.</li>
                                 <li>Согласовываем требования по ГОСТ/ТУ и условия эксплуатации: УФ, мороз, химические среды.</li>
                                 <li>Рассчитываем не только стоимость, но и оптимальный тираж.</li>
-                                <li>По плановому объему определяем гнездность формы и фиксируем смету.</li>
+                                <li>По плановому объему определяем производительность оснастки и фиксируем смету.</li>
                             </ul>
                         </div>
                         <div class="steps-visual">
@@ -2133,7 +2170,7 @@ get_header();
                             <h3 class="steps-title">Опытные образцы T1</h3>
                             <ul class="steps-desc">
                                 <li>Выпускаем тестовую серию T1 и передаем эталонные образцы: обычно 5-10 шт. или 5-10 м профиля.</li>
-                                <li>Выполняем входной контроль по геометрии, внешнему виду и стабильности размеров.</li>
+                                <li>Выполняем приёмочный контроль по геометрии, внешнему виду и стабильности размеров.</li>
                                 <li>Проверяем собираемость с ответными деталями заказчика.</li>
                                 <li>По результатам согласуем корректировки и утверждаем эталон.</li>
                             </ul>
@@ -2150,8 +2187,8 @@ get_header();
                             <ul class="steps-desc">
                                 <li>Запускаем серию по утвержденной оснастке и технологической карте.</li>
                                 <li>При запуске выполняем 100% контроль первых изделий.</li>
-                                <li>В ходе партии ведем выборочный контроль ОТК по критическим параметрам.</li>
-                                <li>На партию оформляем паспорт качества (при необходимости - паспорт плавки).</li>
+                                <li>При производстве партии ведем выборочный контроль по критическим параметрам.</li>
+                                <li>На партию оформляем паспорт качества.</li>
                             </ul>
                         </div>
                         <div class="steps-visual">
@@ -2164,9 +2201,9 @@ get_header();
                             <div class="steps-number">05</div>
                             <h3 class="steps-title">Отгрузка и логистика</h3>
                             <ul class="steps-desc">
-                                <li>Готовим закрывающие документы: УПД, сертификаты на сырье, протоколы испытаний.</li>
+                                <li>Готовим закрывающие документы: УПД, протоколы испытаний.</li>
                                 <li>Маркируем партию и обеспечиваем прослеживаемость по отгрузочным данным.</li>
-                                <li>Упаковываем продукцию в транспортную тару с фиксацией, исключающей бой и деформацию.</li>
+                                <li>Упаковываем продукцию в транспортную тару с фиксацией, исключающей повреждения.</li>
                                 <li>Передаем груз и комплект документов по согласованной схеме доставки.</li>
                             </ul>
                         </div>
@@ -2236,7 +2273,7 @@ get_header();
         <div class="services-container">
             <div class="services-section-header">
                 <h2 class="services-section-header__title">Технологическая база для реализации <span class="highlight">ваших проектов</span></h2>
-                <p class="services-section-header__desc">Оборудование не ради характеристик, а ради результата — изделий, которые готовы к сборке и серийному выпуску.</p>
+                <p class="services-section-header__desc">Оборудование не ради характеристик, а ради результата — изделий, которые готовы к серийному выпуску и сборке.</p>
             </div>
 
             <div class="tech-capabilities-grid">
@@ -2245,30 +2282,33 @@ get_header();
                     <div class="tech-capability__visual tech-capability__visual--stack">
                         <div class="tech-visual-stack">
                             <img class="tech-visual-logo" src="<?php echo get_template_directory_uri(); ?>/assets/images/bernhard-ide-logo.webp" alt="Логотип IDE" width="200" height="80" loading="lazy">
-                            <img class="tech-visual-photo" src="<?php echo get_template_directory_uri(); ?>/assets/images/bernhard-ide-plastic-extruder.webp" alt="Экструзионная линия IDE" width="600" height="400" loading="lazy">
+                            <div class="tech-visual-photo-wrap">
+                                <img class="tech-visual-photo" src="<?php echo get_template_directory_uri(); ?>/assets/images/bernhard-ide-plastic-extruder.webp" alt="Экструзионная линия IDE" width="600" height="400" loading="lazy">
+                                <span class="tech-visual-disclaimer">Иллюстрация производственной базы</span>
+                            </div>
                         </div>
                     </div>
                     <div class="tech-capability__text">
-                        <h3 class="tech-capability__title">Выпуск профилей сложного сечения (ПВХ, АБС, ПЭ)</h3>
-                        <p class="tech-capability__desc">Используем немецкие комплексы IDE, чтобы гарантировать стабильность геометрии на всей длине изделия. Это критично для строительных и монтажных профилей.</p>
+                        <h3 class="tech-capability__title">Выпуск втулок и профилей сложного сечения (ПВХ, АБС, ТПЭ)</h3>
+                        <p class="tech-capability__desc">Используем немецкие экструзионные линии IDE, чтобы гарантировать стабильность геометрии по всей длине изделия. Это критично для строительных и монтажных профилей.</p>
                         <ul class="tech-capability__benefits">
                             <li>
                                 <svg class="tech-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
-                                Без «волн» и деформаций: гусеничная протяжка исключает проскальзывание профиля.
+                                Без «волн» и деформаций: ленточное тянущее устройство исключает проскальзывание профиля.
                             </li>
                             <li>
                                 <svg class="tech-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
-                                Сразу в размер: встроенный пильный узел делает чистый рез без заусенцев — деталь готова к сборке.
+                                Сразу в размер: высокоточное отрезное устройство делает чистый рез без заусенцев — деталь готова к сборке.
                             </li>
                             <li>
                                 <svg class="tech-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
-                                Сложная форма: вакуумная калибровка позволяет отливать многокамерные профили с тонкими перегородками.
+                                Сложная форма: вакуумная калибровка позволяет производить многокамерные профили с тонкими перегородками.
                             </li>
                         </ul>
                     </div>
@@ -2278,7 +2318,7 @@ get_header();
                 <article class="tech-capability tech-capability--reverse">
                     <div class="tech-capability__text">
                         <h3 class="tech-capability__title">Высокоточное литье серийных партий</h3>
-                        <p class="tech-capability__desc">Работаем на станках Union (Тайвань) с сервоприводами. Это оборудование класса "Precision", которое позволяет лить как массивные корпуса, так и миниатюрные детали весом в несколько грамм.</p>
+                        <p class="tech-capability__desc">Работаем на современных ТПА, которые позволяют производить различные типы изделий.</p>
                         <ul class="tech-capability__benefits">
                             <li>
                                 <svg class="tech-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -2290,20 +2330,19 @@ get_header();
                                 <svg class="tech-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
-                                Эстетика: работаем с лицевыми деталями (корпуса приборов), где недопустимы утяжины и облой.
+                                Эстетика: работаем с деталями, где недопустимы утяжины и облой.
                             </li>
-                            <li>
-                                <svg class="tech-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                Экономия: сервоприводы снижают себестоимость цикла, что делает нашу цену конкурентной.
-                            </li>
+
+
                         </ul>
                     </div>
                     <div class="tech-capability__visual tech-capability__visual--stack">
                         <div class="tech-visual-stack">
                             <img class="tech-visual-logo tech-visual-logo--compact" src="<?php echo get_template_directory_uri(); ?>/assets/images/un_m711_logo.webp" alt="Логотип Union" width="200" height="80" loading="lazy">
-                            <img class="tech-visual-photo" src="<?php echo get_template_directory_uri(); ?>/assets/images/un_m711.webp" alt="Термопластавтомат Union" width="600" height="400" loading="lazy">
+                            <div class="tech-visual-photo-wrap">
+                                <img class="tech-visual-photo" src="<?php echo get_template_directory_uri(); ?>/assets/images/un_m711.webp" alt="Термопластавтомат Union" width="600" height="400" loading="lazy">
+                                <span class="tech-visual-disclaimer">Презентационное фото оборудования</span>
+                            </div>
                         </div>
                     </div>
                 </article>
@@ -2319,7 +2358,7 @@ get_header();
                             <svg class="tech-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
-                            Быстрый старт: если вашу пресс-форму нужно «подогнать» под наши станки — сделаем это на месте.
+                            Быстрый старт: если вашу оснастку нужно «подогнать» под наши станки — оперативно сделаем это.
                         </li>
                         <li>
                             <svg class="tech-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -2347,11 +2386,11 @@ get_header();
 
             <div class="portfolio-grid">
                 <article class="portfolio-card prod-card portfolio-card--large portfolio-card--1" data-full-img="<?php echo get_template_directory_uri(); ?>/assets/images/termovstavki_full.webp" role="button" tabindex="0">
-                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/termovstavki_small.webp" alt="Термовставки из полиамида" loading="lazy">
+                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/termovstavki_small.webp" alt="Термовставки из ПВХ" loading="lazy">
                     <div class="portfolio-card__info">
                         <span class="portfolio-card__tag">PA 6.6</span>
-                        <h3 class="portfolio-card__title">Термовставки из полиамида</h3>
-                        <p class="portfolio-card__material">Материал: полиамид PA 6.6</p>
+                        <h3 class="portfolio-card__title">Термовставки из ПВХ</h3>
+                        <p class="portfolio-card__material">Материал: ПВХ</p>
                     </div>
                 </article>
 
@@ -2383,20 +2422,20 @@ get_header();
                 </article>
 
                 <article class="portfolio-card prod-card portfolio-card--medium portfolio-card--5" data-full-img="<?php echo get_template_directory_uri(); ?>/assets/images/plastic-profiles-for-refrigerators-and-appliances_full.webp" role="button" tabindex="0">
-                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/plastic-profiles-for-refrigerators-and-appliances_small.webp" alt="Детали бытовой техники" loading="lazy">
+                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/plastic-profiles-for-refrigerators-and-appliances_small.webp" alt="Профили для бытовой техники" loading="lazy">
                     <div class="portfolio-card__info">
                         <span class="portfolio-card__tag">ПС</span>
-                        <h3 class="portfolio-card__title">Детали бытовой техники</h3>
-                        <p class="portfolio-card__material">Материал: полистирол</p>
+                        <h3 class="portfolio-card__title">Профили для бытовой техники</h3>
+                        <p class="portfolio-card__material">Материал: АБС, ПВХ, ТПЭ</p>
                     </div>
                 </article>
 
                 <article class="portfolio-card prod-card portfolio-card--large portfolio-card--6" data-full-img="<?php echo get_template_directory_uri(); ?>/assets/images/grey-plastic-extrusion-profile-trucks_full.webp" role="button" tabindex="0">
-                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/grey-plastic-extrusion-profile-trucks_small.webp" alt="Профили для фургонов" loading="lazy">
+                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/grey-plastic-extrusion-profile-trucks_small.webp" alt="Профили для автофургонов" loading="lazy">
                     <div class="portfolio-card__info">
                         <span class="portfolio-card__tag">ТЭП</span>
-                        <h3 class="portfolio-card__title">Профили для фургонов</h3>
-                        <p class="portfolio-card__material">Материал: термоэластопласт</p>
+                        <h3 class="portfolio-card__title">Профили для автофургонов</h3>
+                        <p class="portfolio-card__material">Материал: АБС</p>
                     </div>
                 </article>
             </div>

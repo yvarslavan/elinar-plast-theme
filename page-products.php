@@ -75,7 +75,7 @@ get_header();
                 "position": 6,
                 "item": {
                     "@type": "Product",
-                    "name": "Профили для фургонов",
+                    "name": "Профили для автофургонов",
                     "description": "Облицовочные профили для обвязки каркаса грузового транспорта",
                     "category": "Инженерные профили"
                 }
@@ -619,14 +619,14 @@ get_header();
                     </div>
                 </article>
 
-                <!-- Карточка 5: Профили для фургонов -->
+                <!-- Карточка 5: Профили для автофургонов -->
                 <article id="section-truck" class="product-row product-row--cyan" data-material="pvc,pe" data-industry="auto" data-animate="fade-up">
                     <div class="product-row__slider">
                         <div class="zigzag-slider production-gallery-slider">
                             <?php
                             $truck_images = [
-                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-Furgon/profile-furgon-01.webp', 'alt' => 'Профили для фургонов - пример 1', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-Furgon/profile-furgon-02.webp', 'alt' => 'Профили для фургонов - пример 2', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-Furgon/profile-furgon-01.webp', 'alt' => 'Профили для автофургонов - пример 1', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-Furgon/profile-furgon-02.webp', 'alt' => 'Профили для автофургонов - пример 2', 'loading' => 'lazy'],
                             ];
                             ?>
                             <div class="slider-container">
@@ -688,7 +688,7 @@ get_header();
                                     <path d="M4 6V4h16v2" />
                                 </svg>
                             </div>
-                            <h3 class="product-row__title">Профили для фургонов</h3>
+                            <h3 class="product-row__title">Профили для автофургонов</h3>
                         </div>
                         <div class="product-row__specs">
                             <div class="spec-badge">140×55 мм</div>
@@ -1582,7 +1582,7 @@ get_header();
                         <circle cx="18.5" cy="18.5" r="2.5" />
                     </svg>
                 </div>
-                <h2 id="truck-modal-title" class="product-modal__title">ПРОФИЛИ ДЛЯ ФУРГОНОВ: ЗАЩИТА И ДОЛГОВЕЧНОСТЬ</h2>
+                <h2 id="truck-modal-title" class="product-modal__title">ПРОФИЛИ ДЛЯ ФВТОФУРГОНОВ: ЗАЩИТА И ДОЛГОВЕЧНОСТЬ</h2>
             </div>
             <button type="button" class="product-modal__close product-modal__close--cyan" data-close-modal="truck" aria-label="Закрыть">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1596,7 +1596,7 @@ get_header();
                 <p class="lead-text">Облицовочные профили для обшивки каркаса <strong>грузового транспорта</strong>. Обеспечение защиты от механических повреждений и износа при эксплуатации.</p>
             </section>
             <section class="modal-section">
-                <h3 class="modal-section__title">Почему наши профили для фургонов — оптимальный выбор</h3>
+                <h3 class="modal-section__title">Почему наши профили для автофургонов — оптимальный выбор</h3>
                 <div class="capabilities-grid">
                     <div class="capability-card capability-card--cyan">
                         <div class="capability-card__icon capability-card__icon--cyan"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">

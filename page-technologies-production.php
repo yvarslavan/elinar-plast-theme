@@ -190,7 +190,7 @@ get_header();
                     <p>Термопластичный эластомер</p>
                 </div>
                 <div class="material-card">
-                    <div class="material-badge">HIPS</div>
+                    <div class="material-badge">PS</div>
                     <h4>Полистирол</h4>
                     <p>Ударопрочный полистирол</p>
                 </div>

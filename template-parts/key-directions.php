@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Key Directions Section - Industrial Tech / Premium B2B
  * Секция "Ключевые направления" с новым дизайном (Grid, Cards)
@@ -40,7 +41,7 @@
                 <div class="card-overlay">
                     <h3>МАШИНОСТРОЕНИЕ</h3>
                     <div class="card-description">
-                        <p>Высокопрочные профили для фургонов.</p>
+                        <p>Высокопрочные профили для автофургонов.</p>
                     </div>
                 </div>
             </a>

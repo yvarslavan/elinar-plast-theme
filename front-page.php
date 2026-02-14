@@ -209,7 +209,7 @@ get_header();
                     </button>
                 </div>
 
-                <!-- Card 6: Профили для фургонов -->
+                <!-- Card 6: профили для автофургонов -->
                 <div class="solution-card group">
                     <div class="solution-icon icon-slate">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -219,7 +219,7 @@ get_header();
                             <circle cx="18.5" cy="18.5" r="2.5"></circle>
                         </svg>
                     </div>
-                    <h3 class="solution-title">Профили для фургонов</h3>
+                    <h3 class="solution-title">Профили для автофургонов</h3>
                     <p class="solution-desc">
                         Прочные профили 140×55 мм для обвязки каркаса фургона. Защита от износа и механических повреждений.
                     </p>
