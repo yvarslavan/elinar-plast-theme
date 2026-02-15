@@ -114,6 +114,8 @@ get_header();
         text-transform: none;
         font-family: 'Manrope', sans-serif;
         text-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+        text-wrap: balance;
+        overflow-wrap: anywhere;
     }
 
     .services-hero__title .text-accent {
@@ -170,7 +172,7 @@ get_header();
     }
 
     .services-hero .scroll-down-wrapper {
-        bottom: 88px;
+        bottom: clamp(20px, 4vw, 48px);
     }
 
     .services-hero .mouse-icon,
@@ -392,7 +394,7 @@ get_header();
     .services-overlap {
         position: relative;
         padding: 0 24px 90px;
-        --overlap-offset: 72px;
+        --overlap-offset: 48px;
     }
 
     .services-overlap::before {
@@ -492,7 +494,6 @@ get_header();
         justify-content: center;
         gap: 28px;
         padding-bottom: 28px;
-        border-bottom: 1px solid rgba(148, 163, 184, 0.36);
     }
 
     .services-overlap__badge-image {
@@ -596,7 +597,7 @@ get_header();
 
     @media (max-width: 1024px) {
         .services-overlap {
-            --overlap-offset: 80px;
+            --overlap-offset: 56px;
         }
 
         .services-overlap__card {
@@ -641,7 +642,7 @@ get_header();
     @media (max-width: 768px) {
         .services-overlap {
             padding: 0 16px 64px;
-            --overlap-offset: 60px;
+            --overlap-offset: 40px;
         }
 
         .services-overlap__card {
@@ -2077,7 +2078,7 @@ get_header();
         </div>
         <div class="services-hero__content">
             <h1 class="services-hero__title">
-                Контрактное производство полимерных изделий <span class="text-accent">полного цикла</span>
+                Контрактное производство:<br>Экструзия и <span class="text-accent">серийный выпуск</span> изделий из полимеров
             </h1>
             <p class="services-hero__subtitle">Экструзия и литье под давлением. Берем на себя всё: от проектирования оснастки до выпуска серийной партии.</p>
             <a href="#contact-form" class="services-hero__cta">Рассчитать стоимость проекта</a>
