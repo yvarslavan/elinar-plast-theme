@@ -499,6 +499,69 @@ get_header();
         border-color: #fff;
         color: #fff;
     }
+
+    @media (max-width: 767px) {
+        .page-hero-cooperation {
+            min-height: 360px;
+        }
+
+        .hero-content-cooperation {
+            padding: 36px 0;
+        }
+
+        .text-white-opacity {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .condition-card {
+            padding: 28px 20px;
+        }
+
+        .condition-card h3 {
+            font-size: 1.25rem;
+        }
+
+        .cta-cooperation {
+            padding: 56px 0;
+        }
+
+        .cta-cooperation-text h2 {
+            font-size: 1.75rem;
+        }
+
+        .cta-cooperation-text p {
+            font-size: 1rem;
+        }
+
+        .btn-lg {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 390px) {
+        .page-hero-cooperation {
+            min-height: 320px;
+        }
+
+        .condition-card {
+            padding: 22px 16px;
+        }
+
+        .condition-icon svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .cta-cooperation-text h2 {
+            font-size: 1.5rem;
+            line-height: 1.3;
+        }
+    }
 </style>
 
 <?php get_footer(); ?>

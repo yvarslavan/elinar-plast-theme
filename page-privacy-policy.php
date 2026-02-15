@@ -37,10 +37,54 @@ get_header();
   .site-header .logo-text {
     color: #0f172a !important;
   }
+
+  .privacy-policy-card {
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 768px) {
+    .privacy-policy-main {
+      padding: 120px 12px 32px !important;
+    }
+
+    .privacy-policy-card {
+      padding: 24px 16px !important;
+      border-radius: 12px !important;
+    }
+
+    .privacy-policy-card > h1[style] {
+      font-size: 1.75rem !important;
+      margin-bottom: 14px !important;
+    }
+
+    .privacy-policy-card > h2[style] {
+      font-size: 1.125rem !important;
+      margin: 22px 0 10px !important;
+    }
+  }
+
+  @media (max-width: 390px) {
+    .privacy-policy-main {
+      padding: 110px 10px 28px !important;
+    }
+
+    .privacy-policy-card {
+      padding: 18px 14px !important;
+    }
+
+    .privacy-policy-card > h1[style] {
+      font-size: 1.45rem !important;
+      line-height: 1.25 !important;
+    }
+
+    .privacy-policy-card > h2[style] {
+      font-size: 1rem !important;
+    }
+  }
 </style>
 
-<main style="padding: 140px 16px 48px; background: transparent;">
-  <div style="max-width: 800px; margin: 0 auto; background: #ffffff; border-radius: 16px; box-shadow: 0 10px 30px rgba(2, 6, 23, 0.12); padding: 40px 32px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, Arial, 'Noto Sans', 'Helvetica Neue', sans-serif; line-height: 1.6; color: #334155;">
+<main class="privacy-policy-main" style="padding: 140px 16px 48px; background: transparent;">
+  <div class="privacy-policy-card" style="max-width: 800px; margin: 0 auto; background: #ffffff; border-radius: 16px; box-shadow: 0 10px 30px rgba(2, 6, 23, 0.12); padding: 40px 32px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, Arial, 'Noto Sans', 'Helvetica Neue', sans-serif; line-height: 1.6; color: #334155;">
     <h1 style="margin: 0 0 18px; font-size: 32px; line-height: 1.2; color: #0f172a;">Политика конфиденциальности и обработки персональных данных</h1>
     <p style="margin: 0 0 24px; color: #475569;">Настоящая Политика в отношении обработки персональных данных (далее — Политика) определяет порядок обработки и защиты персональных данных пользователей сайта.</p>
 

@@ -5,6 +5,62 @@ Template Name: Thank You Page
 get_header();
 ?>
 
+<style>
+  @media (max-width: 768px) {
+    .thank-you-content[style] {
+      padding: 40px 12px !important;
+    }
+
+    .thank-you-content .thank-you-icon svg {
+      width: 64px;
+      height: 64px;
+    }
+
+    .thank-you-content h2[style] {
+      font-size: 1.5rem !important;
+      line-height: 1.3 !important;
+    }
+
+    .thank-you-content p[style] {
+      font-size: 1rem !important;
+    }
+
+    .thank-you-content .thank-you-info[style] {
+      padding: 20px !important;
+      margin-bottom: 28px !important;
+    }
+
+    .thank-you-content .thank-you-info h3[style] {
+      font-size: 1.1rem !important;
+    }
+
+    .thank-you-content .thank-you-contacts a[style] {
+      font-size: 1.2rem !important;
+      word-break: break-word;
+    }
+
+    .thank-you-content > a.btn[style] {
+      display: block !important;
+      width: 100%;
+      padding: 14px 18px !important;
+    }
+  }
+
+  @media (max-width: 390px) {
+    .thank-you-content[style] {
+      padding: 32px 10px !important;
+    }
+
+    .thank-you-content h2[style] {
+      font-size: 1.35rem !important;
+    }
+
+    .thank-you-content .thank-you-info ul[style] {
+      padding-left: 16px !important;
+    }
+  }
+</style>
+
 <!-- HERO BLOCK - Thank You Page -->
 <div class="page-hero page-hero-compact page-hero-thankyou">
   <!-- Hero Background Image -->

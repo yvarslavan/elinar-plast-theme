@@ -657,6 +657,37 @@ get_header();
         margin-bottom: 0;
         flex-grow: 1;
     }
+
+    @media (max-width: 768px) {
+        .technologies-cards-wrapper {
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+
+        .tech-card-item {
+            padding: 1.5rem 1.25rem;
+        }
+
+        .tech-card-item h3 {
+            font-size: 1.25rem;
+        }
+    }
+
+    @media (max-width: 390px) {
+        .tech-card-item {
+            padding: 1.25rem 1rem;
+        }
+
+        .tech-icon-wrapper {
+            width: 56px;
+            height: 56px;
+            margin-bottom: 1rem;
+        }
+
+        .tech-card-item p {
+            font-size: 0.95rem;
+        }
+    }
 </style>
 
 <!-- BLOCK 5: ADVANTAGES -->

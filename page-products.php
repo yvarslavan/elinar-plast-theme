@@ -160,6 +160,44 @@ get_header();
     .product-row__details-summary span {
         margin-bottom: 0.5rem;
     }
+
+    @media (max-width: 768px) {
+        .product-row__slider,
+        #profiles-slider-fix {
+            min-height: 260px !important;
+            height: 260px !important;
+            aspect-ratio: auto !important;
+        }
+
+        .zigzag-slider .slider-dots {
+            bottom: 12px;
+            gap: 8px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .product-row__slider,
+        #profiles-slider-fix {
+            min-height: 220px !important;
+            height: 220px !important;
+        }
+    }
+
+    @media (max-width: 390px) {
+        .product-row__slider,
+        #profiles-slider-fix {
+            min-height: 200px !important;
+            height: 200px !important;
+        }
+    }
+
+    @media (max-width: 360px) {
+        .product-row__slider,
+        #profiles-slider-fix {
+            min-height: 184px !important;
+            height: 184px !important;
+        }
+    }
 </style>
 
 <!-- HERO SECTION - Масштаб и технология -->
@@ -440,7 +478,7 @@ get_header();
 
                 <!-- Карточка 3: Профили для осветительного шинопровода -->
                 <article id="section-profiles" class="product-row product-row--orange" data-material="pvc,pe,pp,abs" data-industry="electro" data-animate="fade-up">
-                    <div class="product-row__slider" id="profiles-slider-fix" style="aspect-ratio: 4/3 !important; min-height: 400px !important; position: relative !important; overflow: hidden !important;">
+                    <div class="product-row__slider" id="profiles-slider-fix" style="aspect-ratio: 4/3 !important; position: relative !important; overflow: hidden !important;">
                         <div class="zigzag-slider production-gallery-slider" style="height: 100% !important; width: 100% !important; position: relative !important;">
                             <?php
                             $profiles_images = [

@@ -5,6 +5,38 @@ Template Name: Partners Page
 get_header();
 ?>
 
+<style>
+    @media (max-width: 768px) {
+        .page-hero-fullheight {
+            min-height: 72vh;
+        }
+
+        .page-hero-fullheight h1[style] {
+            font-size: 1.9rem !important;
+            margin-bottom: 0.75rem !important;
+        }
+
+        .page-hero-fullheight .lead[style] {
+            font-size: 1rem !important;
+            line-height: 1.5 !important;
+        }
+    }
+
+    @media (max-width: 390px) {
+        .page-hero-fullheight {
+            min-height: 64vh;
+        }
+
+        .page-hero-fullheight h1[style] {
+            font-size: 1.65rem !important;
+        }
+
+        .page-hero-fullheight .lead[style] {
+            font-size: 0.95rem !important;
+        }
+    }
+</style>
+
 <!-- HERO BLOCK - Optimized for LCP -->
 <div class="page-hero page-hero-fullheight">
     <!-- Hero Background Image - LCP optimized -->
