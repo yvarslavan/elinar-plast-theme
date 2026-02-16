@@ -172,7 +172,7 @@ get_header();
     }
 
     .services-hero .scroll-down-wrapper {
-        bottom: clamp(20px, 4vw, 48px);
+        bottom: clamp(64px, 8vw, 96px);
     }
 
     .services-hero .mouse-icon,
@@ -2169,9 +2169,9 @@ get_header();
         </div>
         <div class="services-hero__content">
             <h1 class="services-hero__title">
-                Контрактное производство:<br>Экструзия и <span class="text-accent">серийный выпуск</span> изделий из полимеров
+                <span class="text-accent">Экструзия <span style="color: #ffffff;">и</span> литье под давлением</span>
             </h1>
-            <p class="services-hero__subtitle">Экструзия и литье под давлением. Берем на себя всё: от проектирования оснастки до выпуска серийной партии.</p>
+            <p class="services-hero__subtitle">Берем на себя всё: от проектирования оснастки до выпуска серийной партии</p>
             <a href="#contact-form" class="services-hero__cta">Рассчитать стоимость проекта</a>
         </div>
 
@@ -2195,7 +2195,7 @@ get_header();
                                     <path d="M19.4 15a1.67 1.67 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.67 1.67 0 0 0-1.82-.33a1.67 1.67 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.67 1.67 0 0 0-1-1.51a1.67 1.67 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.67 1.67 0 0 0 .33-1.82a1.67 1.67 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.67 1.67 0 0 0 1.51-1a1.67 1.67 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.67 1.67 0 0 0 1.82.33h.01a1.67 1.67 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.67 1.67 0 0 0 1 1.51a1.67 1.67 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.67 1.67 0 0 0-.33 1.82v.01a1.67 1.67 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.67 1.67 0 0 0-1.51 1z"></path>
                                 </svg>
                             </span>
-                            <p><span class="services-overlap__feature-subtitle">Производство полного цикла</span>Реализация проектов начинается с проектирования оснастки и разработки чертежей, завершаясь серийным выпуском методами экструзии или литья. Особое внимание уделяется точности параметров и скорости выполнения заказов. Гарантией качества служит строгое соответствие готовых изделий согласованному техническому заданию.</p>
+                            <p><span class="services-overlap__feature-subtitle">Производство полного цикла</span>Реализация проектов начинается с проектирования оснастки и разработки чертежей, завершаясь серийным выпуском методами экструзии или литья под давлением. Особое внимание уделяется точности параметров и скорости выполнения заказов. Гарантией качества служит строгое соответствие готовых изделий согласованному техническому заданию.</p>
                         </div>
                         <div class="services-overlap__feature">
                             <span class="services-overlap__feature-icon" aria-hidden="true">
@@ -2489,9 +2489,9 @@ get_header();
                 <article class="portfolio-card prod-card portfolio-card--medium portfolio-card--2" data-full-img="<?php echo get_template_directory_uri(); ?>/assets/images/lighting-track-busbar-profile-cross-section_full.webp" role="button" tabindex="0">
                     <img src="<?php echo get_template_directory_uri(); ?>/assets/images/lighting-track-busbar-profile-cross-section_small.webp" alt="Профили для шинопровода" loading="lazy">
                     <div class="portfolio-card__info">
-                        <span class="portfolio-card__tag">ПВХ/ABS</span>
+                        <span class="portfolio-card__tag">ПВХ</span>
                         <h3 class="portfolio-card__title">Профили для шинопровода</h3>
-                        <p class="portfolio-card__material">Материал: ПВХ и АБС</p>
+                        <p class="portfolio-card__material">Материал: ПВХ</p>
                     </div>
                 </article>
 
@@ -2516,16 +2516,16 @@ get_header();
                 <article class="portfolio-card prod-card portfolio-card--medium portfolio-card--5" data-full-img="<?php echo get_template_directory_uri(); ?>/assets/images/plastic-profiles-for-refrigerators-and-appliances_full.webp" role="button" tabindex="0">
                     <img src="<?php echo get_template_directory_uri(); ?>/assets/images/plastic-profiles-for-refrigerators-and-appliances_small.webp" alt="Профили для бытовой техники" loading="lazy">
                     <div class="portfolio-card__info">
-                        <span class="portfolio-card__tag">ПС</span>
+                        <span class="portfolio-card__tag">АБС, ПВХ, ТЭП</span>
                         <h3 class="portfolio-card__title">Профили для бытовой техники</h3>
-                        <p class="portfolio-card__material">Материал: АБС, ПВХ, ТПЭ</p>
+                        <p class="portfolio-card__material">Материал: АБС, ПВХ, ТЭП</p>
                     </div>
                 </article>
 
                 <article class="portfolio-card prod-card portfolio-card--large portfolio-card--6" data-full-img="<?php echo get_template_directory_uri(); ?>/assets/images/grey-plastic-extrusion-profile-trucks_full.webp" role="button" tabindex="0">
                     <img src="<?php echo get_template_directory_uri(); ?>/assets/images/grey-plastic-extrusion-profile-trucks_small.webp" alt="Профили для автофургонов" loading="lazy">
                     <div class="portfolio-card__info">
-                        <span class="portfolio-card__tag">ТЭП</span>
+                        <span class="portfolio-card__tag">АБС</span>
                         <h3 class="portfolio-card__title">Профили для автофургонов</h3>
                         <p class="portfolio-card__material">Материал: АБС</p>
                     </div>

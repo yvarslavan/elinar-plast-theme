@@ -119,7 +119,7 @@ get_header();
                             </li>
                         </ul>
                         <div class="capability-materials">
-                            <span class="material-chip">ПС</span>
+                            <span class="material-chip">АБС, ПВХ, ТЭП</span>
                             <span class="material-chip">АБС</span>
                         </div>
                     </div>
