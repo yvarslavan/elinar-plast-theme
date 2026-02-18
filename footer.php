@@ -173,7 +173,7 @@ $requisites_url = home_url('/privacy-policy/#operator-details');
                     <span class="footer-bottom-sep">•</span>
                     <a href="<?php echo esc_url($consent_url); ?>" class="footer-bottom-link">Согласие на обработку ПДн</a>
                     <span class="footer-bottom-sep">•</span>
-                    <a href="<?php echo esc_url($requisites_url); ?>" class="footer-bottom-link">Реквизиты (ИНН 5030041433, ОГРН 1025003751068)</a>
+                    <a href="<?php echo esc_url($requisites_url); ?>" class="footer-bottom-link">Реквизиты (ИНН 5030039170, ОГРН 1025003751068)</a>
                 </div>
                 <div class="footer-bottom-right">
                     <span class="footer-copyright">&copy; <?php echo date('Y'); ?> ООО «Элинар Пласт». Все права защищены.</span>
@@ -1040,7 +1040,7 @@ $requisites_url = home_url('/privacy-policy/#operator-details');
 </div>
 
 <script>
-    (function () {
+    (function() {
         const widget = document.getElementById('contact-multi');
         const toggle = document.getElementById('contact-multi-toggle');
         const feedbackModal = document.getElementById('feedback-modal');
@@ -1052,7 +1052,7 @@ $requisites_url = home_url('/privacy-policy/#operator-details');
         const openClass = 'is-open';
         const actionsContainer = widget.querySelector('.contact-multi__actions');
 
-        const setOpenState = function (isOpen) {
+        const setOpenState = function(isOpen) {
             widget.classList.toggle(openClass, isOpen);
             toggle.setAttribute('aria-expanded', String(isOpen));
             toggle.setAttribute('aria-label', isOpen ? 'Закрыть меню связи' : 'Открыть меню связи');
@@ -1061,50 +1061,50 @@ $requisites_url = home_url('/privacy-policy/#operator-details');
             }
         };
 
-        const closeWidget = function () {
+        const closeWidget = function() {
             setOpenState(false);
         };
 
-        const unlockBodyIfNoOpenModal = function () {
+        const unlockBodyIfNoOpenModal = function() {
             const openedModals = document.querySelector('.feedback-modal.show, .callback-modal.show, .yandex-map-modal.show');
             if (!openedModals) {
                 document.body.style.overflow = '';
             }
         };
 
-        const openFeedbackModal = function () {
+        const openFeedbackModal = function() {
             if (!feedbackModal) return;
             feedbackModal.classList.add('show');
             feedbackModal.setAttribute('aria-hidden', 'false');
             document.body.style.overflow = 'hidden';
             const firstField = feedbackModal.querySelector('input, textarea');
             if (firstField) {
-                setTimeout(function () {
+                setTimeout(function() {
                     firstField.focus();
                 }, 120);
             }
         };
 
-        const closeFeedbackModal = function () {
+        const closeFeedbackModal = function() {
             if (!feedbackModal) return;
             feedbackModal.classList.remove('show');
             feedbackModal.setAttribute('aria-hidden', 'true');
             unlockBodyIfNoOpenModal();
         };
 
-        toggle.addEventListener('click', function (event) {
+        toggle.addEventListener('click', function(event) {
             event.preventDefault();
             event.stopPropagation();
             setOpenState(!widget.classList.contains(openClass));
         });
 
-        document.addEventListener('click', function (event) {
+        document.addEventListener('click', function(event) {
             if (!widget.contains(event.target)) {
                 closeWidget();
             }
         });
 
-        document.addEventListener('keydown', function (event) {
+        document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
                 closeWidget();
                 closeFeedbackModal();
@@ -1119,7 +1119,7 @@ $requisites_url = home_url('/privacy-policy/#operator-details');
             feedbackModalOverlay.addEventListener('click', closeFeedbackModal);
         }
 
-        widget.addEventListener('click', function (event) {
+        widget.addEventListener('click', function(event) {
             const actionButton = event.target.closest('[data-contact-action]');
             if (!actionButton) return;
 
