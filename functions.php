@@ -82,6 +82,8 @@ function elinar_handle_project_form_universal()
 
         if (!file_exists($temp_dir)) {
             wp_mkdir_p($temp_dir);
+            // Баг #4: закрываем прямой доступ по URL — чертежи клиентов конфиденциальны
+            file_put_contents($temp_dir . '.htaccess', "Options -Indexes\nDeny from all\n");
         }
 
         // Обработка каждого файла
@@ -116,8 +118,15 @@ function elinar_handle_project_form_universal()
 
             $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
 
-            // Проверка расширения
+            // Проверка расширения по белому списку
             if (!in_array($file_ext, $allowed_extensions)) {
+                wp_redirect($redirect_base . '?form=error&field=file_type#contact-form');
+                exit;
+            }
+
+            // Баг #5: проверка реального MIME-типа (защита от переименованных shell-файлов)
+            $mime_check = wp_check_filetype_and_ext($file_tmp, $file_name);
+            if (!empty($mime_check['ext']) && !in_array(strtolower($mime_check['ext']), $allowed_extensions)) {
                 wp_redirect($redirect_base . '?form=error&field=file_type#contact-form');
                 exit;
             }
@@ -154,8 +163,9 @@ function elinar_handle_project_form_universal()
     }
 
     // Формируем письмо
-    $request_id = 'PRJ-' . date('Ymd') . '-' . strtoupper(substr(md5(uniqid()), 0, 6));
-    $formatted_date = date('d.m.Y H:i');
+    // Баг #14: заменяем date() на wp_date() — учитывает часовой пояс из настроек WP (Москва UTC+3)
+    $request_id = 'PRJ-' . wp_date('Ymd') . '-' . strtoupper(substr(md5(uniqid()), 0, 6));
+    $formatted_date = wp_date('d.m.Y H:i');
 
     $email_body = "НОВАЯ ЗАЯВКА С {$page_source}\n";
     $email_body .= "Номер заявки: {$request_id}\n\n";
@@ -170,8 +180,9 @@ function elinar_handle_project_form_universal()
 
     if (!empty($attachment_names)) {
         $email_body .= "ПРИКРЕПЛЕННЫЕ ФАЙЛЫ:\n";
-        foreach ($attachment_names as $name) {
-            $email_body .= "  - {$name}\n";
+        // Баг #1: переименовано $name → $attachment_name (конфликт с именем клиента в $subject)
+        foreach ($attachment_names as $attachment_name) {
+            $email_body .= "  - {$attachment_name}\n";
         }
         $email_body .= "\n";
     }
@@ -309,7 +320,7 @@ function elinar_format_telegram_message($data)
     $request_id = esc_html($data['request_id'] ?? '');
     $page_url = esc_html($data['page_url'] ?? '');
     $attachment_name = esc_html($data['attachment_name'] ?? '');
-    $date = date('d.m.Y H:i');
+    $date = wp_date('d.m.Y H:i'); // wp_date() учитывает часовой пояс из настроек WP
 
     // Формируем сообщение с HTML-разметкой Telegram
     $lines = array();
@@ -994,9 +1005,8 @@ function elinar_scripts()
     // Базовые стили темы (минифицированная версия для производительности)
     // Оригинал: style.css (232 KB) → Минифицированный: style.min.css (150 KB)
     // После Gzip: ~41 KB → ~26 KB
-    $elinar_style_ver = (defined('WP_DEBUG') && WP_DEBUG)
-        ? filemtime(get_template_directory() . '/style.min.css')
-        : '2.7.0.' . time();
+    // Баг #3: заменяем time() на filemtime() — time() менялся каждую секунду и полностью ломал кэш браузера
+    $elinar_style_ver = filemtime(get_template_directory() . '/style.min.css') ?: '2.7.0';
     wp_enqueue_style('elinar-style', $theme_uri . '/style.min.css', array(), $elinar_style_ver);
 
     wp_add_inline_style('elinar-style', '.cookie-banner{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(calc(100% + 40px));background:#ffffff;border-radius:20px;box-shadow:0 12px 40px rgba(0,0,0,0.12),0 4px 12px rgba(0,0,0,0.08);z-index:9999;padding:1.25rem 1.5rem;transition:transform 0.4s cubic-bezier(0.4,0,0.2,1),opacity 0.4s ease;max-width:640px;width:min(calc(100% - 40px),640px);opacity:0}.cookie-banner.show{transform:translateX(-50%) translateY(0);opacity:1}.cookie-banner-content{display:flex;align-items:flex-start;gap:1.25rem}.cookie-icon{flex-shrink:0;color:#0066cc;margin-top:0.25rem}.cookie-icon svg{display:block}.cookie-banner-main{flex:1;display:flex;flex-direction:column;gap:0.9rem}.cookie-banner-text{display:flex;flex-direction:column;gap:0.5rem}.cookie-banner-title{font-size:1rem;font-weight:700;color:#1e293b;margin:0;line-height:1.4}.cookie-banner-text p{margin:0;font-size:0.9rem;line-height:1.55;color:#64748b}.cookie-banner-links{margin-top:0.25rem;display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;font-size:0.8125rem;line-height:1.4}.cookie-banner-link{color:#0066cc;text-decoration:none;font-weight:500;transition:color 0.2s ease;border-bottom:1px solid rgba(0,102,204,0.3)}.cookie-banner-link:hover{color:#0052a3;border-bottom-color:#0052a3}.cookie-banner-actions{display:flex;align-items:center;gap:0.625rem;flex-wrap:wrap}.cookie-banner-btn{border:none;padding:0.55rem 1.05rem;font-size:0.85rem;font-weight:600;font-family:var(--font-main);border-radius:12px;cursor:pointer;transition:all 0.2s ease;white-space:nowrap;line-height:1.2}.cookie-banner-btn--primary{background-color:#0066cc;color:#fff}.cookie-banner-btn--primary:hover{background-color:#0052a3;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,102,204,0.25)}.cookie-banner-btn--outline{background:transparent;color:#0066cc;border:1.5px solid #0066cc}.cookie-banner-btn--outline:hover{background:rgba(0,102,204,0.08);transform:translateY(-1px)}.cookie-banner-btn--secondary{background:transparent;color:#64748b;border:1.5px solid #cbd5e1}.cookie-banner-btn--secondary:hover{background:#f8fafc;border-color:#94a3b8;color:#475569;transform:translateY(-1px)}.cookie-banner-settings{border-top:1px solid #e2e8f0;margin-top:1.25rem;padding-top:1.25rem;display:grid;gap:1rem}.cookie-banner-settings[hidden]{display:none!important}@media (max-width:768px){.cookie-banner{padding:1.15rem;width:calc(100% - 24px);max-width:100%;bottom:12px;border-radius:16px}.cookie-banner-content{flex-direction:column;gap:1rem}.cookie-icon{margin-top:0}.cookie-banner-actions{width:100%;flex-direction:column;align-items:stretch;gap:0.5rem}.cookie-banner-btn{width:100%;padding:0.75rem 1rem}}');
