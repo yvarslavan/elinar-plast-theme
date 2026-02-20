@@ -187,7 +187,7 @@ define('ELINAR_COPY_EMAIL',    'ваш@email.ru');
 | Параметр | Значение |
 |----------|----------|
 | URL входа | `https://elinar-plast.ru/wp-admin/` |
-| Логин | head_admin |
+| Логин | yvarslavan |
 | Пароль | Lalee1966 |
 
 ### Хостинг cPanel

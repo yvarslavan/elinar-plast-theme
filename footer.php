@@ -171,8 +171,6 @@ $requisites_url = home_url('/privacy-policy/#operator-details');
                 <div class="footer-bottom-left">
                     <a href="<?php echo esc_url($privacy_url); ?>" class="footer-bottom-link">Политика конфиденциальности</a>
                     <span class="footer-bottom-sep">•</span>
-                    <a href="<?php echo esc_url($consent_url); ?>" class="footer-bottom-link">Согласие на обработку ПДн</a>
-                    <span class="footer-bottom-sep">•</span>
                     <a href="<?php echo esc_url($requisites_url); ?>" class="footer-bottom-link">Реквизиты (ИНН 5030039170, ОГРН 1025003751068)</a>
                 </div>
                 <div class="footer-bottom-right">
@@ -1033,7 +1031,7 @@ $requisites_url = home_url('/privacy-policy/#operator-details');
 
             <label class="feedback-modal-consent">
                 <input type="checkbox" name="consent" required>
-                <span>Я даю <a href="<?php echo esc_url($consent_url); ?>" target="_blank" rel="noopener">согласие</a> на обработку <a href="<?php echo esc_url($privacy_url); ?>" target="_blank" rel="noopener">моих персональных данных</a>.</span>
+                <span>Я даю согласие на обработку <a href="<?php echo esc_url($privacy_url); ?>" target="_blank" rel="noopener">моих персональных данных</a>.</span>
             </label>
         </form>
     </div>

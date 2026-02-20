@@ -885,19 +885,33 @@ function elinar_cache_headers_control($headers)
 add_filter('wp_headers', 'elinar_cache_headers_control', 10);
 
 /**
- * Настройка заголовков (Title) для вкладок браузера
+ * Настройка заголовков (Title) для вкладок браузера — SEO-оптимизация
+ * Обновлено: 2026-02-20 — добавлены title для всех ключевых страниц
  */
-add_filter('document_title_parts', function($title) {
+add_filter('document_title_parts', function ($title) {
     // 1. Принудительно ставим правильное название бренда (исправляет elinarplast на продакшене)
     $title['site'] = 'Элинар Пласт';
 
-    // 2. Настройка для ГЛАВНОЙ страницы
-    if (is_front_page()) {
-        // Текст подписи (Title)
-        $title['title'] = 'Производство изделий из пластмасс';
+    // Убираем стандартный слоган везде, чтобы title не был перегружен
+    unset($title['tagline']);
 
-        // Убираем стандартный слоган (tagline) из настроек WP, чтобы заголовок не был слишком длинным
-        unset($title['tagline']);
+    // 2. Настройка для каждой страницы по slug шаблона
+    if (is_front_page()) {
+        $title['title'] = 'Производство изделий из пластмасс — с 2001 года';
+    } elseif (is_page('products') || is_page('продукция')) {
+        $title['title'] = 'Каталог полимерных профилей и изделий';
+    } elseif (is_page('services') || is_page('услуги')) {
+        $title['title'] = 'Экструзия и литьё пластмасс под давлением';
+    } elseif (is_page('about') || is_page('о-компании') || is_page('o-kompanii')) {
+        $title['title'] = 'О компании — производство пластмасс с 2001 года';
+    } elseif (is_page('contacts') || is_page('контакты')) {
+        $title['title'] = 'Контакты — производство в Наро-Фоминске';
+    } elseif (is_page('partners') || is_page('партнеры') || is_page('partnyory')) {
+        $title['title'] = 'Партнёры и клиенты';
+    } elseif (is_page('quote-request') || is_page('zayavka') || is_page('заявка')) {
+        $title['title'] = 'Запрос на расчёт производства';
+    } elseif (is_page('thank-you') || is_page('spasibo')) {
+        $title['title'] = 'Спасибо за заявку';
     }
 
     return $title;
@@ -906,9 +920,69 @@ add_filter('document_title_parts', function($title) {
 /**
  * Изменение разделителя в заголовке на более современный
  */
-add_filter('document_title_separator', function($sep) {
+add_filter('document_title_separator', function ($sep) {
     return '|';
 });
+
+/**
+ * SEO: Meta Descriptions и Robots для всех страниц
+ * Добавлено: 2026-02-20 — работает без плагина напрямую из темы
+ */
+add_action('wp_head', 'elinar_seo_meta_tags', 1);
+function elinar_seo_meta_tags()
+{
+    // --- Описания для каждой страницы ---
+    $description = '';
+
+    if (is_front_page()) {
+        $description = 'Элинар Пласт — производство изделий из пластмасс с 2001 года. Экструзия и литьё под давлением по немецким технологиям. Термовставки, профили, втулки — звоните: +7 (496) 34-77-944.';
+    } elseif (is_page('products') || is_page('продукция')) {
+        $description = 'Каталог полимерных изделий Элинар Пласт: термовставки ПВХ, фаскообразователи, профили для шинопровода, бытовой техники и автофургонов. Производство по чертежам заказчика.';
+    } elseif (is_page('services') || is_page('услуги')) {
+        $description = 'Контрактное производство пластиковых изделий полного цикла: экструзия профилей и литьё под давлением. Проектирование оснастки, опытная серия, серийный выпуск по вашим чертежам.';
+    } elseif (is_page('about') || is_page('о-компании') || is_page('o-kompanii')) {
+        $description = 'ООО «Элинар Пласт» — современное производственное предприятие с более чем 20-летним опытом. Производство в Наро-Фоминском районе (с. Атепцево). Немецкие технологии экструзии и литья.';
+    } elseif (is_page('contacts') || is_page('контакты')) {
+        $description = 'Контакты Элинар Пласт: адрес производства — Московская обл., Наро-Фоминский р-н, с. Атепцево. Телефон: +7 (496) 34-77-944. Заказать производство изделий из пластмасс.';
+    } elseif (is_page('partners') || is_page('партнеры') || is_page('partnyory')) {
+        $description = 'Партнёры и клиенты Элинар Пласт — ведущие промышленные предприятия России, работающие с нашим производством более 20 лет.';
+    } elseif (is_page('quote-request') || is_page('zayavka') || is_page('заявка')) {
+        $description = 'Заполните форму запроса на расчёт производства пластиковых изделий. Укажите чертёж, материал, объём партии — мы ответим в течение 1 рабочего дня.';
+    }
+
+    // Выводим мета-описание, если оно задано
+    if (!empty($description)) {
+        // Безопасное экранирование для вывода в атрибут
+        $safe_desc = esc_attr($description);
+        echo '<meta name="description" content="' . $safe_desc . '">' . "\n";
+
+        // Open Graph описание (для соцсетей)
+        echo '<meta property="og:description" content="' . $safe_desc . '">' . "\n";
+    }
+
+    // Open Graph: заголовок и URL для всех страниц
+    $og_title = wp_get_document_title();
+    echo '<meta property="og:title" content="' . esc_attr($og_title) . '">' . "\n";
+    echo '<meta property="og:type" content="website">' . "\n";
+    echo '<meta property="og:url" content="' . esc_url(get_permalink()) . '">' . "\n";
+    echo '<meta property="og:site_name" content="Элинар Пласт">' . "\n";
+    echo '<meta property="og:locale" content="ru_RU">' . "\n";
+
+    // --- Noindex для служебных/мусорных страниц ---
+    $noindex_pages = ['thank-you', 'spasibo', 'production-demo', 'demo'];
+    $is_noindex    = false;
+
+    foreach ($noindex_pages as $slug) {
+        if (is_page($slug)) {
+            $is_noindex = true;
+            break;
+        }
+    }
+
+    if ($is_noindex) {
+        echo '<meta name="robots" content="noindex, nofollow">' . "\n";
+    }
+}
 
 /**
  * Диагностика модулей Apache (доступна по ?elinar_diag=1 для админов)
