@@ -2536,7 +2536,7 @@ get_header();
 
     <div class="lightbox" id="portfolio-lightbox" aria-hidden="true">
         <button class="lightbox__close" type="button" aria-label="Закрыть">&times;</button>
-        <img class="lightbox__image" src="" alt="">
+        <img class="lightbox__image" src="" alt="Увеличенное изображение изделия из пластика">
     </div>
 
     <!-- Блок 3: Таймлайн (Premium Timeline from Products Page) -->

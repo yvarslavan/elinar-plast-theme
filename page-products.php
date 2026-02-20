@@ -389,9 +389,9 @@ get_header();
                         <div class="zigzag-slider production-gallery-slider">
                             <?php
                             $chamfer_images = [
-                                ['src' => get_template_directory_uri() . '/assets/images/faskoobrazovateli/faskoobrazovateli-1.webp', 'alt' => 'Фаскообразователи - пример 1', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/faskoobrazovateli/faskoobrazovateli-2.webp', 'alt' => 'Фаскообразователи - пример 2', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/faskoobrazovateli/faskoobrazovateli-3.webp', 'alt' => 'Фаскообразователи - пример 3', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/faskoobrazovateli/faskoobrazovateli-1.webp', 'alt' => 'ПВХ фаскообразователь для формирования углов железобетонных изделий', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/faskoobrazovateli/faskoobrazovateli-2.webp', 'alt' => 'Пластиковый фаскообразователь для опалубки и монолитного строительства', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/faskoobrazovateli/faskoobrazovateli-3.webp', 'alt' => 'Экструзионный фаскообразователь с точной геометрией для ЖБИ', 'loading' => 'lazy'],
                             ];
                             ?>
                             <div class="slider-container">
@@ -482,11 +482,11 @@ get_header();
                         <div class="zigzag-slider production-gallery-slider" style="height: 100% !important; width: 100% !important; position: relative !important;">
                             <?php
                             $profiles_images = [
-                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-Shinoprovod/profile-shinoprovod-01.webp', 'alt' => 'Профили для шинопровода - пример 1', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-Shinoprovod/profile-shinoprovod-02.webp', 'alt' => 'Профили для шинопровода - пример 2', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-Shinoprovod/profile-shinoprovod-03.webp', 'alt' => 'Профили для шинопровода - пример 3', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-Shinoprovod/profile-shinoprovod-04.webp', 'alt' => 'Профили для шинопровода - пример 4', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-Shinoprovod/profile-shinoprovod-05.webp', 'alt' => 'Профили для шинопровода - пример 5', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-Shinoprovod/profile-shinoprovod-01.webp', 'alt' => 'Профиль для осветительного шинопровода из инженерного пластика', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-Shinoprovod/profile-shinoprovod-02.webp', 'alt' => 'Изоляционный профиль для шинопровода с точной геометрией', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-Shinoprovod/profile-shinoprovod-03.webp', 'alt' => 'Комплект пластиковых профилей для светотехнического шинопровода', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-Shinoprovod/profile-shinoprovod-04.webp', 'alt' => 'Экструзионный профиль для монтажа токоведущих шин', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-Shinoprovod/profile-shinoprovod-05.webp', 'alt' => 'Термостойкий пластиковый профиль для корпуса шинопровода', 'loading' => 'lazy'],
                             ];
                             ?>
                             <div class="slider-container" style="width: 100% !important; height: 100% !important; position: relative !important;">
@@ -568,15 +568,15 @@ get_header();
                         <div class="zigzag-slider production-gallery-slider">
                             <?php
                             $appliances_images = [
-                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-HomeAppliances/profile-home-01.webp', 'alt' => 'Профиль для бытовой техники 1', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-HomeAppliances/profile-home-02.webp', 'alt' => 'Профиль для бытовой техники 2', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-HomeAppliances/profile-home-03.webp', 'alt' => 'Профиль для бытовой техники 3', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-HomeAppliances/profile-home-04.webp', 'alt' => 'Профиль для бытовой техники 4', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-HomeAppliances/profile-home-05.webp', 'alt' => 'Профиль для бытовой техники 5', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-HomeAppliances/profile-home-06.webp', 'alt' => 'Профиль для бытовой техники 6', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-HomeAppliances/profile-home-07.webp', 'alt' => 'Профиль для бытовой техники 7', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-HomeAppliances/profile-home-08.webp', 'alt' => 'Профиль для бытовой техники 8', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-HomeAppliances/profile-home-09.webp', 'alt' => 'Профиль для бытовой техники 9', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-HomeAppliances/profile-home-01.webp', 'alt' => 'Пластиковый направляющий профиль для бытовой техники', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-HomeAppliances/profile-home-02.webp', 'alt' => 'Декоративный профиль для корпуса бытовой техники', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-HomeAppliances/profile-home-03.webp', 'alt' => 'Уплотнительный профиль для дверцы холодильника', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-HomeAppliances/profile-home-04.webp', 'alt' => 'Профильная деталь из ABS для панелей техники', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-HomeAppliances/profile-home-05.webp', 'alt' => 'Экструзионный профиль для стиральных машин и холодильников', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-HomeAppliances/profile-home-06.webp', 'alt' => 'Функциональный пластиковый профиль для бытовых приборов', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-HomeAppliances/profile-home-07.webp', 'alt' => 'Профиль с чистой лицевой поверхностью для бытовой техники', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-HomeAppliances/profile-home-08.webp', 'alt' => 'Пластиковая направляющая для сборки бытовой техники', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-HomeAppliances/profile-home-09.webp', 'alt' => 'Серийный профиль для комплектующих бытовой техники', 'loading' => 'lazy'],
                             ];
                             ?>
                             <div class="slider-container">
@@ -663,8 +663,8 @@ get_header();
                         <div class="zigzag-slider production-gallery-slider">
                             <?php
                             $truck_images = [
-                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-Furgon/profile-furgon-01.webp', 'alt' => 'Профили для автофургонов - пример 1', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-Furgon/profile-furgon-02.webp', 'alt' => 'Профили для автофургонов - пример 2', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-Furgon/profile-furgon-01.webp', 'alt' => 'Пластиковый профиль для обвязки каркаса автофургона', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Profiles-Furgon/profile-furgon-02.webp', 'alt' => 'Ударопрочный профиль для облицовки грузового фургона', 'loading' => 'lazy'],
                             ];
                             ?>
                             <div class="slider-container">
@@ -748,10 +748,10 @@ get_header();
                         <div class="zigzag-slider production-gallery-slider">
                             <?php
                             $vtulki_images = [
-                                ['src' => get_template_directory_uri() . '/assets/images/Polymer-Bushings-Spools/Spool%20Rings-1.webp', 'alt' => 'Полимерные втулки и кольца - пример 1', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/Polymer-Bushings-Spools/Spool%20Rings-2.webp', 'alt' => 'Полимерные втулки и кольца - пример 2', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/Polymer-Bushings-Spools/Spool%20Rings-3.webp', 'alt' => 'Полимерные втулки и кольца - пример 3', 'loading' => 'lazy'],
-                                ['src' => get_template_directory_uri() . '/assets/images/Polymer-Bushings-Spools/Spool%20Rings-4.webp', 'alt' => 'Полимерные втулки и кольца - пример 4', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Polymer-Bushings-Spools/Spool%20Rings-1.webp', 'alt' => 'Полимерная втулка для кабельного барабана', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Polymer-Bushings-Spools/Spool%20Rings-2.webp', 'alt' => 'Пластиковое кольцо для катушки и намоточного барабана', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Polymer-Bushings-Spools/Spool%20Rings-3.webp', 'alt' => 'Износостойкая полимерная втулка для промышленного узла', 'loading' => 'lazy'],
+                                ['src' => get_template_directory_uri() . '/assets/images/Polymer-Bushings-Spools/Spool%20Rings-4.webp', 'alt' => 'Комплект полимерных втулок и колец для намоточного оборудования', 'loading' => 'lazy'],
                             ];
                             ?>
                             <div class="slider-container">

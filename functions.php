@@ -906,8 +906,16 @@ add_filter('document_title_parts', function ($title) {
         $title['title'] = 'О компании — производство пластмасс с 2001 года';
     } elseif (is_page('contacts') || is_page('контакты')) {
         $title['title'] = 'Контакты — производство в Наро-Фоминске';
+    } elseif (is_page('technologies-production') || is_page('technologies-and-production') || is_page_template('page-technologies-production.php')) {
+        $title['title'] = 'Технологии и производственные возможности';
+    } elseif (is_page('sotrudnichestvo') || is_page('cooperation') || is_page_template('page-sotrudnichestvo.php')) {
+        $title['title'] = 'Сотрудничество и контрактное производство';
+    } elseif (is_page('privacy-policy') || is_page('politika-konfidenczialnosti') || is_page_template('page-privacy-policy.php')) {
+        $title['title'] = 'Политика обработки персональных данных';
     } elseif (is_page('partners') || is_page('партнеры') || is_page('partnyory')) {
         $title['title'] = 'Партнёры и клиенты';
+    } elseif (is_page('production-demo') || is_page('demo') || is_page_template('page-production-demo.php')) {
+        $title['title'] = 'Демо: производственный цикл';
     } elseif (is_page('quote-request') || is_page('zayavka') || is_page('заявка')) {
         $title['title'] = 'Запрос на расчёт производства';
     } elseif (is_page('thank-you') || is_page('spasibo')) {
@@ -944,8 +952,16 @@ function elinar_seo_meta_tags()
         $description = 'ООО «Элинар Пласт» — современное производственное предприятие с более чем 20-летним опытом. Производство в Наро-Фоминском районе (с. Атепцево). Немецкие технологии экструзии и литья.';
     } elseif (is_page('contacts') || is_page('контакты')) {
         $description = 'Контакты Элинар Пласт: адрес производства — Московская обл., Наро-Фоминский р-н, с. Атепцево. Телефон: +7 (496) 34-77-944. Заказать производство изделий из пластмасс.';
+    } elseif (is_page('technologies-production') || is_page('technologies-and-production') || is_page_template('page-technologies-production.php')) {
+        $description = 'Технологии Элинар Пласт: экструзия профилей и литьё под давлением, контроль качества, разработка оснастки и полный цикл контрактного производства пластиковых изделий.';
+    } elseif (is_page('sotrudnichestvo') || is_page('cooperation') || is_page_template('page-sotrudnichestvo.php')) {
+        $description = 'Сотрудничество с Элинар Пласт: прямые поставки, контрактное производство, резервирование сырья и стабильные отгрузки для промышленных предприятий.';
+    } elseif (is_page('privacy-policy') || is_page('politika-konfidenczialnosti') || is_page_template('page-privacy-policy.php')) {
+        $description = 'Политика в отношении обработки персональных данных ООО «Элинар Пласт»: цели, состав данных, правовые основания и порядок защиты информации.';
     } elseif (is_page('partners') || is_page('партнеры') || is_page('partnyory')) {
         $description = 'Партнёры и клиенты Элинар Пласт — ведущие промышленные предприятия России, работающие с нашим производством более 20 лет.';
+    } elseif (is_page('production-demo') || is_page('demo') || is_page_template('page-production-demo.php')) {
+        $description = 'Служебная демо-страница производственного цикла. Предназначена для внутреннего просмотра и закрыта от индексации.';
     } elseif (is_page('quote-request') || is_page('zayavka') || is_page('заявка')) {
         $description = 'Заполните форму запроса на расчёт производства пластиковых изделий. Укажите чертёж, материал, объём партии — мы ответим в течение 1 рабочего дня.';
     }
@@ -969,15 +985,18 @@ function elinar_seo_meta_tags()
     echo '<meta property="og:locale" content="ru_RU">' . "\n";
 
     // --- Noindex для служебных/мусорных страниц ---
-    $noindex_pages = ['thank-you', 'spasibo', 'production-demo', 'demo'];
-    $is_noindex    = false;
-
-    foreach ($noindex_pages as $slug) {
-        if (is_page($slug)) {
-            $is_noindex = true;
-            break;
-        }
-    }
+    $is_noindex = (
+        is_page('thank-you')
+        || is_page('spasibo')
+        || is_page('production-demo')
+        || is_page('demo')
+        || is_page('quote-request')
+        || is_page('zayavka')
+        || is_page('заявка')
+        || is_page_template('page-thank-you.php')
+        || is_page_template('page-production-demo.php')
+        || is_page_template('page-quote-request.php')
+    );
 
     if ($is_noindex) {
         echo '<meta name="robots" content="noindex, nofollow">' . "\n";
