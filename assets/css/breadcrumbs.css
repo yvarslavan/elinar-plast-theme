@@ -204,6 +204,15 @@
     }
 }
 
+/* About/mobile: убираем правый градиент breadcrumbs, чтобы он не маскировал бургер */
+@media (max-width: 1024px) {
+    body.page-template-page-about .breadcrumbs::after,
+    body.page-template-page-about-php .breadcrumbs::after,
+    body.page-about .breadcrumbs::after {
+        display: none !important;
+    }
+}
+
 /* ============================================
    DARK THEME SUPPORT (если используется)
    ============================================ */

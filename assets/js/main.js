@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // При скролле: хедер растягивается на всю ширину страницы
     // Также переключает логотип: белый при загрузке, цветной при скролле
     const header = document.querySelector('.site-header');
-    let headerScrolled = false;
+    let headerScrolled = header ? header.classList.contains('scrolled') : false;
 
     // ========== WOW-ЭФФЕКТ 1: Scroll Progress Indicator ==========
     // Создаём элемент прогресс-бара
@@ -429,18 +429,23 @@ document.addEventListener('DOMContentLoaded', function () {
     // Функция для проверки состояния скролла
     function checkScrollState() {
         const scrollY = window.scrollY;
+        if (!header) {
+            updateScrollProgress();
+            return;
+        }
+        const hasScrolledClass = header.classList.contains('scrolled');
 
         // Эффект растягивания на всю ширину при скролле и смена логотипа
         if (scrollY > 50) {
-            if (!headerScrolled) {
+            if (!hasScrolledClass) {
                 header.classList.add('scrolled');
-                headerScrolled = true;
             }
+            headerScrolled = true;
         } else {
-            if (headerScrolled) {
+            if (hasScrolledClass) {
                 header.classList.remove('scrolled');
-                headerScrolled = false;
             }
+            headerScrolled = false;
         }
 
         // Обновляем прогресс-бар при каждом скролле
@@ -457,6 +462,21 @@ document.addEventListener('DOMContentLoaded', function () {
         updateDocHeight();
         checkScrollState();
     }, 150));
+    window.addEventListener('load', function () {
+        updateDocHeight();
+        checkScrollState();
+        // Android может восстановить scroll после DOMContentLoaded
+        setTimeout(checkScrollState, 120);
+    });
+
+    // Android/Chrome bfcache: сбрасываем залипшее состояние мобильного меню и пересчитываем хедер
+    window.addEventListener('pageshow', function () {
+        if (mainNav && menuToggle) {
+            mainNav.classList.remove('active');
+            menuToggle.classList.remove('active');
+        }
+        checkScrollState();
+    });
 
     // ============================================================================
     // MODAL WINDOWS
