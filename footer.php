@@ -1230,7 +1230,7 @@ $requisites_url = home_url('/privacy-policy/#operator-details');
         <div class="cookie-banner-main">
             <div class="cookie-banner-text">
                 <h3 class="cookie-banner-title">Мы используем cookies</h3>
-                <p>Мы используем файлы cookie и сервис веб-аналитики Яндекс.Метрика. Продолжая пользоваться сайтом или нажимая «Согласен», вы подтверждаете своё согласие на обработку персональных данных в соответствии с <a href="<?php echo esc_url($privacy_url); ?>" class="cookie-banner-link">Политикой конфиденциальности</a>.</p>
+                <p>Мы используем файлы cookie и сервис веб-аналитики Яндекс.Метрика. Нажимая «Согласен», вы даете согласие на обработку персональных данных, включая поручение обработки ООО «ЯНДЕКС» (119021, г. Москва, ул. Льва Толстого, д. 16), в соответствии с <a href="<?php echo esc_url($privacy_url); ?>" class="cookie-banner-link">Политикой в отношении обработки персональных данных</a>.</p>
             </div>
 
             <div class="cookie-banner-actions">

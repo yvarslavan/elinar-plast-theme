@@ -453,7 +453,7 @@
                 <div class="quote-consent">
                     <label class="quote-checkbox">
                         <input type="checkbox" name="consent" required>
-                        <span>Я даю <a href="<?php echo esc_url(home_url('/privacy-policy/#consent-processing')); ?>" target="_blank" rel="noopener">согласие</a> на обработку <a href="<?php echo esc_url(home_url('/privacy-policy/')); ?>" target="_blank" rel="noopener">моих персональных данных</a></span>
+                        <span>Я даю согласие на обработку моих персональных данных, включая поручение обработки ООО «ЯНДЕКС», в соответствии с <a href="<?php echo esc_url(home_url('/privacy-policy/')); ?>" target="_blank" rel="noopener">Политикой в отношении обработки персональных данных</a></span>
                     </label>
                 </div>
             </div>

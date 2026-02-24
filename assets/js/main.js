@@ -2278,14 +2278,23 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Создаем элемент для сообщения
                     const messageDiv = document.createElement('div');
                     messageDiv.className = 'form-message';
+                    let submissionSucceeded = false;
 
                     if (data.success) {
+                        submissionSucceeded = true;
                         messageDiv.className += ' form-message-success';
                         messageDiv.textContent = data.data.message;
 
                         // Очищаем форму при успешной отправке
                         form.reset();
                         syncSubmitStateByConsent();
+
+                        // Явно показываем успешное состояние кнопки, чтобы реакция была заметной
+                        if (submitButton) {
+                            submitButton.disabled = true;
+                            submitButton.setAttribute('aria-disabled', 'true');
+                            submitButton.textContent = 'Отправлено';
+                        }
 
                         // Автоматически скрываем сообщение через 5 секунд
                         setTimeout(function () {
@@ -2310,10 +2319,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Прокрутка к сообщению
                     messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-                    // Восстанавливаем кнопку
+                    // Восстанавливаем кнопку с задержкой после успешной отправки
                     if (submitButton) {
-                        submitButton.textContent = originalButtonText;
-                        syncSubmitStateByConsent();
+                        if (submissionSucceeded) {
+                            setTimeout(function () {
+                                submitButton.textContent = originalButtonText;
+                                syncSubmitStateByConsent();
+                            }, 1800);
+                        } else {
+                            submitButton.textContent = originalButtonText;
+                            syncSubmitStateByConsent();
+                        }
                     }
                 })
                 .catch(function (error) {

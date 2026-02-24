@@ -132,7 +132,7 @@ get_header();
                         <div class="form-consent">
                             <label>
                                 <input type="checkbox" name="consent" required>
-                                <span>Я даю <a href="<?php echo esc_url(home_url('/privacy-policy/#consent-processing')); ?>" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline;">согласие</a> на обработку <a href="<?php echo esc_url(home_url('/privacy-policy/')); ?>" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline;">моих персональных данных</a>.</span>
+                                <span>Я даю согласие на обработку моих персональных данных, включая поручение обработки ООО «ЯНДЕКС», в соответствии с <a href="<?php echo esc_url(home_url('/privacy-policy/')); ?>" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline;">Политикой в отношении обработки персональных данных</a>.</span>
                             </label>
                         </div>
                     </form>

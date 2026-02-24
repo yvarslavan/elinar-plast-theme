@@ -214,7 +214,7 @@ if ($form_status === 'success') {
                         <div class="audit-form-agreement" style="margin-bottom: 0.5rem; display: flex; align-items: flex-start; gap: 0.5rem;">
                             <input type="checkbox" name="privacy_agreement" id="privacy_agreement" required style="margin-top: 3px;">
                             <label for="privacy_agreement" style="font-size: 13px; color: #666; line-height: 1.4; cursor: pointer;">
-                                Я даю <a href="<?php echo esc_url(home_url('/privacy-policy/#consent-processing')); ?>" target="_blank" rel="noopener" style="text-decoration: underline; color: inherit;">согласие</a> на обработку <a href="<?php echo esc_url(home_url('/privacy-policy/')); ?>" target="_blank" rel="noopener" style="text-decoration: underline; color: inherit;">моих персональных данных</a>
+                                Я даю согласие на обработку моих персональных данных, включая поручение обработки ООО «ЯНДЕКС», в соответствии с <a href="<?php echo esc_url(home_url('/privacy-policy/')); ?>" target="_blank" rel="noopener" style="text-decoration: underline; color: inherit;">Политикой в отношении обработки персональных данных</a>
                             </label>
                         </div>
 

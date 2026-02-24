@@ -191,7 +191,7 @@ function elinar_handle_project_form_universal()
     $email_body .= "URL страницы: {$redirect_base}\n";
 
     $subject = "Новая заявка с {$page_source}: {$name}";
-    $headers = array('Content-Type: text/plain; charset=UTF-8', 'Reply-To: ' . $email);
+    $headers = elinar_build_mail_headers($email);
 
     $attachments = array();
     if (!empty($attachment_paths)) {
@@ -203,17 +203,11 @@ function elinar_handle_project_form_universal()
     }
 
     // Email-адреса из конфигурации с fallback на значения по умолчанию
-    $primary_email = defined('ELINAR_PRIMARY_EMAIL') ? ELINAR_PRIMARY_EMAIL : 'plast@elinar.ru';
-    $copy_email = defined('ELINAR_COPY_EMAIL') ? ELINAR_COPY_EMAIL : 'varslavanyury@gmail.com';
+    $primary_email = elinar_get_primary_email();
+    $copy_email = elinar_get_copy_email();
 
-    // Отправка на основной адрес
-    $mail_sent = wp_mail($primary_email, $subject, $email_body, $headers, $attachments);
-
-    // Независимая отправка копии на резервный адрес
-    wp_mail($copy_email, $subject, $email_body, $headers, $attachments);
-
-    // Параллельная отправка в Telegram (не блокирует email-логику)
-    elinar_send_telegram_notification(array(
+    // Telegram отправляем в первую очередь, чтобы дубль не зависел от SMTP таймаутов
+    $telegram_sent = elinar_send_telegram_notification(array(
         'name'            => $name,
         'phone'           => $phone,
         'email'           => $email,
@@ -223,6 +217,22 @@ function elinar_handle_project_form_universal()
         'page_source'     => $page_source,
         'request_id'      => $request_id,
         'page_url'        => $redirect_base,
+    ));
+
+    // Отправка на основной адрес (с fallback на mail() без вложений)
+    $primary_send = elinar_send_mail_with_fallback($primary_email, $subject, $email_body, $headers, $attachments, $email);
+    $mail_sent = !empty($primary_send['sent']);
+
+    // Независимая отправка копии на резервный адрес
+    elinar_send_mail_with_fallback($copy_email, $subject, $email_body, $headers, $attachments, $email);
+
+    elinar_delivery_log('project_form_universal', array(
+        'request_id' => $request_id,
+        'mail_sent' => (bool) $mail_sent,
+        'mail_via' => isset($primary_send['via']) ? (string) $primary_send['via'] : '',
+        'wp_mail_error' => isset($primary_send['wp_mail_error']) ? (string) $primary_send['wp_mail_error'] : '',
+        'telegram_sent' => (bool) $telegram_sent,
+        'attachments_count' => count($attachments),
     ));
 
     // Удаляем временные файлы
@@ -237,7 +247,7 @@ function elinar_handle_project_form_universal()
     // На локальном сервере считаем успехом
     $is_local = strpos($host, 'localhost') !== false || strpos($host, '.local') !== false;
 
-    if ($mail_sent || $is_local) {
+    if ($mail_sent || $telegram_sent || $is_local) {
         wp_redirect(home_url('/thank-you/'));
         exit;
     } else {
@@ -252,6 +262,306 @@ function elinar_handle_project_form_universal()
  * Отправка заявок в Telegram параллельно с email (не влияет на email-логику)
  * ============================================================================
  */
+if (!function_exists('elinar_telegram_log')) {
+    function elinar_telegram_log($context, $message)
+    {
+        if (!function_exists('elinar_private_log_file')) {
+            return;
+        }
+
+        $context = sanitize_text_field((string) $context);
+        $message = sanitize_textarea_field((string) $message);
+        $line = wp_date('Y-m-d H:i:s') . " | {$context} | {$message}\n";
+        @file_put_contents(elinar_private_log_file('telegram-log.txt'), $line, FILE_APPEND | LOCK_EX);
+    }
+}
+
+if (!function_exists('elinar_sanitize_telegram_error_text')) {
+    function elinar_sanitize_telegram_error_text($text)
+    {
+        $text = (string) $text;
+        if ($text === '') {
+            return $text;
+        }
+
+        // Маскируем токен, если он попал в URL ошибки.
+        $text = preg_replace('#/bot[0-9]+:[A-Za-z0-9_-]+/#', '/bot***REDACTED***/', $text);
+
+        if (defined('TELEGRAM_BOT_TOKEN') && TELEGRAM_BOT_TOKEN !== '') {
+            $text = str_replace((string) TELEGRAM_BOT_TOKEN, '***REDACTED***', $text);
+        }
+
+        return $text;
+    }
+}
+
+if (!function_exists('elinar_get_telegram_chat_id')) {
+    function elinar_get_telegram_chat_id()
+    {
+        if (defined('TELEGRAM_CHAT_ID') && TELEGRAM_CHAT_ID !== '') {
+            return (string) TELEGRAM_CHAT_ID;
+        }
+
+        return '-1003410037262';
+    }
+}
+
+if (!function_exists('elinar_get_telegram_api_base_url')) {
+    function elinar_get_telegram_api_base_url()
+    {
+        if (defined('ELINAR_TELEGRAM_API_BASE_URL') && ELINAR_TELEGRAM_API_BASE_URL !== '') {
+            return rtrim((string) ELINAR_TELEGRAM_API_BASE_URL, '/');
+        }
+
+        return 'https://api.telegram.org';
+    }
+}
+
+if (!function_exists('elinar_is_telegram_connectivity_error')) {
+    function elinar_is_telegram_connectivity_error($error_text)
+    {
+        if (!is_string($error_text) || $error_text === '') {
+            return false;
+        }
+
+        $error_text = strtolower($error_text);
+        $needles = array(
+            'timed out',
+            'could not resolve host',
+            'couldn\'t connect',
+            'connection refused',
+            'failed to connect',
+            'curl error 28',
+            'operation timed out',
+            'stream_socket_client',
+        );
+
+        foreach ($needles as $needle) {
+            if (strpos($error_text, $needle) !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+if (!function_exists('elinar_telegram_mark_unreachable')) {
+    function elinar_telegram_mark_unreachable($reason = '')
+    {
+        $enable_backoff = defined('ELINAR_TELEGRAM_ENABLE_BACKOFF') ? (bool) ELINAR_TELEGRAM_ENABLE_BACKOFF : false;
+        if ($enable_backoff && function_exists('set_transient')) {
+            set_transient('elinar_skip_telegram', 1, 5 * MINUTE_IN_SECONDS);
+            if ($reason !== '') {
+                elinar_telegram_log('telegram', 'temporary skip enabled: ' . sanitize_text_field((string) $reason));
+            }
+        }
+    }
+}
+
+if (!function_exists('elinar_telegram_clear_unreachable_mark')) {
+    function elinar_telegram_clear_unreachable_mark()
+    {
+        $enable_backoff = defined('ELINAR_TELEGRAM_ENABLE_BACKOFF') ? (bool) ELINAR_TELEGRAM_ENABLE_BACKOFF : false;
+        if ($enable_backoff && function_exists('delete_transient')) {
+            delete_transient('elinar_skip_telegram');
+        }
+    }
+}
+
+if (!function_exists('elinar_telegram_is_temporarily_unreachable')) {
+    function elinar_telegram_is_temporarily_unreachable()
+    {
+        $enable_backoff = defined('ELINAR_TELEGRAM_ENABLE_BACKOFF') ? (bool) ELINAR_TELEGRAM_ENABLE_BACKOFF : false;
+        if (!$enable_backoff) {
+            return false;
+        }
+
+        return function_exists('get_transient') && (bool) get_transient('elinar_skip_telegram');
+    }
+}
+
+if (!function_exists('elinar_configure_telegram_curl')) {
+    function elinar_configure_telegram_curl($handle, $request_args, $url)
+    {
+        if (!is_string($url) || $url === '') {
+            return;
+        }
+
+        $request_host = parse_url($url, PHP_URL_HOST);
+        $telegram_host = parse_url(elinar_get_telegram_api_base_url(), PHP_URL_HOST);
+        $request_host = is_string($request_host) ? strtolower($request_host) : '';
+        $telegram_host = is_string($telegram_host) ? strtolower($telegram_host) : '';
+
+        if ($request_host === '' || $telegram_host === '' || $request_host !== $telegram_host) {
+            return;
+        }
+
+        // На части хостингов Telegram по IPv6 недоступен, а IPv4 работает стабильно.
+        $force_ipv4 = defined('ELINAR_TELEGRAM_FORCE_IPV4') ? (bool) ELINAR_TELEGRAM_FORCE_IPV4 : false;
+        if (
+            $force_ipv4 &&
+            defined('CURLOPT_IPRESOLVE') &&
+            defined('CURL_IPRESOLVE_V4') &&
+            function_exists('curl_setopt')
+        ) {
+            @curl_setopt($handle, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+        }
+
+        if (defined('ELINAR_TELEGRAM_CONNECT_TIMEOUT')) {
+            $connect_timeout = (int) ELINAR_TELEGRAM_CONNECT_TIMEOUT;
+            if ($connect_timeout < 2) {
+                $connect_timeout = 2;
+            }
+            if (defined('CURLOPT_CONNECTTIMEOUT') && function_exists('curl_setopt')) {
+                @curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, $connect_timeout);
+            }
+        }
+
+        // Опционально: HTTP(S) proxy для Telegram (если хостинг блокирует прямой выход).
+        if (defined('ELINAR_TELEGRAM_PROXY') && ELINAR_TELEGRAM_PROXY !== '' && defined('CURLOPT_PROXY') && function_exists('curl_setopt')) {
+            @curl_setopt($handle, CURLOPT_PROXY, (string) ELINAR_TELEGRAM_PROXY);
+
+            if (defined('ELINAR_TELEGRAM_PROXY_AUTH') && ELINAR_TELEGRAM_PROXY_AUTH !== '' && defined('CURLOPT_PROXYUSERPWD')) {
+                @curl_setopt($handle, CURLOPT_PROXYUSERPWD, (string) ELINAR_TELEGRAM_PROXY_AUTH);
+            }
+        }
+    }
+}
+add_action('http_api_curl', 'elinar_configure_telegram_curl', 10, 3);
+
+if (!function_exists('elinar_telegram_stream_context_post')) {
+    function elinar_telegram_stream_context_post($url, $args = array())
+    {
+        if (!function_exists('stream_context_create') || !function_exists('file_get_contents')) {
+            return new WP_Error('telegram_stream_unavailable', 'PHP stream transport is unavailable');
+        }
+
+        $args = is_array($args) ? $args : array();
+        $timeout = isset($args['timeout']) ? (int) $args['timeout'] : 10;
+        if ($timeout < 2) {
+            $timeout = 2;
+        }
+
+        $body = isset($args['body']) ? $args['body'] : '';
+        $headers = array();
+
+        if (!empty($args['headers']) && is_array($args['headers'])) {
+            foreach ($args['headers'] as $key => $value) {
+                if (is_int($key)) {
+                    $headers[] = trim((string) $value);
+                } else {
+                    $headers[] = trim((string) $key) . ': ' . trim((string) $value);
+                }
+            }
+        }
+
+        $has_content_type = false;
+        foreach ($headers as $header_line) {
+            if (stripos($header_line, 'content-type:') === 0) {
+                $has_content_type = true;
+                break;
+            }
+        }
+
+        if (is_array($body)) {
+            $body = http_build_query($body, '', '&');
+            if (!$has_content_type) {
+                $headers[] = 'Content-Type: application/x-www-form-urlencoded';
+            }
+        } elseif (!is_string($body)) {
+            $body = (string) $body;
+        }
+
+        $headers[] = 'Connection: close';
+        $headers[] = 'Content-Length: ' . strlen($body);
+
+        $context = stream_context_create(array(
+            'http' => array(
+                'method' => 'POST',
+                'header' => implode("\r\n", $headers) . "\r\n",
+                'content' => $body,
+                'timeout' => $timeout,
+                'ignore_errors' => true,
+            ),
+            'ssl' => array(
+                'verify_peer' => true,
+                'verify_peer_name' => true,
+            ),
+        ));
+
+        $raw_body = @file_get_contents($url, false, $context);
+        $response_headers = isset($http_response_header) && is_array($http_response_header) ? $http_response_header : array();
+
+        $status_code = 0;
+        if (!empty($response_headers[0]) && preg_match('#HTTP/\S+\s+(\d{3})#', (string) $response_headers[0], $m)) {
+            $status_code = (int) $m[1];
+        }
+
+        if ($raw_body === false && $status_code === 0) {
+            $last_error = error_get_last();
+            $error_msg = is_array($last_error) && !empty($last_error['message']) ? (string) $last_error['message'] : 'Unknown stream transport error';
+            return new WP_Error('telegram_stream_transport_error', $error_msg);
+        }
+
+        return array(
+            'headers' => $response_headers,
+            'body' => (string) $raw_body,
+            'response' => array(
+                'code' => $status_code,
+                'message' => '',
+            ),
+            'cookies' => array(),
+            'filename' => null,
+        );
+    }
+}
+
+if (!function_exists('elinar_telegram_remote_post')) {
+    function elinar_telegram_remote_post($url, $args = array(), $log_context = 'telegram')
+    {
+        $args = is_array($args) ? $args : array();
+        $response = wp_remote_post($url, $args);
+
+        if (!is_wp_error($response)) {
+            return $response;
+        }
+
+        $error = $response->get_error_message();
+        if (!elinar_is_telegram_connectivity_error($error)) {
+            return $response;
+        }
+
+        $allow_stream_retry = defined('ELINAR_TELEGRAM_STREAM_RETRY') ? (bool) ELINAR_TELEGRAM_STREAM_RETRY : true;
+        if (!$allow_stream_retry) {
+            return $response;
+        }
+
+        // Фолбэк: повторяем запрос через Streams transport, если cURL не смог подключиться.
+        add_filter('use_curl_transport', '__return_false', 99);
+        $retry = wp_remote_post($url, $args);
+        remove_filter('use_curl_transport', '__return_false', 99);
+
+        if (!is_wp_error($retry)) {
+            elinar_telegram_log($log_context, 'stream transport retry succeeded');
+            return $retry;
+        }
+
+        $wp_stream_error = elinar_sanitize_telegram_error_text($retry->get_error_message());
+        elinar_telegram_log($log_context, 'wp stream transport retry failed: ' . sanitize_text_field($wp_stream_error));
+
+        $stream_fallback = elinar_telegram_stream_context_post($url, $args);
+        if (!is_wp_error($stream_fallback)) {
+            elinar_telegram_log($log_context, 'php stream_context fallback succeeded');
+            return $stream_fallback;
+        }
+
+        $stream_error = elinar_sanitize_telegram_error_text($stream_fallback->get_error_message());
+        elinar_telegram_log($log_context, 'php stream_context fallback failed: ' . sanitize_text_field($stream_error));
+
+        return $retry;
+    }
+}
 
 /**
  * Отправляет уведомление о заявке в Telegram
@@ -263,12 +573,17 @@ function elinar_send_telegram_notification($data)
 {
     // Проверяем наличие токена бота
     if (!defined('TELEGRAM_BOT_TOKEN') || empty(TELEGRAM_BOT_TOKEN)) {
-        // Токен не настроен — тихо выходим, email продолжает работать
+        elinar_telegram_log('telegram', 'TELEGRAM_BOT_TOKEN is missing');
+        return false;
+    }
+
+    if (elinar_telegram_is_temporarily_unreachable()) {
+        elinar_telegram_log('telegram', 'skipped: temporary connectivity backoff is active');
         return false;
     }
 
     $bot_token = TELEGRAM_BOT_TOKEN;
-    $chat_id = '-1003410037262';
+    $chat_id = elinar_get_telegram_chat_id();
 
     // Формируем красиво оформленное сообщение (HTML-разметка Telegram)
     $message = elinar_format_telegram_message($data);
@@ -277,12 +592,26 @@ function elinar_send_telegram_notification($data)
         // Отправляем текстовое сообщение
         $text_sent = elinar_telegram_send_message($bot_token, $chat_id, $message);
 
+        if (!$text_sent) {
+            elinar_telegram_log('telegram', 'sendMessage failed; documents skipped');
+            return false;
+        }
+
         // Если есть файлы — отправляем их отдельными сообщениями
         $attachment_paths = $data['attachment_paths'] ?? array();
         $attachment_names = $data['attachment_names'] ?? array();
 
         if (!empty($attachment_paths) && is_array($attachment_paths)) {
+            $max_files = defined('ELINAR_TELEGRAM_MAX_FILES') ? (int) ELINAR_TELEGRAM_MAX_FILES : 3;
+            if ($max_files < 1) {
+                $max_files = 1;
+            }
+
             foreach ($attachment_paths as $index => $path) {
+                if ($index >= $max_files) {
+                    break;
+                }
+
                 if (file_exists($path)) {
                     $name = isset($attachment_names[$index]) ? $attachment_names[$index] : basename($path);
                     elinar_telegram_send_document(
@@ -300,6 +629,7 @@ function elinar_send_telegram_notification($data)
     } catch (Exception $e) {
         // Логируем ошибку, но не прерываем основной процесс
         error_log('Elinar Telegram Error: ' . $e->getMessage());
+        elinar_telegram_log('telegram', 'exception: ' . sanitize_text_field($e->getMessage()));
         return false;
     }
 }
@@ -326,7 +656,8 @@ function elinar_format_telegram_message($data)
     $lines = array();
 
     // Заголовок
-    $lines[] = "📋 <b>НОВАЯ ЗАЯВКА С " . mb_strtoupper($page_source) . "</b>";
+    $source_title = function_exists('mb_strtoupper') ? mb_strtoupper($page_source, 'UTF-8') : strtoupper($page_source);
+    $lines[] = "📋 <b>НОВАЯ ЗАЯВКА С " . $source_title . "</b>";
     $lines[] = "";
     $lines[] = "🔖 <b>Номер:</b> <code>{$request_id}</code>";
     $lines[] = "📅 <b>Дата:</b> {$date}";
@@ -383,19 +714,44 @@ function elinar_format_telegram_message($data)
  */
 function elinar_telegram_send_message($bot_token, $chat_id, $message)
 {
-    $url = "https://api.telegram.org/bot{$bot_token}/sendMessage";
+    $api_base_url = elinar_get_telegram_api_base_url();
+    $url = "{$api_base_url}/bot{$bot_token}/sendMessage";
+    $message = (string) $message;
+    $parse_mode = 'HTML';
+    $timeout = defined('ELINAR_TELEGRAM_TIMEOUT') ? (int) ELINAR_TELEGRAM_TIMEOUT : 10;
+    if ($timeout < 2) {
+        $timeout = 2;
+    }
 
-    $response = wp_remote_post($url, array(
-        'timeout' => 10,
+    // Защита от слишком длинных HTML-сообщений Telegram.
+    $max_len = 3500;
+    $message_len = function_exists('mb_strlen') ? mb_strlen($message, 'UTF-8') : strlen($message);
+    if ($message_len > $max_len) {
+        $plain = wp_strip_all_tags(html_entity_decode($message, ENT_QUOTES, 'UTF-8'));
+        if (function_exists('mb_substr')) {
+            $message = mb_substr($plain, 0, $max_len, 'UTF-8') . '...';
+        } else {
+            $message = substr($plain, 0, $max_len) . '...';
+        }
+        $parse_mode = '';
+    }
+
+    $response = elinar_telegram_remote_post($url, array(
+        'timeout' => $timeout,
         'body' => array(
             'chat_id'    => $chat_id,
             'text'       => $message,
-            'parse_mode' => 'HTML',
+            'parse_mode' => $parse_mode,
         ),
-    ));
+    ), 'telegram');
 
     if (is_wp_error($response)) {
-        error_log('Elinar Telegram sendMessage Error: ' . $response->get_error_message());
+        $error = elinar_sanitize_telegram_error_text($response->get_error_message());
+        error_log('Elinar Telegram sendMessage Error: ' . $error);
+        elinar_telegram_log('telegram', 'sendMessage transport error: ' . sanitize_text_field($error));
+        if (elinar_is_telegram_connectivity_error($error)) {
+            elinar_telegram_mark_unreachable($error);
+        }
         return false;
     }
 
@@ -403,10 +759,69 @@ function elinar_telegram_send_message($bot_token, $chat_id, $message)
     $result = json_decode($body, true);
 
     if (empty($result['ok'])) {
+        $api_error = '';
+        if (is_array($result) && !empty($result['description'])) {
+            $api_error = (string) $result['description'];
+        }
         error_log('Elinar Telegram sendMessage Failed: ' . $body);
+        if ($api_error !== '') {
+            elinar_telegram_log('telegram', 'sendMessage api error: ' . sanitize_text_field($api_error));
+        } else {
+            elinar_telegram_log('telegram', 'sendMessage api response is not ok');
+        }
+
+        // Повторяем отправку без parse_mode на случай ошибки HTML-разметки.
+        if ($parse_mode === 'HTML') {
+            $plain_text = wp_strip_all_tags(html_entity_decode($message, ENT_QUOTES, 'UTF-8'));
+            $retry = elinar_telegram_remote_post($url, array(
+                'timeout' => $timeout,
+                'body' => array(
+                    'chat_id' => $chat_id,
+                    'text'    => $plain_text,
+                ),
+            ), 'telegram');
+
+            if (is_wp_error($retry)) {
+                $retry_error = elinar_sanitize_telegram_error_text($retry->get_error_message());
+                elinar_telegram_log('telegram', 'sendMessage retry transport error: ' . sanitize_text_field($retry_error));
+                if (elinar_is_telegram_connectivity_error($retry_error)) {
+                    elinar_telegram_mark_unreachable($retry_error);
+                }
+            } else {
+                $retry_body = wp_remote_retrieve_body($retry);
+                $retry_result = json_decode($retry_body, true);
+                if (!empty($retry_result['ok'])) {
+                    $retry_message_id = '';
+                    if (is_array($retry_result) && !empty($retry_result['result']) && is_array($retry_result['result']) && isset($retry_result['result']['message_id'])) {
+                        $retry_message_id = (string) $retry_result['result']['message_id'];
+                    }
+                    if ($retry_message_id !== '') {
+                        elinar_telegram_log('telegram', 'sendMessage ok via retry, message_id=' . sanitize_text_field($retry_message_id));
+                    } else {
+                        elinar_telegram_log('telegram', 'sendMessage ok via retry');
+                    }
+                    elinar_telegram_clear_unreachable_mark();
+                    return true;
+                }
+                error_log('Elinar Telegram sendMessage Retry Failed: ' . $retry_body);
+                if (is_array($retry_result) && !empty($retry_result['description'])) {
+                    elinar_telegram_log('telegram', 'sendMessage retry api error: ' . sanitize_text_field((string) $retry_result['description']));
+                }
+            }
+        }
+
         return false;
     }
 
+    $message_id = '';
+    if (is_array($result) && !empty($result['result']) && is_array($result['result']) && isset($result['result']['message_id'])) {
+        $message_id = (string) $result['result']['message_id'];
+    }
+    if ($message_id !== '') {
+        elinar_telegram_log('telegram', 'sendMessage ok, message_id=' . sanitize_text_field($message_id));
+    }
+
+    elinar_telegram_clear_unreachable_mark();
     return true;
 }
 
@@ -422,12 +837,21 @@ function elinar_telegram_send_message($bot_token, $chat_id, $message)
  */
 function elinar_telegram_send_document($bot_token, $chat_id, $file_path, $file_name, $request_id = '')
 {
+    if (elinar_telegram_is_temporarily_unreachable()) {
+        return false;
+    }
+
     if (!file_exists($file_path) || !is_readable($file_path)) {
         error_log('Elinar Telegram sendDocument Error: File not found or not readable - ' . $file_path);
         return false;
     }
 
-    $url = "https://api.telegram.org/bot{$bot_token}/sendDocument";
+    $api_base_url = elinar_get_telegram_api_base_url();
+    $url = "{$api_base_url}/bot{$bot_token}/sendDocument";
+    $timeout = defined('ELINAR_TELEGRAM_FILE_TIMEOUT') ? (int) ELINAR_TELEGRAM_FILE_TIMEOUT : 15;
+    if ($timeout < 3) {
+        $timeout = 3;
+    }
 
     // Подготавливаем подпись к файлу
     $caption = "📎 Файл к заявке";
@@ -479,16 +903,21 @@ function elinar_telegram_send_document($bot_token, $chat_id, $file_path, $file_n
 
     $body .= "--{$boundary}--\r\n";
 
-    $response = wp_remote_post($url, array(
-        'timeout' => 30,
+    $response = elinar_telegram_remote_post($url, array(
+        'timeout' => $timeout,
         'headers' => array(
             'Content-Type' => "multipart/form-data; boundary={$boundary}",
         ),
         'body' => $body,
-    ));
+    ), 'telegram');
 
     if (is_wp_error($response)) {
-        error_log('Elinar Telegram sendDocument Error: ' . $response->get_error_message());
+        $error = elinar_sanitize_telegram_error_text($response->get_error_message());
+        error_log('Elinar Telegram sendDocument Error: ' . $error);
+        elinar_telegram_log('telegram', 'sendDocument transport error: ' . sanitize_text_field($error));
+        if (elinar_is_telegram_connectivity_error($error)) {
+            elinar_telegram_mark_unreachable($error);
+        }
         return false;
     }
 
@@ -497,9 +926,13 @@ function elinar_telegram_send_document($bot_token, $chat_id, $file_path, $file_n
 
     if (empty($result['ok'])) {
         error_log('Elinar Telegram sendDocument Failed: ' . $response_body);
+        if (is_array($result) && !empty($result['description'])) {
+            elinar_telegram_log('telegram', 'sendDocument api error: ' . sanitize_text_field((string) $result['description']));
+        }
         return false;
     }
 
+    elinar_telegram_clear_unreachable_mark();
     return true;
 }
 
@@ -520,11 +953,17 @@ function elinar_send_quote_telegram_notification($data)
 {
     // Проверяем наличие токена бота
     if (!defined('TELEGRAM_BOT_TOKEN') || empty(TELEGRAM_BOT_TOKEN)) {
+        elinar_telegram_log('quote_telegram', 'TELEGRAM_BOT_TOKEN is missing');
+        return false;
+    }
+
+    if (elinar_telegram_is_temporarily_unreachable()) {
+        elinar_telegram_log('quote_telegram', 'skipped: temporary connectivity backoff is active');
         return false;
     }
 
     $bot_token = TELEGRAM_BOT_TOKEN;
-    $chat_id = '-1003410037262';
+    $chat_id = elinar_get_telegram_chat_id();
 
     // Формируем красиво оформленное сообщение (HTML-разметка Telegram)
     $message = elinar_format_quote_telegram_message($data);
@@ -533,10 +972,24 @@ function elinar_send_quote_telegram_notification($data)
         // Отправляем текстовое сообщение
         $text_sent = elinar_telegram_send_message($bot_token, $chat_id, $message);
 
+        if (!$text_sent) {
+            elinar_telegram_log('quote_telegram', 'sendMessage failed; documents skipped');
+            return false;
+        }
+
         // Отправляем файлы как документы
         $uploaded_files = $data['uploaded_files'] ?? array();
         if (!empty($uploaded_files)) {
-            foreach ($uploaded_files as $file) {
+            $max_files = defined('ELINAR_TELEGRAM_MAX_FILES') ? (int) ELINAR_TELEGRAM_MAX_FILES : 3;
+            if ($max_files < 1) {
+                $max_files = 1;
+            }
+
+            foreach ($uploaded_files as $index => $file) {
+                if ($index >= $max_files) {
+                    break;
+                }
+
                 if (!empty($file['path']) && file_exists($file['path'])) {
                     elinar_telegram_send_document(
                         $bot_token,
@@ -552,6 +1005,7 @@ function elinar_send_quote_telegram_notification($data)
         return $text_sent;
     } catch (Exception $e) {
         error_log('Elinar Telegram Quote Error: ' . $e->getMessage());
+        elinar_telegram_log('quote_telegram', 'exception: ' . sanitize_text_field($e->getMessage()));
         return false;
     }
 }
@@ -1673,6 +2127,263 @@ if (!function_exists('elinar_private_log_file')) {
     }
 }
 
+if (!function_exists('elinar_delivery_log')) {
+    function elinar_delivery_log($form_key, $payload = array())
+    {
+        if (!function_exists('elinar_private_log_file')) {
+            return;
+        }
+
+        $entry = array(
+            'time' => wp_date('Y-m-d H:i:s'),
+            'form' => sanitize_key((string) $form_key),
+            'payload' => is_array($payload) ? $payload : array(),
+        );
+
+        $line = wp_json_encode($entry, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        if (is_string($line) && $line !== '') {
+            @file_put_contents(elinar_private_log_file('delivery-log.txt'), $line . "\n", FILE_APPEND | LOCK_EX);
+        }
+    }
+}
+
+if (!function_exists('elinar_is_local_environment')) {
+    function elinar_is_local_environment()
+    {
+        $home = function_exists('home_url') ? (string) home_url() : '';
+        return (
+            strpos($home, 'localhost') !== false ||
+            strpos($home, '127.0.0.1') !== false ||
+            strpos($home, '.local') !== false
+        );
+    }
+}
+
+/**
+ * Почтовые адреса и заголовки для форм.
+ * Важно: единый From повышает доставляемость писем после смены домена.
+ */
+if (!function_exists('elinar_get_primary_email')) {
+    function elinar_get_primary_email()
+    {
+        if (defined('ELINAR_PRIMARY_EMAIL') && is_email(ELINAR_PRIMARY_EMAIL)) {
+            return ELINAR_PRIMARY_EMAIL;
+        }
+
+        return 'plast@elinar.ru';
+    }
+}
+
+if (!function_exists('elinar_get_copy_email')) {
+    function elinar_get_copy_email()
+    {
+        if (defined('ELINAR_COPY_EMAIL') && is_email(ELINAR_COPY_EMAIL)) {
+            return ELINAR_COPY_EMAIL;
+        }
+
+        return 'varslavanyury@gmail.com';
+    }
+}
+
+if (!function_exists('elinar_get_from_email')) {
+    function elinar_get_from_email()
+    {
+        if (defined('ELINAR_FROM_EMAIL') && is_email(ELINAR_FROM_EMAIL)) {
+            return ELINAR_FROM_EMAIL;
+        }
+
+        $primary_email = elinar_get_primary_email();
+        if (is_email($primary_email)) {
+            return $primary_email;
+        }
+
+        $host = parse_url(home_url(), PHP_URL_HOST);
+        $host = is_string($host) ? trim($host) : '';
+
+        return $host !== '' ? 'wordpress@' . $host : 'wordpress@localhost.localdomain';
+    }
+}
+
+if (!function_exists('elinar_build_mail_headers')) {
+    function elinar_build_mail_headers($reply_to = '', $from_name = 'Элинар Пласт')
+    {
+        $headers = array('Content-Type: text/plain; charset=UTF-8');
+        $from_email = elinar_get_from_email();
+
+        if ($from_name !== '') {
+            $headers[] = 'From: ' . $from_name . ' <' . $from_email . '>';
+        } else {
+            $headers[] = 'From: ' . $from_email;
+        }
+
+        if (!empty($reply_to) && is_email($reply_to)) {
+            $headers[] = 'Reply-To: ' . $reply_to;
+        }
+
+        return $headers;
+    }
+}
+
+if (!function_exists('elinar_build_simple_mail_headers')) {
+    function elinar_build_simple_mail_headers($reply_to = '')
+    {
+        $headers = 'From: ' . elinar_get_from_email() . "\r\n";
+        $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+
+        if (!empty($reply_to) && is_email($reply_to)) {
+            $headers .= 'Reply-To: ' . $reply_to . "\r\n";
+        }
+
+        return $headers;
+    }
+}
+
+/**
+ * Настройка таймаута SMTP для WP Mail SMTP.
+ * Уменьшает зависания формы при недоступном SMTP-хосте.
+ */
+if (!function_exists('elinar_tune_wp_mail_smtp_timeout')) {
+    function elinar_tune_wp_mail_smtp_timeout($phpmailer)
+    {
+        if (!is_object($phpmailer)) {
+            return $phpmailer;
+        }
+
+        // По умолчанию не трогаем таймауты PHPMailer/WP Mail SMTP.
+        // Это снижает риск ложных timeout на медленных/VPN-каналах.
+        if (!defined('ELINAR_SMTP_TIMEOUT')) {
+            return $phpmailer;
+        }
+
+        $timeout = (int) ELINAR_SMTP_TIMEOUT;
+        if ($timeout < 3) {
+            $timeout = 3;
+        }
+
+        if (property_exists($phpmailer, 'Timeout')) {
+            $phpmailer->Timeout = $timeout;
+        }
+        if (property_exists($phpmailer, 'Timelimit')) {
+            $phpmailer->Timelimit = $timeout;
+        }
+
+        return $phpmailer;
+    }
+}
+add_filter('wp_mail_smtp_custom_options', 'elinar_tune_wp_mail_smtp_timeout', 20);
+
+if (!function_exists('elinar_is_smtp_connectivity_error')) {
+    function elinar_is_smtp_connectivity_error($error_text)
+    {
+        if (!is_string($error_text) || $error_text === '') {
+            return false;
+        }
+
+        $error_text = strtolower($error_text);
+        $needles = array(
+            'could not connect to smtp host',
+            'failed to connect to server',
+            'connection timed out',
+            'stream_socket_client',
+            'smtp code: 110',
+        );
+
+        foreach ($needles as $needle) {
+            if (strpos($error_text, $needle) !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+/**
+ * Унифицированная отправка письма:
+ * 1) пробует wp_mail (SMTP/плагины),
+ * 2) при неудаче и отсутствии вложений — fallback на mail().
+ *
+ * @return array{sent:bool,via:string,wp_mail_error:string}
+ */
+if (!function_exists('elinar_send_mail_with_fallback')) {
+    function elinar_send_mail_with_fallback($to, $subject, $message, $headers = array(), $attachments = array(), $reply_to = '')
+    {
+        static $skip_wp_mail_for_request = false;
+        $allow_mail_fallback = defined('ELINAR_ENABLE_MAIL_FALLBACK')
+            ? (bool) ELINAR_ENABLE_MAIL_FALLBACK
+            : elinar_is_local_environment();
+
+        $result = array(
+            'sent' => false,
+            'via' => 'none',
+            'wp_mail_error' => '',
+        );
+
+        $to = (string) $to;
+        $subject = (string) $subject;
+        $message = (string) $message;
+        $headers = is_array($headers) ? $headers : array();
+        $attachments = is_array($attachments) ? $attachments : array();
+
+        $should_skip_wp_mail = $skip_wp_mail_for_request;
+
+        if ($should_skip_wp_mail) {
+            // mail() не умеет корректно работать с вложениями в этом упрощенном fallback.
+            if ($allow_mail_fallback && empty($attachments) && function_exists('mail')) {
+                $simple_headers = elinar_build_simple_mail_headers($reply_to);
+                $fallback_sent = @mail($to, $subject, $message, $simple_headers);
+                if ($fallback_sent) {
+                    $result['sent'] = true;
+                    $result['via'] = 'mail';
+                }
+            }
+            return $result;
+        }
+
+        $wp_mail_error = '';
+        $wp_mail_error_callback = function ($wp_error) use (&$wp_mail_error) {
+            if (is_wp_error($wp_error)) {
+                $wp_mail_error = $wp_error->get_error_message();
+            }
+        };
+
+        add_action('wp_mail_failed', $wp_mail_error_callback);
+        $mail_sent = wp_mail($to, $subject, $message, $headers, $attachments);
+        remove_action('wp_mail_failed', $wp_mail_error_callback);
+
+        if ($mail_sent) {
+            $result['sent'] = true;
+            $result['via'] = 'wp_mail';
+            return $result;
+        }
+
+        $result['wp_mail_error'] = $wp_mail_error;
+        $is_connectivity_error = elinar_is_smtp_connectivity_error($wp_mail_error);
+        // В пределах текущего запроса не повторяем только ошибки сетевого подключения.
+        $skip_wp_mail_for_request = $is_connectivity_error;
+
+        // При ошибках аутентификации/настроек не подменяем результат fallback-ом.
+        if (!$is_connectivity_error) {
+            return $result;
+        }
+
+        // mail() не умеет корректно работать с вложениями в этом упрощенном fallback.
+        if (!$allow_mail_fallback || !empty($attachments) || !function_exists('mail')) {
+            return $result;
+        }
+
+        $simple_headers = elinar_build_simple_mail_headers($reply_to);
+        $fallback_sent = @mail($to, $subject, $message, $simple_headers);
+
+        if ($fallback_sent) {
+            $result['sent'] = true;
+            $result['via'] = 'mail';
+        }
+
+        return $result;
+    }
+}
+
 // ============================================================================
 // 4. CUSTOM ROUTING (FALLBACK)
 // ============================================================================
@@ -1984,8 +2695,8 @@ function elinar_handle_contact_form()
     }
 
     // Email-адреса из конфигурации с fallback на значения по умолчанию
-    $to = defined('ELINAR_PRIMARY_EMAIL') ? ELINAR_PRIMARY_EMAIL : 'plast@elinar.ru';
-    $to_copy = defined('ELINAR_COPY_EMAIL') ? ELINAR_COPY_EMAIL : 'varslavanyury@gmail.com';
+    $to = elinar_get_primary_email();
+    $to_copy = elinar_get_copy_email();
 
     // Тема письма
     $subject = 'Новая заявка на расчет проекта - Элинар Пласт';
@@ -2010,60 +2721,51 @@ function elinar_handle_contact_form()
     $message .= "\nДата и время: " . $formatted_date . "\n";
     $message .= "IP адрес: " . elinar_get_real_ip() . "\n";
 
+    $request_id = 'CNT-' . wp_date('Ymd') . '-' . strtoupper(substr(md5(uniqid('', true)), 0, 6));
+    $page_url = wp_get_referer();
+    if (!is_string($page_url) || $page_url === '') {
+        $page_url = home_url('/');
+    }
+
     // Сохраняем заявку в лог-файл (резервный вариант)
     $log_entry = $log_date . " | Имя: " . (!empty($name) ? $name : 'не указано') . " | Телефон: {$phone} | Email: " . (!empty($email) ? $email : 'не указан') . " | Вопрос: {$question} | IP: " . elinar_get_real_ip() . "\n";
     $log_file = elinar_private_log_file('contact-form-log.txt');
     @file_put_contents($log_file, $log_entry, FILE_APPEND | LOCK_EX);
 
-    // Заголовки письма (минимальный набор для максимальной совместимости)
-    $headers = array();
-    $headers[] = 'Content-Type: text/plain; charset=UTF-8';
+    $telegram_sent = elinar_send_telegram_notification(array(
+        'name' => !empty($name) ? $name : 'Не указано',
+        'phone' => $phone,
+        'email' => !empty($email) ? $email : 'Не указан',
+        'message' => $question,
+        'page_source' => 'формы Запросить расчет проекта',
+        'request_id' => $request_id,
+        'page_url' => $page_url,
+        'attachment_paths' => array(),
+        'attachment_names' => array(),
+    ));
 
-    // From заголовок - упрощенный формат
-    $site_url = parse_url(home_url(), PHP_URL_HOST);
-    $from_email = 'noreply@' . ($site_url ? $site_url : 'localhost');
-    $headers[] = 'From: ' . $from_email;
+    // Заголовки письма
+    $headers = elinar_build_mail_headers($email);
 
-    // Reply-To заголовок
-    if (!empty($email) && is_email($email)) {
-        $headers[] = 'Reply-To: ' . $email;
-    }
-
-    // Попытка отправки через wp_mail
-    $mail_sent = false;
-    $wp_mail_error = null;
-
-    // Перехватываем ошибки wp_mail
-    $wp_mail_error_callback = function ($wp_error) use (&$wp_mail_error) {
-        $wp_mail_error = $wp_error->get_error_message();
-    };
-    add_action('wp_mail_failed', $wp_mail_error_callback);
-
-    // Отправка на основной адрес
-    $mail_sent = wp_mail($to, $subject, $message, $headers);
+    // Отправка на основной адрес (с fallback на mail())
+    $primary_send = elinar_send_mail_with_fallback($to, $subject, $message, $headers, array(), $email);
+    $mail_sent = !empty($primary_send['sent']);
+    $wp_mail_error = isset($primary_send['wp_mail_error']) ? (string) $primary_send['wp_mail_error'] : '';
 
     // Независимая отправка копии на резервный адрес
-    wp_mail($to_copy, $subject, $message, $headers);
+    elinar_send_mail_with_fallback($to_copy, $subject, $message, $headers, array(), $email);
 
-    // Убираем обработчик ошибок
-    remove_action('wp_mail_failed', $wp_mail_error_callback);
-
-    // Если wp_mail не сработал, пробуем альтернативный способ
-    if (!$mail_sent) {
-        // Упрощенные заголовки для mail()
-        $simple_headers = "From: {$from_email}\r\n";
-        $simple_headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
-        if (!empty($email) && is_email($email)) {
-            $simple_headers .= "Reply-To: {$email}\r\n";
-        }
-
-        $mail_sent = @mail($to, $subject, $message, $simple_headers);
-        // Копия через mail()
-        @mail($to_copy, $subject, $message, $simple_headers);
-    }
+    elinar_delivery_log('contact_form', array(
+        'request_id' => $request_id,
+        'mail_sent' => (bool) $mail_sent,
+        'mail_via' => isset($primary_send['via']) ? (string) $primary_send['via'] : '',
+        'wp_mail_error' => $wp_mail_error,
+        'to' => $to,
+        'telegram_sent' => (bool) $telegram_sent,
+    ));
 
     // Если письмо отправлено успешно
-    if ($mail_sent) {
+    if ($mail_sent || $telegram_sent) {
         wp_send_json_success(array('message' => 'Спасибо! Ваша заявка успешно отправлена. Мы свяжемся с вами в ближайшее время.'));
     } else {
         // На локальном сервере или при проблемах с почтой - все равно показываем успех,
@@ -2201,6 +2903,15 @@ function elinar_handle_quote_form()
     }
 
     if (!empty($_FILES['files']['name'][0])) {
+        $allowed_extensions = array('jpg', 'jpeg', 'png', 'pdf', 'dwg', 'dxf', 'step', 'stp', 'iges', 'igs', 'stl');
+        $max_file_size = 10 * 1024 * 1024; // 10 MB per file
+        $allowed_mimes = array(
+            'jpg|jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'pdf' => 'application/pdf',
+            'dwg|dxf|step|stp|iges|igs|stl' => 'application/octet-stream',
+        );
+
         $file_count = count($_FILES['files']['name']);
 
         if ($file_count > 5) {
@@ -2220,21 +2931,20 @@ function elinar_handle_quote_form()
                 'size' => $_FILES['files']['size'][$i]
             );
 
-            // Определяем MIME-типы для разрешенных файлов
-            $allowed_mimes = array(
-                'jpg|jpeg' => 'image/jpeg',
-                'png' => 'image/png',
-                'pdf' => 'application/pdf',
-                'dwg' => 'application/acad',
-                'dxf' => 'application/dxf',
-                'step|stp' => 'model/step',
-                'iges|igs' => 'model/iges',
-                'stl' => 'model/stl',
-            );
+            $file_ext = strtolower(pathinfo((string) $file['name'], PATHINFO_EXTENSION));
+            if (!in_array($file_ext, $allowed_extensions, true)) {
+                wp_send_json_error(array('message' => 'Недопустимый формат файла. Разрешены: JPG, PNG, PDF, DWG, DXF, STEP, STP, IGES, STL.'));
+            }
 
-            // Используем WordPress загрузчик с кастомными настройками
+            if ((int) $file['size'] > $max_file_size) {
+                wp_send_json_error(array('message' => 'Файл слишком большой. Максимальный размер: 10 МБ.'));
+            }
+
+            // Для CAD-файлов MIME определяется на разных серверах по-разному.
+            // Проверку типа делаем по whitelist расширений выше.
             $upload_overrides = array(
                 'test_form' => false,
+                'test_type' => false,
                 'mimes' => $allowed_mimes,
                 'test_size' => true,
                 'unique_filename_callback' => function ($dir, $name, $ext) {
@@ -2433,35 +3143,12 @@ function elinar_handle_quote_form()
     @file_put_contents($log_file, $log_entry, FILE_APPEND | LOCK_EX);
 
     // Email-адреса из конфигурации с fallback на значения по умолчанию
-    $to = defined('ELINAR_PRIMARY_EMAIL') ? ELINAR_PRIMARY_EMAIL : 'plast@elinar.ru';
-    $to_copy = defined('ELINAR_COPY_EMAIL') ? ELINAR_COPY_EMAIL : 'varslavanyury@gmail.com';
+    $to = elinar_get_primary_email();
+    $to_copy = elinar_get_copy_email();
     $subject = "Запрос на расчет производства №{$request_id} - {$project_name}";
 
-    // Заголовки письма
-    $headers = array();
-    $headers[] = 'Content-Type: text/plain; charset=UTF-8';
-
-    $site_url = parse_url(home_url(), PHP_URL_HOST);
-    $from_email = 'noreply@' . ($site_url ? $site_url : 'localhost');
-    $headers[] = 'From: ' . $from_email;
-    $headers[] = 'Reply-To: ' . $email;
-
-    // Отправка письма
-    $attachments = array();
-    foreach ($uploaded_files as $file) {
-        if (!empty($file['path'])) {
-            $attachments[] = $file['path'];
-        }
-    }
-
-    // Отправка на основной адрес
-    $mail_sent = wp_mail($to, $subject, $message, $headers, $attachments);
-
-    // Независимая отправка копии на резервный адрес
-    wp_mail($to_copy, $subject, $message, $headers, $attachments);
-
-    // Параллельная отправка в Telegram (не блокирует email-логику)
-    elinar_send_quote_telegram_notification(array(
+    // Telegram отправляем в первую очередь, чтобы дубль не зависел от SMTP таймаутов
+    $telegram_sent = elinar_send_quote_telegram_notification(array(
         'request_id'           => $request_id,
         'technology'           => $technology,
         'technology_label'     => $technology_labels[$technology] ?? $technology,
@@ -2501,6 +3188,33 @@ function elinar_handle_quote_form()
         'ip'                   => elinar_get_real_ip(),
     ));
 
+    // Заголовки письма
+    $headers = elinar_build_mail_headers($email);
+
+    // Отправка письма
+    $attachments = array();
+    foreach ($uploaded_files as $file) {
+        if (!empty($file['path'])) {
+            $attachments[] = $file['path'];
+        }
+    }
+
+    // Отправка на основной адрес (с fallback на mail() без вложений)
+    $primary_send = elinar_send_mail_with_fallback($to, $subject, $message, $headers, $attachments, $email);
+    $mail_sent = !empty($primary_send['sent']);
+
+    // Независимая отправка копии на резервный адрес
+    elinar_send_mail_with_fallback($to_copy, $subject, $message, $headers, $attachments, $email);
+
+    elinar_delivery_log('quote_form', array(
+        'request_id' => $request_id,
+        'mail_sent' => (bool) $mail_sent,
+        'mail_via' => isset($primary_send['via']) ? (string) $primary_send['via'] : '',
+        'wp_mail_error' => isset($primary_send['wp_mail_error']) ? (string) $primary_send['wp_mail_error'] : '',
+        'telegram_sent' => (bool) $telegram_sent,
+        'attachments_count' => count($attachments),
+    ));
+
     // Проверяем результат
     $is_local = (
         strpos(home_url(), 'localhost') !== false ||
@@ -2509,7 +3223,7 @@ function elinar_handle_quote_form()
         strpos(home_url(), 'local') !== false
     );
 
-    if ($mail_sent || $is_local) {
+    if ($mail_sent || $telegram_sent || $is_local) {
         // Удаляем загруженные файлы после успешной обработки, чтобы не хранить PII/чертежи на сервере
         foreach ($uploaded_files as $file) {
             $path = isset($file['path']) ? (string) $file['path'] : '';
@@ -2652,18 +3366,12 @@ function elinar_handle_project_form()
     $email_body .= "═══════════════════════════════════════════════════════════\n";
 
     // Email-адреса из конфигурации с fallback на значения по умолчанию
-    $to = defined('ELINAR_PRIMARY_EMAIL') ? ELINAR_PRIMARY_EMAIL : 'plast@elinar.ru';
-    $to_copy = defined('ELINAR_COPY_EMAIL') ? ELINAR_COPY_EMAIL : 'varslavanyury@gmail.com';
+    $to = elinar_get_primary_email();
+    $to_copy = elinar_get_copy_email();
     $subject = "Новая заявка на расчет с сайта: {$name}";
 
     // Заголовки письма
-    $headers = array();
-    $headers[] = 'Content-Type: text/plain; charset=UTF-8';
-
-    $site_url = parse_url(home_url(), PHP_URL_HOST);
-    $from_email = 'noreply@' . ($site_url ? $site_url : 'localhost');
-    $headers[] = 'From: Элинар Пласт <' . $from_email . '>';
-    $headers[] = 'Reply-To: ' . $email;
+    $headers = elinar_build_mail_headers($email);
 
     // Вложения
     $attachments = array();
@@ -2671,11 +3379,20 @@ function elinar_handle_project_form()
         $attachments[] = $attachment_path;
     }
 
-    // Отправка на основной адрес
-    $mail_sent = wp_mail($to, $subject, $email_body, $headers, $attachments);
+    // Отправка на основной адрес (с fallback на mail() без вложений)
+    $primary_send = elinar_send_mail_with_fallback($to, $subject, $email_body, $headers, $attachments, $email);
+    $mail_sent = !empty($primary_send['sent']);
 
     // Независимая отправка копии на резервный адрес
-    wp_mail($to_copy, $subject, $email_body, $headers, $attachments);
+    elinar_send_mail_with_fallback($to_copy, $subject, $email_body, $headers, $attachments, $email);
+
+    elinar_delivery_log('project_form_ajax', array(
+        'request_id' => $request_id,
+        'mail_sent' => (bool) $mail_sent,
+        'mail_via' => isset($primary_send['via']) ? (string) $primary_send['via'] : '',
+        'wp_mail_error' => isset($primary_send['wp_mail_error']) ? (string) $primary_send['wp_mail_error'] : '',
+        'attachments_count' => count($attachments),
+    ));
 
     // Удаляем временный файл после отправки
     if (!empty($attachment_path) && file_exists($attachment_path)) {
