@@ -1380,13 +1380,6 @@ get_header();
                     localStorage.setItem('faq_banner_' + bannerId + '_closed', 'true');
 
                     // Отслеживание закрытия для аналитики
-                    if (typeof gtag !== 'undefined') {
-                        gtag('event', 'faq_banner_closed', {
-                            'event_category': 'FAQ Banner',
-                            'event_label': bannerId + '_home',
-                            'value': 1
-                        });
-                    }
                 }
             }
 
@@ -1409,13 +1402,6 @@ get_header();
             const promoBtn = document.querySelector('[data-faq-teaser="cross-promo-home"]');
             if (promoBtn) {
                 promoBtn.addEventListener('click', function() {
-                    if (typeof gtag !== 'undefined') {
-                        gtag('event', 'faq_teaser_click', {
-                            'event_category': 'FAQ Teaser',
-                            'event_label': 'cross-promo-home',
-                            'value': 1
-                        });
-                    }
                     if (typeof ym !== 'undefined') {
                         ym(window.yaCounterId || 0, 'reachGoal', 'faq_teaser_click', {
                             teaser_type: 'cross-promo-home'

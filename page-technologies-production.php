@@ -818,13 +818,6 @@ get_header();
         teaserLinks.forEach(link => {
             link.addEventListener('click', function() {
                 const teaserType = this.getAttribute('data-faq-teaser') || 'unknown';
-                if (typeof gtag !== 'undefined') {
-                    gtag('event', 'faq_teaser_click', {
-                        'event_category': 'FAQ Teaser',
-                        'event_label': teaserType,
-                        'value': 1
-                    });
-                }
                 if (typeof ym !== 'undefined') {
                     ym(window.yaCounterId || 0, 'reachGoal', 'faq_teaser_click', {
                         teaser_type: teaserType
