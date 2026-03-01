@@ -21,8 +21,11 @@
     <?php endif; ?>
 
     <?php
-    $should_render_critical_css = !defined('ELINAR_OPT_CRITICAL_CSS_SCOPE')
-        || !ELINAR_OPT_CRITICAL_CSS_SCOPE
+    $critical_css_scope_enabled = defined('ELINAR_OPT_CRITICAL_CSS_SCOPE')
+        ? (bool) constant('ELINAR_OPT_CRITICAL_CSS_SCOPE')
+        : false;
+
+    $should_render_critical_css = !$critical_css_scope_enabled
         || (function_exists('is_front_page') && is_front_page());
     ?>
     <?php if ($should_render_critical_css): ?>
