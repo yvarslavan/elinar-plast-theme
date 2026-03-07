@@ -37,6 +37,12 @@ if ($form_status === 'success') {
         case 'mail':
             $form_message = 'Ошибка отправки. Позвоните нам: +7 (496) 34-77-944';
             break;
+        case 'security':
+            $form_message = 'Проверка безопасности не пройдена, обновите страницу и попробуйте снова.';
+            break;
+        case 'rate_limit':
+            $form_message = 'Слишком много попыток, повторите позже.';
+            break;
         default:
             $form_message = 'Произошла ошибка. Попробуйте снова.';
     }
@@ -150,13 +156,10 @@ if ($form_status === 'success') {
                         </div>
                     <?php endif; ?>
 
-                    <form class="audit-form" id="project-form" method="post" enctype="multipart/form-data">
+                    <form class="audit-form" id="project-form" method="post" enctype="multipart/form-data" data-elinar-form="project_form_universal">
                         <input type="hidden" name="project_form_submit" value="1">
                         <?php wp_nonce_field('elinar_project_form', 'project_form_nonce'); ?>
-                        <!-- Honeypot антиспам -->
-                        <div style="position: absolute; left: -9999px;" aria-hidden="true">
-                            <input type="text" name="website_url" tabindex="-1" autocomplete="off">
-                        </div>
+                        <?php elinar_render_form_security_fields('project_form_universal'); ?>
 
                         <div class="audit-form-row">
                             <div class="audit-form-group">
@@ -217,6 +220,8 @@ if ($form_status === 'success') {
                                 Я даю согласие на обработку моих персональных данных, включая поручение обработки ООО «ЯНДЕКС», в соответствии с <a href="<?php echo esc_url(home_url('/privacy-policy/')); ?>" target="_blank" rel="noopener" style="text-decoration: underline; color: inherit;">Политикой в отношении обработки персональных данных</a>
                             </label>
                         </div>
+
+                        <?php elinar_render_turnstile_widget('project_form_universal', 'elinar-form-security--audit'); ?>
 
                         <button type="submit" class="audit-submit-btn cta-button" id="submit-btn">
                             <span>ОТПРАВИТЬ НА ЭКСПЕРТИЗУ</span>

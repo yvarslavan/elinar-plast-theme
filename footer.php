@@ -1019,11 +1019,14 @@ $requisites_url = home_url('/privacy-policy/#operator-details');
     <div class="feedback-modal-content" role="dialog" aria-modal="true" aria-labelledby="feedback-modal-title">
         <button class="feedback-modal-close" type="button" aria-label="Закрыть">&times;</button>
         <h2 id="feedback-modal-title" class="feedback-modal-title">Обратная связь, замечания и предложения</h2>
-        <form class="simple-form contacts-form feedback-modal-form" action="#" method="post">
+        <form class="simple-form contacts-form feedback-modal-form" action="#" method="post" data-elinar-form="contact_form">
+            <?php elinar_render_form_security_fields('contact_form'); ?>
             <input class="feedback-modal-field" type="text" name="name" placeholder="Имя (необязательно)">
             <input class="feedback-modal-field" type="email" name="email" placeholder="Ваш E-mail">
             <input class="feedback-modal-field" type="tel" name="phone" placeholder="Контактный номер телефона *" required>
             <textarea class="feedback-modal-field feedback-modal-field--textarea" name="question" placeholder="Ваш вопрос *" rows="4" required></textarea>
+
+            <?php elinar_render_turnstile_widget('contact_form', 'elinar-form-security--feedback'); ?>
 
             <div class="form-buttons">
                 <button type="submit" class="feedback-modal-submit">ОТПРАВИТЬ</button>

@@ -2482,6 +2482,43 @@ li.menu-services:hover ul.sub-menu,
     cursor: not-allowed;
 }
 
+.elinar-form-honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.elinar-form-security {
+    margin: 1rem 0;
+}
+
+.elinar-form-security .elinar-turnstile-slot {
+    min-height: 70px;
+}
+
+.elinar-form-security .elinar-turnstile-widget {
+    min-height: 65px;
+}
+
+.elinar-turnstile-message {
+    min-height: 1.25rem;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    color: #dc2626;
+}
+
+.elinar-form-security--feedback {
+    margin-bottom: 1rem;
+}
+
+.quote-form-footer .elinar-form-security,
+.audit-form .elinar-form-security {
+    margin-top: 1rem;
+}
+
 /* Footer */
 .site-footer {
     /* Modern abstract tech background with diagonal light shafts */

@@ -63,6 +63,10 @@
         // Sync submit state with consent checkbox
         updateSubmitButtonState();
 
+        if (window.elinarFormSecurity) {
+            window.elinarFormSecurity.refresh(form);
+        }
+
         // Update progress bar
         updateProgressBar();
     }
@@ -543,6 +547,14 @@
             return;
         }
 
+        if (window.elinarFormSecurity) {
+            const securityCheck = window.elinarFormSecurity.ensureToken(form);
+            if (!securityCheck.ok) {
+                showError(securityCheck.message || 'Проверка безопасности не пройдена, обновите страницу и попробуйте снова.');
+                return;
+            }
+        }
+
         // Show loading
         showLoading(true);
 
@@ -568,14 +580,24 @@
                     // Clear saved data
                     clearSavedData();
 
+                    if (window.elinarFormSecurity) {
+                        window.elinarFormSecurity.reset(form);
+                    }
+
                     // Show success message
                     showSuccess(data.data.message);
                 } else {
+                    if (window.elinarFormSecurity) {
+                        window.elinarFormSecurity.reset(form);
+                    }
                     showError(data.data.message || 'Произошла ошибка при отправке');
                 }
             })
             .catch(error => {
                 showLoading(false);
+                if (window.elinarFormSecurity) {
+                    window.elinarFormSecurity.reset(form);
+                }
                 showError('Ошибка сети. Пожалуйста, попробуйте позже.');
                 console.error('Form submission error:', error);
             });
@@ -714,6 +736,10 @@
 
         // Clear saved data
         clearSavedData();
+
+        if (window.elinarFormSecurity) {
+            window.elinarFormSecurity.reset(form);
+        }
     }
 
     /**
@@ -729,7 +755,15 @@
             };
 
             for (let [key, value] of formData.entries()) {
-                if (key !== 'files[]' && key !== 'quote_nonce' && key !== 'website_url') {
+                if (
+                    key !== 'files[]' &&
+                    key !== 'quote_nonce' &&
+                    key !== 'website_url' &&
+                    key !== 'cf-turnstile-response' &&
+                    key !== 'form_render_ts' &&
+                    key !== 'form_elapsed_ms' &&
+                    key !== 'form_security_key'
+                ) {
                     data.fields[key] = value;
                 }
             }

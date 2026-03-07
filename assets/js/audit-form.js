@@ -273,6 +273,26 @@
         return text.replace(/[&<>"']/g, m => map[m]);
     }
 
+    function syncUploadedFilesToInput() {
+        if (!fileInput) return true;
+
+        if (uploadedFiles.length === 0) {
+            fileInput.value = '';
+            return true;
+        }
+
+        if (typeof DataTransfer === 'undefined') {
+            return false;
+        }
+
+        const dataTransfer = new DataTransfer();
+        uploadedFiles.forEach(file => {
+            dataTransfer.items.add(file);
+        });
+        fileInput.files = dataTransfer.files;
+        return true;
+    }
+
     // ============================================
     // FORM SUBMISSION
     // ============================================
@@ -314,72 +334,47 @@
                 return;
             }
 
-            // Если есть загруженные файлы, нужно их прикрепить к форме
-            if (uploadedFiles.length > 0) {
-                e.preventDefault();
-
-                // Create FormData
-                const formData = new FormData(projectForm);
-
-                // Remove old attachment field
-                formData.delete('attachment[]');
-
-                // Add all uploaded files
-                uploadedFiles.forEach((file, index) => {
-                    formData.append('attachment[]', file);
-                });
-
-                // Add loading state
-                submitBtn.classList.add('is-submitting');
-                submitBtn.disabled = true;
-                const originalContent = submitBtn.innerHTML;
-                submitBtn.setAttribute('data-original-content', originalContent);
-                submitBtn.innerHTML = `
-                    <span class="submit-spinner"></span>
-                    <span>Заявка отправляется...</span>
-                `;
-
-                // Submit form via AJAX
-                fetch(projectForm.action || window.location.href, {
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(response => {
-                        // Allow form to submit normally
-                        projectForm.submit();
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        // Restore button
-                        submitBtn.classList.remove('is-submitting');
-                        submitBtn.innerHTML = originalContent;
-                        syncAuditSubmitState();
-                        if (fileError) {
-                            fileError.textContent = 'Ошибка отправки. Попробуйте снова.';
-                        }
-                    });
-            } else {
-                // No files, submit normally
-                submitBtn.classList.add('is-submitting');
-                submitBtn.disabled = true;
-                const originalContent = submitBtn.innerHTML;
-                submitBtn.setAttribute('data-original-content', originalContent);
-                submitBtn.innerHTML = `
-                    <span class="submit-spinner"></span>
-                    <span>Заявка отправляется...</span>
-                `;
+            if (window.elinarFormSecurity) {
+                const securityCheck = window.elinarFormSecurity.ensureToken(projectForm);
+                if (!securityCheck.ok) {
+                    e.preventDefault();
+                    return;
+                }
             }
+
+            if (!syncUploadedFilesToInput()) {
+                e.preventDefault();
+                if (fileError) {
+                    fileError.textContent = 'Ваш браузер не поддерживает безопасную отправку файлов. Попробуйте другой браузер.';
+                }
+                return;
+            }
+
+            submitBtn.classList.add('is-submitting');
+            submitBtn.disabled = true;
+            const originalContent = submitBtn.innerHTML;
+            submitBtn.setAttribute('data-original-content', originalContent);
+            submitBtn.innerHTML = `
+                <span class="submit-spinner"></span>
+                <span>Заявка отправляется...</span>
+            `;
         });
 
         // Восстанавливаем кнопку при возврате на страницу (bfcache)
         window.addEventListener('pageshow', function (e) {
-            if (e.persisted && submitBtn.classList.contains('is-submitting')) {
-                submitBtn.classList.remove('is-submitting');
-                const originalContent = submitBtn.getAttribute('data-original-content');
-                if (originalContent) {
-                    submitBtn.innerHTML = originalContent;
+            if (e.persisted) {
+                if (submitBtn.classList.contains('is-submitting')) {
+                    submitBtn.classList.remove('is-submitting');
+                    const originalContent = submitBtn.getAttribute('data-original-content');
+                    if (originalContent) {
+                        submitBtn.innerHTML = originalContent;
+                    }
+                    syncAuditSubmitState();
                 }
-                syncAuditSubmitState();
+
+                if (window.elinarFormSecurity) {
+                    window.elinarFormSecurity.reset(projectForm);
+                }
             }
         });
     }

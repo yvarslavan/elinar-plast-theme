@@ -38,9 +38,8 @@
         </div>
     </div>
 
-    <form class="quote-form" id="quote-form" method="post" enctype="multipart/form-data">
-        <!-- Honeypot field for spam protection -->
-        <input type="text" name="website_url" class="quote-honeypot" tabindex="-1" autocomplete="off">
+    <form class="quote-form" id="quote-form" method="post" enctype="multipart/form-data" data-elinar-form="quote_form">
+        <?php elinar_render_form_security_fields('quote_form'); ?>
 
         <!-- БЛОК 0: Выбор технологии производства -->
         <div class="quote-step active" data-step="0">
@@ -456,6 +455,7 @@
                         <span>Я даю согласие на обработку моих персональных данных, включая поручение обработки ООО «ЯНДЕКС», в соответствии с <a href="<?php echo esc_url(home_url('/privacy-policy/')); ?>" target="_blank" rel="noopener">Политикой в отношении обработки персональных данных</a></span>
                     </label>
                 </div>
+                <?php elinar_render_turnstile_widget('quote_form', 'elinar-form-security--quote'); ?>
             </div>
         </div>
 

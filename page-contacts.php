@@ -3,20 +3,33 @@
 Template Name: Contacts Page
 */
 get_header();
+
+$about_hero_sources = function_exists('elinar_get_about_hero_image_sources')
+    ? elinar_get_about_hero_image_sources()
+    : array(
+        'mobile' => array('url' => get_template_directory_uri() . '/assets/images/hero-bg_about_mobile.webp'),
+        'tablet' => array('url' => get_template_directory_uri() . '/assets/images/hero-bg_about_tablet.webp'),
+        'desktop' => array(
+            'url' => get_template_directory_uri() . '/assets/images/hero-bg_about.webp',
+            'width' => 1200,
+            'height' => 509,
+        ),
+    );
 ?>
 
 <!-- HERO BLOCK - Optimized for LCP -->
 <div class="page-hero page-hero-compact page-hero-contacts">
     <!-- Hero Background Image - LCP optimized (Contacts specific) -->
     <picture class="hero-bg-picture">
-        <source media="(max-width: 768px)" srcset="<?php echo get_template_directory_uri(); ?>/assets/images/hero-bg_about_mobile.webp" type="image/webp">
-        <source media="(max-width: 1024px)" srcset="<?php echo get_template_directory_uri(); ?>/assets/images/hero-bg_about_tablet.webp" type="image/webp">
-        <source srcset="<?php echo get_template_directory_uri(); ?>/assets/images/hero-bg_about.webp" type="image/webp">
-        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/hero-bg_about.webp"
+        <source media="(max-width: 768px)" srcset="<?php echo esc_url($about_hero_sources['mobile']['url']); ?>" type="image/webp">
+        <source media="(max-width: 1024px)" srcset="<?php echo esc_url($about_hero_sources['tablet']['url']); ?>" type="image/webp">
+        <source media="(min-width: 1025px)" srcset="<?php echo esc_url($about_hero_sources['desktop']['url']); ?>" type="image/webp">
+        <img src="<?php echo esc_url($about_hero_sources['desktop']['url']); ?>"
             alt="Контакты Элинар Пласт"
             class="hero-bg-img"
-            width="1920"
-            height="1080"
+            width="<?php echo esc_attr((string) $about_hero_sources['desktop']['width']); ?>"
+            height="<?php echo esc_attr((string) $about_hero_sources['desktop']['height']); ?>"
+            sizes="100vw"
             fetchpriority="high"
             loading="eager"
             decoding="sync">
@@ -113,7 +126,8 @@ get_header();
             <div class="contacts-form-wrapper">
                 <div class="contacts-form-card">
                     <h2 class="contacts-form-title">Обратная связь, замечания и предложения</h2>
-                    <form class="simple-form contacts-form" action="#" method="post">
+                    <form class="simple-form contacts-form" action="#" method="post" data-elinar-form="contact_form">
+                        <?php elinar_render_form_security_fields('contact_form'); ?>
                         <div class="form-group">
                             <input type="text" name="name" placeholder="Имя (необязательно)">
                         </div>
@@ -126,6 +140,7 @@ get_header();
                         <div class="form-group">
                             <textarea name="question" placeholder="Ваш вопрос *" rows="3" required></textarea>
                         </div>
+                        <?php elinar_render_turnstile_widget('contact_form', 'elinar-form-security--simple'); ?>
                         <div class="form-buttons">
                             <button type="submit" class="btn btn-accent full-width">ОТПРАВИТЬ</button>
                         </div>

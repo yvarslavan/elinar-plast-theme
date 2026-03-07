@@ -14,6 +14,419 @@ if (!defined('ELINAR_OPT_RESOURCE_HINTS')) define('ELINAR_OPT_RESOURCE_HINTS', t
 if (!defined('ELINAR_OPT_DEFER_NONCRIT_CSS')) define('ELINAR_OPT_DEFER_NONCRIT_CSS', false);
 if (!defined('ELINAR_OPT_ASYNC_MAIN_CSS')) define('ELINAR_OPT_ASYNC_MAIN_CSS', false);
 if (!defined('ELINAR_OPT_ASYNC_FONTS')) define('ELINAR_OPT_ASYNC_FONTS', true);
+if (!defined('ELINAR_TURNSTILE_SITE_KEY')) define('ELINAR_TURNSTILE_SITE_KEY', '');
+if (!defined('ELINAR_TURNSTILE_SECRET_KEY')) define('ELINAR_TURNSTILE_SECRET_KEY', '');
+if (!defined('ELINAR_FORM_RATE_LIMIT_MAX_ATTEMPTS')) define('ELINAR_FORM_RATE_LIMIT_MAX_ATTEMPTS', 5);
+if (!defined('ELINAR_FORM_RATE_LIMIT_WINDOW')) define('ELINAR_FORM_RATE_LIMIT_WINDOW', 15 * MINUTE_IN_SECONDS);
+if (!defined('ELINAR_FORM_MIN_ELAPSED_MS')) define('ELINAR_FORM_MIN_ELAPSED_MS', 3000);
+
+if (!function_exists('elinar_get_user_agent')) {
+    function elinar_get_user_agent()
+    {
+        $user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? wp_unslash((string) $_SERVER['HTTP_USER_AGENT']) : '';
+        $user_agent = sanitize_text_field($user_agent);
+
+        if (function_exists('mb_substr')) {
+            return mb_substr($user_agent, 0, 512, 'UTF-8');
+        }
+
+        return substr($user_agent, 0, 512);
+    }
+}
+
+if (!function_exists('elinar_get_request_referrer')) {
+    function elinar_get_request_referrer()
+    {
+        $referrer = wp_get_referer();
+        if (!is_string($referrer) || $referrer === '') {
+            $referrer = isset($_SERVER['HTTP_REFERER']) ? wp_unslash((string) $_SERVER['HTTP_REFERER']) : '';
+        }
+
+        $referrer = is_string($referrer) ? trim($referrer) : '';
+        return $referrer !== '' ? esc_url_raw($referrer) : '';
+    }
+}
+
+if (!function_exists('elinar_get_turnstile_site_key')) {
+    function elinar_get_turnstile_site_key()
+    {
+        return defined('ELINAR_TURNSTILE_SITE_KEY') ? trim((string) ELINAR_TURNSTILE_SITE_KEY) : '';
+    }
+}
+
+if (!function_exists('elinar_get_turnstile_secret_key')) {
+    function elinar_get_turnstile_secret_key()
+    {
+        return defined('ELINAR_TURNSTILE_SECRET_KEY') ? trim((string) ELINAR_TURNSTILE_SECRET_KEY) : '';
+    }
+}
+
+if (!function_exists('elinar_has_turnstile_keys')) {
+    function elinar_has_turnstile_keys()
+    {
+        return elinar_get_turnstile_site_key() !== '' && elinar_get_turnstile_secret_key() !== '';
+    }
+}
+
+if (!function_exists('elinar_get_form_security_message')) {
+    function elinar_get_form_security_message($code = 'security')
+    {
+        if ($code === 'rate_limit') {
+            return 'Слишком много попыток, повторите позже.';
+        }
+
+        return 'Проверка безопасности не пройдена, обновите страницу и попробуйте снова.';
+    }
+}
+
+if (!function_exists('elinar_generate_request_id')) {
+    function elinar_generate_request_id($prefix = 'REQ')
+    {
+        $hash = strtoupper(substr(md5(uniqid('', true)), 0, 6));
+        return sanitize_key($prefix) !== '' ? strtoupper($prefix) . '-' . wp_date('Ymd') . '-' . $hash : wp_date('Ymd') . '-' . $hash;
+    }
+}
+
+if (!function_exists('elinar_security_log')) {
+    function elinar_security_log($form_key, $payload = array())
+    {
+        if (!function_exists('elinar_private_log_file')) {
+            return;
+        }
+
+        $entry = array(
+            'time' => wp_date('Y-m-d H:i:s'),
+            'form' => sanitize_key((string) $form_key),
+            'ip' => function_exists('elinar_get_real_ip') ? elinar_get_real_ip() : '',
+            'user_agent' => function_exists('elinar_get_user_agent') ? elinar_get_user_agent() : '',
+            'referrer' => function_exists('elinar_get_request_referrer') ? elinar_get_request_referrer() : '',
+            'payload' => is_array($payload) ? $payload : array(),
+        );
+
+        $line = wp_json_encode($entry, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        if (is_string($line) && $line !== '') {
+            @file_put_contents(elinar_private_log_file('form-security-log.txt'), $line . "\n", FILE_APPEND | LOCK_EX);
+        }
+    }
+}
+
+if (!function_exists('elinar_get_form_elapsed_ms')) {
+    function elinar_get_form_elapsed_ms()
+    {
+        $elapsed_ms = isset($_POST['form_elapsed_ms']) ? (int) $_POST['form_elapsed_ms'] : 0;
+        if ($elapsed_ms > 0) {
+            return $elapsed_ms;
+        }
+
+        $render_ts = isset($_POST['form_render_ts']) ? (int) $_POST['form_render_ts'] : 0;
+        if ($render_ts <= 0) {
+            return 0;
+        }
+
+        $server_now_ms = (int) round(microtime(true) * 1000);
+        $delta = $server_now_ms - $render_ts;
+        if ($delta <= 0 || $delta > DAY_IN_SECONDS * 1000) {
+            return 0;
+        }
+
+        return $delta;
+    }
+}
+
+if (!function_exists('elinar_check_form_rate_limit')) {
+    function elinar_check_form_rate_limit($form_key, $request_id = '')
+    {
+        $ip = function_exists('elinar_get_real_ip') ? elinar_get_real_ip() : '';
+        $user_agent = function_exists('elinar_get_user_agent') ? elinar_get_user_agent() : '';
+        $max_attempts = (int) ELINAR_FORM_RATE_LIMIT_MAX_ATTEMPTS;
+        $window = (int) ELINAR_FORM_RATE_LIMIT_WINDOW;
+        $key = 'elinar_form_rl_' . md5($form_key . '|' . $ip . '|' . sha1($user_agent));
+        $state = get_transient($key);
+
+        if (!is_array($state)) {
+            $state = array(
+                'count' => 0,
+                'started_at' => time(),
+            );
+        }
+
+        $state['count'] = isset($state['count']) ? (int) $state['count'] + 1 : 1;
+        $state['started_at'] = isset($state['started_at']) ? (int) $state['started_at'] : time();
+
+        set_transient($key, $state, $window);
+
+        $allowed = $state['count'] <= $max_attempts;
+        if (!$allowed) {
+            elinar_security_log($form_key, array(
+                'event' => 'rate_limit',
+                'request_id' => $request_id,
+                'attempt_count' => $state['count'],
+                'max_attempts' => $max_attempts,
+                'window_seconds' => $window,
+            ));
+        }
+
+        return array(
+            'ok' => $allowed,
+            'count' => $state['count'],
+            'max_attempts' => $max_attempts,
+            'window_seconds' => $window,
+        );
+    }
+}
+
+if (!function_exists('elinar_validate_turnstile_token')) {
+    function elinar_validate_turnstile_token($token, $form_key, $request_id = '')
+    {
+        $token = is_string($token) ? trim($token) : '';
+        $is_local = function_exists('elinar_is_local_environment') && elinar_is_local_environment();
+
+        if ($is_local) {
+            return array(
+                'ok' => true,
+                'status' => 'bypassed_local',
+                'error_codes' => array(),
+            );
+        }
+
+        if (!elinar_has_turnstile_keys()) {
+            elinar_security_log($form_key, array(
+                'event' => 'turnstile_config_missing',
+                'request_id' => $request_id,
+            ));
+
+            return array(
+                'ok' => false,
+                'code' => 'turnstile_config',
+                'status' => 'config_missing',
+                'error_codes' => array('missing-input-secret'),
+            );
+        }
+
+        if ($token === '') {
+            elinar_security_log($form_key, array(
+                'event' => 'turnstile_missing',
+                'request_id' => $request_id,
+            ));
+
+            return array(
+                'ok' => false,
+                'code' => 'turnstile_missing',
+                'status' => 'missing',
+                'error_codes' => array('missing-input-response'),
+            );
+        }
+
+        $response = wp_remote_post('https://challenges.cloudflare.com/turnstile/v0/siteverify', array(
+            'timeout' => 10,
+            'body' => array(
+                'secret' => elinar_get_turnstile_secret_key(),
+                'response' => $token,
+                'remoteip' => function_exists('elinar_get_real_ip') ? elinar_get_real_ip() : '',
+            ),
+        ));
+
+        if (is_wp_error($response)) {
+            elinar_security_log($form_key, array(
+                'event' => 'turnstile_request_error',
+                'request_id' => $request_id,
+                'message' => sanitize_text_field($response->get_error_message()),
+            ));
+
+            return array(
+                'ok' => false,
+                'code' => 'turnstile_request',
+                'status' => 'request_error',
+                'error_codes' => array('request-error'),
+            );
+        }
+
+        $body = wp_remote_retrieve_body($response);
+        $result = json_decode($body, true);
+        $success = is_array($result) && !empty($result['success']);
+        $error_codes = is_array($result) && !empty($result['error-codes']) && is_array($result['error-codes']) ? array_map('sanitize_text_field', $result['error-codes']) : array();
+        $hostname = is_array($result) && !empty($result['hostname']) ? sanitize_text_field((string) $result['hostname']) : '';
+
+        if (!$success) {
+            elinar_security_log($form_key, array(
+                'event' => 'turnstile_invalid',
+                'request_id' => $request_id,
+                'error_codes' => $error_codes,
+                'hostname' => $hostname,
+            ));
+
+            return array(
+                'ok' => false,
+                'code' => 'turnstile_invalid',
+                'status' => 'invalid',
+                'error_codes' => $error_codes,
+                'hostname' => $hostname,
+            );
+        }
+
+        return array(
+            'ok' => true,
+            'status' => 'passed',
+            'error_codes' => $error_codes,
+            'hostname' => $hostname,
+        );
+    }
+}
+
+if (!function_exists('elinar_validate_form_security')) {
+    function elinar_validate_form_security($form_key, $request_id = '', $honeypot_field = 'website_url')
+    {
+        $ip = function_exists('elinar_get_real_ip') ? elinar_get_real_ip() : '';
+        $user_agent = function_exists('elinar_get_user_agent') ? elinar_get_user_agent() : '';
+        $referrer = function_exists('elinar_get_request_referrer') ? elinar_get_request_referrer() : '';
+
+        if ($honeypot_field !== '' && !empty($_POST[$honeypot_field])) {
+            elinar_security_log($form_key, array(
+                'event' => 'honeypot',
+                'request_id' => $request_id,
+            ));
+
+            return array(
+                'ok' => false,
+                'code' => 'honeypot',
+                'message' => elinar_get_form_security_message('security'),
+            );
+        }
+
+        $rate_limit = elinar_check_form_rate_limit($form_key, $request_id);
+        if (empty($rate_limit['ok'])) {
+            return array(
+                'ok' => false,
+                'code' => 'rate_limit',
+                'message' => elinar_get_form_security_message('rate_limit'),
+                'meta' => array(
+                    'ip' => $ip,
+                    'user_agent' => $user_agent,
+                    'referrer' => $referrer,
+                    'rate_limit' => $rate_limit,
+                ),
+            );
+        }
+
+        $elapsed_ms = elinar_get_form_elapsed_ms();
+        if ($elapsed_ms < (int) ELINAR_FORM_MIN_ELAPSED_MS) {
+            elinar_security_log($form_key, array(
+                'event' => 'timing',
+                'request_id' => $request_id,
+                'elapsed_ms' => $elapsed_ms,
+                'min_elapsed_ms' => (int) ELINAR_FORM_MIN_ELAPSED_MS,
+            ));
+
+            return array(
+                'ok' => false,
+                'code' => 'timing',
+                'message' => elinar_get_form_security_message('security'),
+                'meta' => array(
+                    'ip' => $ip,
+                    'user_agent' => $user_agent,
+                    'referrer' => $referrer,
+                    'rate_limit' => $rate_limit,
+                    'elapsed_ms' => $elapsed_ms,
+                ),
+            );
+        }
+
+        $turnstile = elinar_validate_turnstile_token(isset($_POST['cf-turnstile-response']) ? wp_unslash((string) $_POST['cf-turnstile-response']) : '', $form_key, $request_id);
+        if (empty($turnstile['ok'])) {
+            return array(
+                'ok' => false,
+                'code' => isset($turnstile['code']) ? (string) $turnstile['code'] : 'turnstile',
+                'message' => elinar_get_form_security_message('security'),
+                'meta' => array(
+                    'ip' => $ip,
+                    'user_agent' => $user_agent,
+                    'referrer' => $referrer,
+                    'rate_limit' => $rate_limit,
+                    'elapsed_ms' => $elapsed_ms,
+                    'turnstile' => $turnstile,
+                ),
+            );
+        }
+
+        return array(
+            'ok' => true,
+            'meta' => array(
+                'ip' => $ip,
+                'user_agent' => $user_agent,
+                'referrer' => $referrer,
+                'rate_limit' => $rate_limit,
+                'elapsed_ms' => $elapsed_ms,
+                'turnstile' => $turnstile,
+            ),
+        );
+    }
+}
+
+if (!function_exists('elinar_render_form_security_fields')) {
+    function elinar_render_form_security_fields($form_key, $honeypot_field = 'website_url')
+    {
+        ?>
+        <input type="hidden" name="form_security_key" value="<?php echo esc_attr($form_key); ?>">
+        <input type="hidden" name="form_render_ts" class="elinar-form-render-ts" value="">
+        <input type="hidden" name="form_elapsed_ms" class="elinar-form-elapsed-ms" value="">
+        <?php if ($honeypot_field !== '') : ?>
+            <div class="elinar-form-honeypot" aria-hidden="true">
+                <input type="text" name="<?php echo esc_attr($honeypot_field); ?>" tabindex="-1" autocomplete="off">
+            </div>
+        <?php endif;
+    }
+}
+
+if (!function_exists('elinar_render_turnstile_widget')) {
+    function elinar_render_turnstile_widget($form_key, $wrapper_class = '')
+    {
+        $classes = trim('elinar-form-security ' . $wrapper_class);
+        ?>
+        <div class="<?php echo esc_attr($classes); ?>" data-elinar-form-security="<?php echo esc_attr($form_key); ?>">
+            <div class="elinar-turnstile-slot">
+                <div class="elinar-turnstile-widget" data-elinar-form="<?php echo esc_attr($form_key); ?>"></div>
+            </div>
+            <div class="elinar-turnstile-message" aria-live="polite"></div>
+        </div>
+        <?php
+    }
+}
+
+if (!function_exists('elinar_get_about_hero_image_sources')) {
+    function elinar_get_about_hero_image_sources()
+    {
+        $theme_dir = get_template_directory();
+        $theme_uri = get_template_directory_uri();
+
+        $desktop_rel = '/assets/images/hero-bg_about.webp';
+        $desktop_width = 1200;
+        $desktop_height = 509;
+
+        if (file_exists($theme_dir . '/assets/images/hero-bg_about_desktop.webp')) {
+            $desktop_rel = '/assets/images/hero-bg_about_desktop.webp';
+            $desktop_width = 1920;
+            $desktop_height = 814;
+        }
+
+        return array(
+            'mobile' => array(
+                'url' => $theme_uri . '/assets/images/hero-bg_about_mobile.webp',
+                'width' => 800,
+                'height' => 600,
+            ),
+            'tablet' => array(
+                'url' => $theme_uri . '/assets/images/hero-bg_about_tablet.webp',
+                'width' => 1200,
+                'height' => 800,
+            ),
+            'desktop' => array(
+                'url' => $theme_uri . $desktop_rel,
+                'width' => $desktop_width,
+                'height' => $desktop_height,
+            ),
+        );
+    }
+}
 
 /**
  * ============================================================================
@@ -33,16 +446,22 @@ function elinar_handle_project_form_universal()
     $host = $_SERVER['HTTP_HOST'];
     $uri = strtok($_SERVER['REQUEST_URI'], '?'); // Убираем query string
     $redirect_base = $protocol . '://' . $host . $uri;
+    $request_id = elinar_generate_request_id('PRJ');
 
     // CSRF защита
     if (!isset($_POST['project_form_nonce']) || !wp_verify_nonce($_POST['project_form_nonce'], 'elinar_project_form')) {
+        elinar_security_log('project_form_universal', array(
+            'event' => 'nonce_failed',
+            'request_id' => $request_id,
+        ));
         wp_redirect($redirect_base . '?form=error&field=security#contact-form');
         exit;
     }
 
-    // Honeypot проверка
-    if (!empty($_POST['website_url'])) {
-        wp_redirect($redirect_base . '?form=spam#contact-form');
+    $security_check = elinar_validate_form_security('project_form_universal', $request_id);
+    if (empty($security_check['ok'])) {
+        $error_field = isset($security_check['code']) && $security_check['code'] === 'rate_limit' ? 'rate_limit' : 'security';
+        wp_redirect($redirect_base . '?form=error&field=' . $error_field . '#contact-form');
         exit;
     }
 
@@ -164,7 +583,6 @@ function elinar_handle_project_form_universal()
 
     // Формируем письмо
     // Баг #14: заменяем date() на wp_date() — учитывает часовой пояс из настроек WP (Москва UTC+3)
-    $request_id = 'PRJ-' . wp_date('Ymd') . '-' . strtoupper(substr(md5(uniqid()), 0, 6));
     $formatted_date = wp_date('d.m.Y H:i');
 
     $email_body = "НОВАЯ ЗАЯВКА С {$page_source}\n";
@@ -223,11 +641,14 @@ function elinar_handle_project_form_universal()
     $primary_send = elinar_send_mail_with_fallback($primary_email, $subject, $email_body, $headers, $attachments, $email);
     $mail_sent = !empty($primary_send['sent']);
 
-    // Независимая отправка копии на резервный адрес
-    elinar_send_mail_with_fallback($copy_email, $subject, $email_body, $headers, $attachments, $email);
+    // Независимая отправка копии на резервный адрес (если задан и не совпадает с основным)
+    if (!empty($copy_email) && is_email($copy_email) && strtolower($copy_email) !== strtolower($primary_email)) {
+        elinar_send_mail_with_fallback($copy_email, $subject, $email_body, $headers, $attachments, $email);
+    }
 
     elinar_delivery_log('project_form_universal', array(
         'request_id' => $request_id,
+        'security' => isset($security_check['meta']) ? $security_check['meta'] : array(),
         'mail_sent' => (bool) $mail_sent,
         'mail_via' => isset($primary_send['via']) ? (string) $primary_send['via'] : '',
         'wp_mail_error' => isset($primary_send['wp_mail_error']) ? (string) $primary_send['wp_mail_error'] : '',
@@ -1549,12 +1970,19 @@ function elinar_scripts()
 
     $theme_uri = get_template_directory_uri();
 
-    // Базовые стили темы (минифицированная версия для производительности)
-    // Оригинал: style.css (232 KB) → Минифицированный: style.min.css (150 KB)
-    // После Gzip: ~41 KB → ~26 KB
-    // Баг #3: заменяем time() на filemtime() — time() менялся каждую секунду и полностью ломал кэш браузера
-    $elinar_style_ver = filemtime(get_template_directory() . '/style.min.css') ?: '2.7.0';
-    wp_enqueue_style('elinar-style', $theme_uri . '/style.min.css', array(), $elinar_style_ver);
+    // Базовые стили темы: в debug грузим style.css, в production — style.min.css.
+    $is_debug_mode = defined('WP_DEBUG') && WP_DEBUG;
+    $style_rel_path = $is_debug_mode ? '/style.css' : '/style.min.css';
+    $style_abs_path = get_template_directory() . $style_rel_path;
+
+    // Fallback на style.css, если style.min.css еще не собран.
+    if (!file_exists($style_abs_path)) {
+        $style_rel_path = '/style.css';
+        $style_abs_path = get_template_directory() . $style_rel_path;
+    }
+
+    $elinar_style_ver = file_exists($style_abs_path) ? (string) filemtime($style_abs_path) : '2.7.1';
+    wp_enqueue_style('elinar-style', $theme_uri . $style_rel_path, array(), $elinar_style_ver);
 
     wp_add_inline_style('elinar-style', '.cookie-banner{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(calc(100% + 40px));background:#ffffff;border-radius:20px;box-shadow:0 12px 40px rgba(0,0,0,0.12),0 4px 12px rgba(0,0,0,0.08);z-index:9999;padding:1.25rem 1.5rem;transition:transform 0.4s cubic-bezier(0.4,0,0.2,1),opacity 0.4s ease;max-width:640px;width:min(calc(100% - 40px),640px);opacity:0}.cookie-banner.show{transform:translateX(-50%) translateY(0);opacity:1}.cookie-banner-content{display:flex;align-items:flex-start;gap:1.25rem}.cookie-icon{flex-shrink:0;color:#0066cc;margin-top:0.25rem}.cookie-icon svg{display:block}.cookie-banner-main{flex:1;display:flex;flex-direction:column;gap:0.9rem}.cookie-banner-text{display:flex;flex-direction:column;gap:0.5rem}.cookie-banner-title{font-size:1rem;font-weight:700;color:#1e293b;margin:0;line-height:1.4}.cookie-banner-text p{margin:0;font-size:0.9rem;line-height:1.55;color:#64748b}.cookie-banner-links{margin-top:0.25rem;display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;font-size:0.8125rem;line-height:1.4}.cookie-banner-link{color:#0066cc;text-decoration:none;font-weight:500;transition:color 0.2s ease;border-bottom:1px solid rgba(0,102,204,0.3)}.cookie-banner-link:hover{color:#0052a3;border-bottom-color:#0052a3}.cookie-banner-actions{display:flex;align-items:center;gap:0.625rem;flex-wrap:wrap}.cookie-banner-btn{border:none;padding:0.55rem 1.05rem;font-size:0.85rem;font-weight:600;font-family:var(--font-main);border-radius:12px;cursor:pointer;transition:all 0.2s ease;white-space:nowrap;line-height:1.2}.cookie-banner-btn--primary{background-color:#0066cc;color:#fff}.cookie-banner-btn--primary:hover{background-color:#0052a3;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,102,204,0.25)}.cookie-banner-btn--outline{background:transparent;color:#0066cc;border:1.5px solid #0066cc}.cookie-banner-btn--outline:hover{background:rgba(0,102,204,0.08);transform:translateY(-1px)}.cookie-banner-btn--secondary{background:transparent;color:#64748b;border:1.5px solid #cbd5e1}.cookie-banner-btn--secondary:hover{background:#f8fafc;border-color:#94a3b8;color:#475569;transform:translateY(-1px)}.cookie-banner-settings{border-top:1px solid #e2e8f0;margin-top:1.25rem;padding-top:1.25rem;display:grid;gap:1rem}.cookie-banner-settings[hidden]{display:none!important}@media (max-width:768px){.cookie-banner{padding:1.15rem;width:calc(100% - 24px);max-width:100%;bottom:12px;border-radius:16px}.cookie-banner-content{flex-direction:column;gap:1rem}.cookie-icon{margin-top:0}.cookie-banner-actions{width:100%;flex-direction:column;align-items:stretch;gap:0.5rem}.cookie-banner-btn{width:100%;padding:0.75rem 1rem}}');
 
@@ -1639,7 +2067,7 @@ function elinar_scripts()
 
     // Шаблонные страницы: подключаем их CSS только на соответствующих URL
     if ($is_about_page) {
-        wp_enqueue_style('elinar-about', $theme_uri . '/assets/css/page-about.css', array(), '1.0.4');
+        wp_enqueue_style('elinar-about', $theme_uri . '/assets/css/page-about.css', array(), '1.0.5');
         wp_enqueue_script('elinar-about-js', $theme_uri . '/assets/js/page-about.js', array(), '1.0.0', true);
     }
 
@@ -1658,7 +2086,9 @@ function elinar_scripts()
     }
 
     if ($is_contacts_page) {
-        wp_enqueue_style('elinar-contacts', $theme_uri . '/assets/css/page-contacts.css', array(), '2.0.' . time());
+        $contacts_css_path = get_template_directory() . '/assets/css/page-contacts.css';
+        $contacts_ver = $is_debug_mode ? '2.0.' . time() : (file_exists($contacts_css_path) ? (string) filemtime($contacts_css_path) : '2.0.0');
+        wp_enqueue_style('elinar-contacts', $theme_uri . '/assets/css/page-contacts.css', array(), $contacts_ver);
     }
 
     if ($is_products_page) {
@@ -1689,13 +2119,35 @@ function elinar_scripts()
         ));
     }
 
+    $turnstile_site_key = elinar_get_turnstile_site_key();
+    $form_security_deps = array();
+    if ($turnstile_site_key !== '') {
+        wp_register_script('cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit', array(), null, true);
+        $form_security_deps[] = 'cloudflare-turnstile';
+    }
+
+    $form_security_rel_path = '/assets/js/form-security.js';
+    $form_security_abs_path = get_template_directory() . $form_security_rel_path;
+    $form_security_ver = file_exists($form_security_abs_path) ? (string) filemtime($form_security_abs_path) : '1.0.0';
+    wp_enqueue_script('elinar-form-security', get_template_directory_uri() . $form_security_rel_path, $form_security_deps, $form_security_ver, true);
+    wp_localize_script('elinar-form-security', 'elinarFormSecurityConfig', array(
+        'siteKey' => $turnstile_site_key,
+        'enabled' => elinar_has_turnstile_keys(),
+        'isLocal' => function_exists('elinar_is_local_environment') ? elinar_is_local_environment() : false,
+        'messages' => array(
+            'security' => elinar_get_form_security_message('security'),
+            'rateLimit' => elinar_get_form_security_message('rate_limit'),
+            'loading' => 'Проверка безопасности загружается, попробуйте снова через несколько секунд.',
+        ),
+    ));
+
     // Audit Form - используется на страницах Products, Technologies, About, Contacts, Services и Front Page
     $is_services_page = is_page_template('page-services.php') || strpos($request_uri, 'services') !== false;
     $needs_audit_form = $is_front_page || $is_products_page || $is_tech_page || $is_about_page || $is_contacts_page || $is_services_page;
     if ($needs_audit_form) {
         $audit_form_ver = defined('WP_DEBUG') && WP_DEBUG ? '1.0.3.' . time() : '1.0.3';
         wp_enqueue_style('audit-form', $theme_uri . '/assets/css/audit-form.css', array(), $audit_form_ver);
-        wp_enqueue_script('audit-form', $theme_uri . '/assets/js/audit-form.js', array(), '1.0.1', true);
+        wp_enqueue_script('audit-form', $theme_uri . '/assets/js/audit-form.js', array('elinar-form-security'), '1.0.1', true);
     }
 
     // Products Timeline - теперь используется на странице Services вместо Products
@@ -1716,7 +2168,7 @@ function elinar_scripts()
     // Форма запроса КП – только на странице "Запрос расчета"
     if ($is_quote_page) {
         wp_enqueue_style('quote-form', $theme_uri . '/assets/css/quote-form.css', array(), '1.0.3');
-        wp_enqueue_script('quote-form', $theme_uri . '/assets/js/quote-form.js', array(), '1.0.0', true);
+        wp_enqueue_script('quote-form', $theme_uri . '/assets/js/quote-form.js', array('elinar-form-security'), '1.0.0', true);
 
         // Localize script for quote form AJAX
         wp_localize_script('quote-form', 'quoteFormAjax', array(
@@ -1734,12 +2186,18 @@ function elinar_scripts()
     $yandex_api_key = defined('ELINAR_YANDEX_MAPS_API_KEY') ? ELINAR_YANDEX_MAPS_API_KEY : 'b376f600-5f23-4f98-aff8-76b815df14bf';
     $yandex_maps_url = 'https://api-maps.yandex.ru/2.1/?apikey=' . esc_attr($yandex_api_key) . '&lang=ru_RU';
 
-    // Main JS (используем main.js для разработки, чтобы видеть изменения)
-    $main_js_path = get_template_directory_uri() . '/assets/js/main.js';
-    $main_js_ver = '2.1.3.' . time();
+    // Main JS: в debug грузим source, в production — минифицированную версию.
+    $main_js_rel_path = $is_debug_mode ? '/assets/js/main.js' : '/assets/js/main.min.js';
+    $main_js_abs_path = get_template_directory() . $main_js_rel_path;
 
-    wp_add_inline_script('elinar-script', 'console.log("ELINAR: Loading main.js v2.1.3");', 'before');
-    wp_enqueue_script('elinar-script', $main_js_path, array(), $main_js_ver, true);
+    // Fallback на main.js, если main.min.js отсутствует.
+    if (!file_exists($main_js_abs_path)) {
+        $main_js_rel_path = '/assets/js/main.js';
+        $main_js_abs_path = get_template_directory() . $main_js_rel_path;
+    }
+
+    $main_js_ver = file_exists($main_js_abs_path) ? (string) filemtime($main_js_abs_path) : '2.1.3';
+    wp_enqueue_script('elinar-script', get_template_directory_uri() . $main_js_rel_path, array('elinar-form-security'), $main_js_ver, true);
 
     // Локализация для AJAX
     wp_localize_script('elinar-script', 'elinarAjax', array(
@@ -2137,6 +2595,9 @@ if (!function_exists('elinar_delivery_log')) {
         $entry = array(
             'time' => wp_date('Y-m-d H:i:s'),
             'form' => sanitize_key((string) $form_key),
+            'ip' => function_exists('elinar_get_real_ip') ? elinar_get_real_ip() : '',
+            'user_agent' => function_exists('elinar_get_user_agent') ? elinar_get_user_agent() : '',
+            'referrer' => function_exists('elinar_get_request_referrer') ? elinar_get_request_referrer() : '',
             'payload' => is_array($payload) ? $payload : array(),
         );
 
@@ -2170,7 +2631,12 @@ if (!function_exists('elinar_get_primary_email')) {
             return ELINAR_PRIMARY_EMAIL;
         }
 
-        return 'plast@elinar.ru';
+        $admin_email = function_exists('get_option') ? get_option('admin_email') : '';
+        if (is_email($admin_email)) {
+            return $admin_email;
+        }
+
+        return 'wordpress@localhost.localdomain';
     }
 }
 
@@ -2181,7 +2647,7 @@ if (!function_exists('elinar_get_copy_email')) {
             return ELINAR_COPY_EMAIL;
         }
 
-        return 'varslavanyury@gmail.com';
+        return '';
     }
 }
 
@@ -2655,9 +3121,20 @@ function elinar_breadcrumbs()
 // --- Обработчик формы "Запросить расчет" ---
 function elinar_handle_contact_form()
 {
+    $request_id = elinar_generate_request_id('CNT');
+
     // Проверка nonce для безопасности
     if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'elinar_contact_form_nonce')) {
+        elinar_security_log('contact_form', array(
+            'event' => 'nonce_failed',
+            'request_id' => $request_id,
+        ));
         wp_send_json_error(array('message' => 'Ошибка безопасности. Пожалуйста, обновите страницу и попробуйте снова.'));
+    }
+
+    $security_check = elinar_validate_form_security('contact_form', $request_id);
+    if (empty($security_check['ok'])) {
+        wp_send_json_error(array('message' => isset($security_check['message']) ? $security_check['message'] : elinar_get_form_security_message('security')));
     }
 
     // Получаем и очищаем данные
@@ -2721,7 +3198,6 @@ function elinar_handle_contact_form()
     $message .= "\nДата и время: " . $formatted_date . "\n";
     $message .= "IP адрес: " . elinar_get_real_ip() . "\n";
 
-    $request_id = 'CNT-' . wp_date('Ymd') . '-' . strtoupper(substr(md5(uniqid('', true)), 0, 6));
     $page_url = wp_get_referer();
     if (!is_string($page_url) || $page_url === '') {
         $page_url = home_url('/');
@@ -2752,11 +3228,14 @@ function elinar_handle_contact_form()
     $mail_sent = !empty($primary_send['sent']);
     $wp_mail_error = isset($primary_send['wp_mail_error']) ? (string) $primary_send['wp_mail_error'] : '';
 
-    // Независимая отправка копии на резервный адрес
-    elinar_send_mail_with_fallback($to_copy, $subject, $message, $headers, array(), $email);
+    // Независимая отправка копии на резервный адрес (если задан и не совпадает с основным)
+    if (!empty($to_copy) && is_email($to_copy) && strtolower($to_copy) !== strtolower($to)) {
+        elinar_send_mail_with_fallback($to_copy, $subject, $message, $headers, array(), $email);
+    }
 
     elinar_delivery_log('contact_form', array(
         'request_id' => $request_id,
+        'security' => isset($security_check['meta']) ? $security_check['meta'] : array(),
         'mail_sent' => (bool) $mail_sent,
         'mail_via' => isset($primary_send['via']) ? (string) $primary_send['via'] : '',
         'wp_mail_error' => $wp_mail_error,
@@ -2801,14 +3280,20 @@ add_action('wp_ajax_nopriv_elinar_contact_form', 'elinar_handle_contact_form');
 // --- Обработчик формы запроса КП ---
 function elinar_handle_quote_form()
 {
+    $request_id = elinar_generate_request_id('QTE');
+
     // Проверка nonce для безопасности
     if (!isset($_POST['quote_nonce']) || !wp_verify_nonce($_POST['quote_nonce'], 'elinar_quote_form_nonce')) {
+        elinar_security_log('quote_form', array(
+            'event' => 'nonce_failed',
+            'request_id' => $request_id,
+        ));
         wp_send_json_error(array('message' => 'Ошибка безопасности. Пожалуйста, обновите страницу и попробуйте снова.'));
     }
 
-    // Honeypot check
-    if (!empty($_POST['website_url'])) {
-        wp_send_json_error(array('message' => 'Ошибка отправки формы.'));
+    $security_check = elinar_validate_form_security('quote_form', $request_id);
+    if (empty($security_check['ok'])) {
+        wp_send_json_error(array('message' => isset($security_check['message']) ? $security_check['message'] : elinar_get_form_security_message('security')));
     }
 
     // Получаем и очищаем данные
@@ -3001,7 +3486,6 @@ function elinar_handle_quote_form()
     $moscow_timezone = new DateTimeZone('Europe/Moscow');
     $current_time = new DateTime('now', $moscow_timezone);
     $formatted_date = $current_time->format('d.m.Y H:i:s');
-    $request_id = $current_time->format('Ymd-His') . '-' . substr(uniqid(), -4);
 
     $message = "═══════════════════════════════════════════════════════════\n";
     $message .= "  ЗАПРОС НА РАСЧЕТ ПРОИЗВОДСТВА №{$request_id}\n";
@@ -3203,11 +3687,14 @@ function elinar_handle_quote_form()
     $primary_send = elinar_send_mail_with_fallback($to, $subject, $message, $headers, $attachments, $email);
     $mail_sent = !empty($primary_send['sent']);
 
-    // Независимая отправка копии на резервный адрес
-    elinar_send_mail_with_fallback($to_copy, $subject, $message, $headers, $attachments, $email);
+    // Независимая отправка копии на резервный адрес (если задан и не совпадает с основным)
+    if (!empty($to_copy) && is_email($to_copy) && strtolower($to_copy) !== strtolower($to)) {
+        elinar_send_mail_with_fallback($to_copy, $subject, $message, $headers, $attachments, $email);
+    }
 
     elinar_delivery_log('quote_form', array(
         'request_id' => $request_id,
+        'security' => isset($security_check['meta']) ? $security_check['meta'] : array(),
         'mail_sent' => (bool) $mail_sent,
         'mail_via' => isset($primary_send['via']) ? (string) $primary_send['via'] : '',
         'wp_mail_error' => isset($primary_send['wp_mail_error']) ? (string) $primary_send['wp_mail_error'] : '',
@@ -3256,17 +3743,22 @@ add_action('wp_ajax_nopriv_elinar_quote_form', 'elinar_handle_quote_form');
  */
 function elinar_handle_project_form()
 {
+    $request_id = elinar_generate_request_id('PRJ');
     $disable_nonce_checks = (bool) (defined('ELINAR_DISABLE_NONCE_CHECKS') ? constant('ELINAR_DISABLE_NONCE_CHECKS') : false);
     if (!$disable_nonce_checks) {
         if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'project_form_nonce')) {
+            elinar_security_log('project_form_ajax', array(
+                'event' => 'nonce_failed',
+                'request_id' => $request_id,
+            ));
             wp_send_json_error(array('message' => 'Ошибка безопасности. Обновите страницу и попробуйте снова.'));
             return;
         }
     }
 
-    // Honeypot проверка (антиспам)
-    if (!empty($_POST['website_url'])) {
-        wp_send_json_error(array('message' => 'Обнаружен спам.'));
+    $security_check = elinar_validate_form_security('project_form_ajax', $request_id);
+    if (empty($security_check['ok'])) {
+        wp_send_json_error(array('message' => isset($security_check['message']) ? $security_check['message'] : elinar_get_form_security_message('security')));
         return;
     }
 
@@ -3335,7 +3827,6 @@ function elinar_handle_project_form()
     }
 
     // Формируем письмо
-    $request_id = 'PRJ-' . date('Ymd') . '-' . strtoupper(substr(md5(uniqid()), 0, 6));
     $formatted_date = date('d.m.Y H:i');
 
     $email_body = "═══════════════════════════════════════════════════════════\n";
@@ -3383,11 +3874,14 @@ function elinar_handle_project_form()
     $primary_send = elinar_send_mail_with_fallback($to, $subject, $email_body, $headers, $attachments, $email);
     $mail_sent = !empty($primary_send['sent']);
 
-    // Независимая отправка копии на резервный адрес
-    elinar_send_mail_with_fallback($to_copy, $subject, $email_body, $headers, $attachments, $email);
+    // Независимая отправка копии на резервный адрес (если задан и не совпадает с основным)
+    if (!empty($to_copy) && is_email($to_copy) && strtolower($to_copy) !== strtolower($to)) {
+        elinar_send_mail_with_fallback($to_copy, $subject, $email_body, $headers, $attachments, $email);
+    }
 
     elinar_delivery_log('project_form_ajax', array(
         'request_id' => $request_id,
+        'security' => isset($security_check['meta']) ? $security_check['meta'] : array(),
         'mail_sent' => (bool) $mail_sent,
         'mail_via' => isset($primary_send['via']) ? (string) $primary_send['via'] : '',
         'wp_mail_error' => isset($primary_send['wp_mail_error']) ? (string) $primary_send['wp_mail_error'] : '',
@@ -3696,3 +4190,85 @@ function elinar_enqueue_scroll_down_assets() {
         );
     }
 }
+
+/**
+ * Normalize legacy contact URL /contact/ -> /contacts/.
+ * Keeps query string and fragment, and only rewrites site-local URLs.
+ */
+function elinar_normalize_legacy_contact_url($url) {
+    if (!is_string($url) || $url === '') {
+        return $url;
+    }
+
+    $parts = wp_parse_url($url);
+    if ($parts === false) {
+        return $url;
+    }
+
+    $path = isset($parts['path']) ? untrailingslashit($parts['path']) : '';
+    if ($path !== '/contact' && $path !== 'contact') {
+        return $url;
+    }
+
+    $site_host = strtolower((string) wp_parse_url(home_url('/'), PHP_URL_HOST));
+    $url_host = isset($parts['host']) ? strtolower((string) $parts['host']) : '';
+    if ($url_host !== '' && $url_host !== $site_host) {
+        return $url;
+    }
+
+    $normalized = home_url('/contacts/');
+    if (!empty($parts['query'])) {
+        $normalized .= '?' . $parts['query'];
+    }
+    if (!empty($parts['fragment'])) {
+        $normalized .= '#' . $parts['fragment'];
+    }
+
+    return $normalized;
+}
+
+function elinar_fix_legacy_contact_nav_link($atts) {
+    if (!empty($atts['href'])) {
+        $atts['href'] = elinar_normalize_legacy_contact_url($atts['href']);
+    }
+
+    return $atts;
+}
+add_filter('nav_menu_link_attributes', 'elinar_fix_legacy_contact_nav_link', 20);
+
+function elinar_fix_legacy_contact_links_in_content($content) {
+    if (!is_string($content) || strpos($content, 'contact') === false) {
+        return $content;
+    }
+
+    return preg_replace_callback(
+        '/\bhref=(["\'])([^"\']+)\1/i',
+        function ($matches) {
+            $quote = $matches[1];
+            $href = $matches[2];
+            $normalized = elinar_normalize_legacy_contact_url($href);
+
+            if ($normalized === $href) {
+                return $matches[0];
+            }
+
+            return 'href=' . $quote . esc_url($normalized) . $quote;
+        },
+        $content
+    );
+}
+add_filter('the_content', 'elinar_fix_legacy_contact_links_in_content', 20);
+
+function elinar_fix_legacy_contact_wp_sitemap_entry($entry) {
+    if (is_array($entry) && !empty($entry['loc'])) {
+        $entry['loc'] = elinar_normalize_legacy_contact_url($entry['loc']);
+    }
+
+    return $entry;
+}
+add_filter('wp_sitemaps_posts_entry', 'elinar_fix_legacy_contact_wp_sitemap_entry', 20);
+add_filter('wp_sitemaps_taxonomies_entry', 'elinar_fix_legacy_contact_wp_sitemap_entry', 20);
+add_filter('wp_sitemaps_users_entry', 'elinar_fix_legacy_contact_wp_sitemap_entry', 20);
+
+// Yoast XML sitemap URLs.
+add_filter('wpseo_xml_sitemap_post_url', 'elinar_normalize_legacy_contact_url', 20);

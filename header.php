@@ -299,7 +299,29 @@
 
     <?php elseif (is_page_template('page-about.php') || is_page('about')): ?>
         <!-- Страница "О нас" -->
-        <link rel="preload" href="<?php echo get_template_directory_uri(); ?>/assets/images/hero-bg_about.webp" as="image" type="image/webp" fetchpriority="high">
+        <?php $about_hero_sources = function_exists('elinar_get_about_hero_image_sources') ? elinar_get_about_hero_image_sources() : array(
+            'mobile' => array('url' => get_template_directory_uri() . '/assets/images/hero-bg_about_mobile.webp'),
+            'tablet' => array('url' => get_template_directory_uri() . '/assets/images/hero-bg_about_tablet.webp'),
+            'desktop' => array('url' => get_template_directory_uri() . '/assets/images/hero-bg_about.webp'),
+        ); ?>
+        <link rel="preload"
+            href="<?php echo esc_url($about_hero_sources['mobile']['url']); ?>"
+            as="image"
+            type="image/webp"
+            media="(max-width: 768px)"
+            fetchpriority="high">
+        <link rel="preload"
+            href="<?php echo esc_url($about_hero_sources['tablet']['url']); ?>"
+            as="image"
+            type="image/webp"
+            media="(min-width: 769px) and (max-width: 1024px)"
+            fetchpriority="high">
+        <link rel="preload"
+            href="<?php echo esc_url($about_hero_sources['desktop']['url']); ?>"
+            as="image"
+            type="image/webp"
+            media="(min-width: 1025px)"
+            fetchpriority="high">
 
     <?php elseif (is_page_template('page-products.php') || is_page('products')): ?>
         <!-- Страница "Продукция" -->
@@ -311,7 +333,29 @@
 
     <?php elseif (is_page_template('page-contacts.php') || is_page('contacts')): ?>
         <!-- Страница "Контакты" -->
-        <link rel="preload" href="<?php echo get_template_directory_uri(); ?>/assets/images/hero-bg-desktop_contact.webp" as="image" type="image/webp" fetchpriority="high">
+        <?php $about_hero_sources = function_exists('elinar_get_about_hero_image_sources') ? elinar_get_about_hero_image_sources() : array(
+            'mobile' => array('url' => get_template_directory_uri() . '/assets/images/hero-bg_about_mobile.webp'),
+            'tablet' => array('url' => get_template_directory_uri() . '/assets/images/hero-bg_about_tablet.webp'),
+            'desktop' => array('url' => get_template_directory_uri() . '/assets/images/hero-bg_about.webp'),
+        ); ?>
+        <link rel="preload"
+            href="<?php echo esc_url($about_hero_sources['mobile']['url']); ?>"
+            as="image"
+            type="image/webp"
+            media="(max-width: 768px)"
+            fetchpriority="high">
+        <link rel="preload"
+            href="<?php echo esc_url($about_hero_sources['tablet']['url']); ?>"
+            as="image"
+            type="image/webp"
+            media="(min-width: 769px) and (max-width: 1024px)"
+            fetchpriority="high">
+        <link rel="preload"
+            href="<?php echo esc_url($about_hero_sources['desktop']['url']); ?>"
+            as="image"
+            type="image/webp"
+            media="(min-width: 1025px)"
+            fetchpriority="high">
 
     <?php else: ?>
         <!-- Другие страницы: стандартные файлы -->
@@ -567,7 +611,7 @@
                         <li class="menu-item"><a href="' . home_url('/products') . '">Продукция</a></li>
                         <li class="menu-item"><a href="' . home_url('/partners') . '">Партнеры</a></li>
                         <li class="menu-item"><a href="' . home_url('/about') . '">О нас</a></li>
-                        <li class="menu-item"><a href="' . home_url('/contacts') . '">Контакты</a></li>
+                        <li class="menu-item"><a href="' . home_url('/contacts/') . '">Контакты</a></li>
                     </ul>';
                     }
                 ));

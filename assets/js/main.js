@@ -2242,6 +2242,30 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            if (window.elinarFormSecurity) {
+                const securityCheck = window.elinarFormSecurity.ensureToken(form);
+                if (!securityCheck.ok) {
+                    const existingSecurityMessage = form.querySelector('.form-message');
+                    if (existingSecurityMessage) {
+                        existingSecurityMessage.remove();
+                    }
+
+                    const securityMessageDiv = document.createElement('div');
+                    securityMessageDiv.className = 'form-message form-message-error';
+                    securityMessageDiv.textContent = securityCheck.message || 'Проверка безопасности не пройдена, обновите страницу и попробуйте снова.';
+
+                    const securityButtons = form.querySelector('.form-buttons');
+                    if (securityButtons) {
+                        securityButtons.parentNode.insertBefore(securityMessageDiv, securityButtons);
+                    } else {
+                        form.appendChild(securityMessageDiv);
+                    }
+
+                    securityMessageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    return;
+                }
+            }
+
             const formData = new FormData(form);
             const originalButtonText = submitButton ? submitButton.textContent : '';
 
@@ -2287,6 +2311,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         // Очищаем форму при успешной отправке
                         form.reset();
+                        if (window.elinarFormSecurity) {
+                            window.elinarFormSecurity.reset(form);
+                        }
                         syncSubmitStateByConsent();
 
                         // Явно показываем успешное состояние кнопки, чтобы реакция была заметной
@@ -2306,6 +2333,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     } else {
                         messageDiv.className += ' form-message-error';
                         messageDiv.textContent = data.data.message;
+                        if (window.elinarFormSecurity) {
+                            window.elinarFormSecurity.reset(form);
+                        }
                     }
 
                     // Вставляем сообщение перед кнопками формы
@@ -2334,6 +2364,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .catch(function (error) {
                     console.error('Ошибка:', error);
+                    if (window.elinarFormSecurity) {
+                        window.elinarFormSecurity.reset(form);
+                    }
 
                     // Создаем сообщение об ошибке
                     const messageDiv = document.createElement('div');

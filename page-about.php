@@ -4,19 +4,33 @@ Template Name: About Page
 */
 // Форма обрабатывается универсальным обработчиком в functions.php (elinar_handle_project_form_universal)
 get_header();
+
+$about_hero_sources = function_exists('elinar_get_about_hero_image_sources')
+    ? elinar_get_about_hero_image_sources()
+    : array(
+        'mobile' => array('url' => get_template_directory_uri() . '/assets/images/hero-bg_about_mobile.webp'),
+        'tablet' => array('url' => get_template_directory_uri() . '/assets/images/hero-bg_about_tablet.webp'),
+        'desktop' => array(
+            'url' => get_template_directory_uri() . '/assets/images/hero-bg_about.webp',
+            'width' => 1200,
+            'height' => 509,
+        ),
+    );
 ?>
 
 <!-- HERO BLOCK - Optimized for LCP -->
 <div class="page-hero page-hero-compact page-hero-about">
     <!-- Hero Background Image - LCP optimized -->
     <picture class="hero-bg-picture">
-        <source media="(max-width: 768px)" srcset="<?php echo get_template_directory_uri(); ?>/assets/images/hero-bg_about_mobile.webp" type="image/webp">
-        <source media="(max-width: 1024px)" srcset="<?php echo get_template_directory_uri(); ?>/assets/images/hero-bg_about_tablet.webp" type="image/webp">
-        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/hero-bg_about.webp"
+        <source media="(max-width: 768px)" srcset="<?php echo esc_url($about_hero_sources['mobile']['url']); ?>" type="image/webp">
+        <source media="(max-width: 1024px)" srcset="<?php echo esc_url($about_hero_sources['tablet']['url']); ?>" type="image/webp">
+        <source media="(min-width: 1025px)" srcset="<?php echo esc_url($about_hero_sources['desktop']['url']); ?>" type="image/webp">
+        <img src="<?php echo esc_url($about_hero_sources['desktop']['url']); ?>"
             alt="О компании Элинар Пласт"
             class="hero-bg-img"
-            width="1920"
-            height="1080"
+            width="<?php echo esc_attr((string) $about_hero_sources['desktop']['width']); ?>"
+            height="<?php echo esc_attr((string) $about_hero_sources['desktop']['height']); ?>"
+            sizes="100vw"
             fetchpriority="high"
             loading="eager"
             decoding="sync">

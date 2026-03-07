@@ -20,24 +20,24 @@
 
 /* Увеличиваем высоту hero-секции на странице About */
 .page-hero-about {
-    min-height: 700px !important;
-    max-height: 90vh !important;
-    padding: 5rem 0 !important;
-    padding-top: calc(5rem + var(--header-height)) !important;
+    min-height: 500px !important;
+    max-height: 72vh !important;
+    padding: 3rem 0 !important;
+    padding-top: calc(3.5rem + var(--header-height)) !important;
 }
 
 @media (min-width: 1024px) {
     .page-hero-about {
-        min-height: 800px !important;
-        max-height: 95vh !important;
-        padding: 6rem 0 !important;
-        padding-top: calc(6rem + var(--header-height)) !important;
+        min-height: clamp(460px, 28vw, 620px) !important;
+        max-height: 78vh !important;
+        padding: 4rem 0 !important;
+        padding-top: calc(4rem + var(--header-height)) !important;
     }
 }
 
 @media (max-width: 768px) {
     .page-hero-about {
-        min-height: 550px !important;
+        min-height: 480px !important;
         max-height: 75vh !important;
         padding: 4rem 0 !important;
         padding-top: calc(4rem + var(--header-height)) !important;
@@ -88,6 +88,10 @@
     color: rgba(255, 255, 255, 0.9) !important;
     max-width: 700px;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.page-hero-about .hero-bg-img {
+    object-position: center 32%;
 }
 
 .accent-text {
