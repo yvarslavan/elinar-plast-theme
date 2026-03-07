@@ -2,6 +2,8 @@
     'use strict';
 
     var config = window.elinarFormSecurityConfig || {};
+    var tokenFieldName = config.tokenFieldName || 'elinar-turnstile-response';
+    var legacyTokenFieldName = config.legacyTokenFieldName || 'cf-turnstile-response';
     var selectors = {
         forms: 'form[data-elinar-form]',
         widget: '.elinar-turnstile-widget',
@@ -30,6 +32,10 @@
         return !!(form && form.getAttribute && form.getAttribute('data-elinar-form'));
     }
 
+    function getLegacyTokenFields(form) {
+        return toArray(form.querySelectorAll('input[name="' + legacyTokenFieldName + '"]'));
+    }
+
     function getState(form) {
         if (!form.__elinarFormSecurityState) {
             form.__elinarFormSecurityState = {
@@ -43,16 +49,44 @@
     }
 
     function ensureTokenField(form) {
-        var field = form.querySelector('input[name="cf-turnstile-response"]');
+        var field = form.querySelector('input[name="' + tokenFieldName + '"][data-elinar-turnstile-token="true"]');
         if (field) {
+            return field;
+        }
+
+        field = form.querySelector('input[name="' + tokenFieldName + '"]');
+        if (field) {
+            field.setAttribute('data-elinar-turnstile-token', 'true');
             return field;
         }
 
         field = document.createElement('input');
         field.type = 'hidden';
-        field.name = 'cf-turnstile-response';
+        field.name = tokenFieldName;
+        field.setAttribute('data-elinar-turnstile-token', 'true');
         form.appendChild(field);
         return field;
+    }
+
+    function syncLegacyTokenFields(form, token) {
+        getLegacyTokenFields(form).forEach(function (field) {
+            field.value = token || '';
+        });
+    }
+
+    function getAnyLegacyTokenValue(form) {
+        var value = '';
+
+        getLegacyTokenFields(form).some(function (field) {
+            if (field && field.value) {
+                value = field.value;
+                return true;
+            }
+
+            return false;
+        });
+
+        return value;
     }
 
     function getWidget(form) {
@@ -110,6 +144,7 @@
         state.renderedAt = now();
 
         ensureTokenField(form).value = '';
+        syncLegacyTokenFields(form, '');
         clearError(form);
         updateTiming(form);
     }
@@ -131,17 +166,21 @@
                 sitekey: config.siteKey,
                 theme: 'auto',
                 size: 'flexible',
+                'response-field': false,
                 action: form.getAttribute('data-elinar-form') || 'form',
                 callback: function (token) {
                     ensureTokenField(form).value = token || '';
+                    syncLegacyTokenFields(form, token || '');
                     clearError(form);
                 },
                 'expired-callback': function () {
                     ensureTokenField(form).value = '';
+                    syncLegacyTokenFields(form, '');
                     showError(form, getMessage('security', 'Проверка безопасности не пройдена, обновите страницу и попробуйте снова.'));
                 },
                 'error-callback': function () {
                     ensureTokenField(form).value = '';
+                    syncLegacyTokenFields(form, '');
                     showError(form, getMessage('loading', 'Проверка безопасности загружается, попробуйте снова через несколько секунд.'));
                 }
             });
@@ -188,6 +227,7 @@
     }
 
     function ensureToken(form) {
+        var state = getState(form);
         var tokenField = ensureTokenField(form);
 
         updateTiming(form);
@@ -204,7 +244,20 @@
         renderWidget(form);
 
         if (!tokenField.value) {
-            var missingTokenMessage = getState(form).widgetId ? getMessage('security', 'Проверка безопасности не пройдена, обновите страницу и попробуйте снова.') : getMessage('loading', 'Проверка безопасности загружается, попробуйте снова через несколько секунд.');
+            tokenField.value = getAnyLegacyTokenValue(form);
+        }
+
+        if (!tokenField.value && config.enabled && state.widgetId !== null && window.turnstile && typeof window.turnstile.getResponse === 'function') {
+            try {
+                tokenField.value = window.turnstile.getResponse(state.widgetId) || '';
+            } catch (error) {
+            }
+        }
+
+        syncLegacyTokenFields(form, tokenField.value);
+
+        if (!tokenField.value) {
+            var missingTokenMessage = state.widgetId ? getMessage('security', 'Проверка безопасности не пройдена, обновите страницу и попробуйте снова.') : getMessage('loading', 'Проверка безопасности загружается, попробуйте снова через несколько секунд.');
             showError(form, missingTokenMessage);
             return { ok: false, message: missingTokenMessage };
         }
@@ -218,6 +271,7 @@
         var tokenField = ensureTokenField(form);
 
         tokenField.value = '';
+        syncLegacyTokenFields(form, '');
         clearError(form);
 
         if (config.enabled && state.widgetId !== null && window.turnstile && typeof window.turnstile.reset === 'function') {

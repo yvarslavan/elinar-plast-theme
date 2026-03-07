@@ -38,10 +38,17 @@ if ($form_status === 'success') {
             $form_message = 'Ошибка отправки. Позвоните нам: +7 (496) 34-77-944';
             break;
         case 'security':
-            $form_message = 'Проверка безопасности не пройдена, обновите страницу и попробуйте снова.';
-            break;
         case 'rate_limit':
-            $form_message = 'Слишком много попыток, повторите позже.';
+        case 'timing':
+        case 'honeypot':
+        case 'turnstile_missing':
+        case 'turnstile_invalid':
+        case 'turnstile_request':
+        case 'turnstile_config':
+        case 'nonce':
+            $form_message = function_exists('elinar_get_form_security_message')
+                ? elinar_get_form_security_message($form_field)
+                : 'Проверка безопасности не пройдена, обновите страницу и попробуйте снова.';
             break;
         default:
             $form_message = 'Произошла ошибка. Попробуйте снова.';

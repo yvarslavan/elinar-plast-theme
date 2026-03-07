@@ -759,6 +759,8 @@
                     key !== 'files[]' &&
                     key !== 'quote_nonce' &&
                     key !== 'website_url' &&
+                    key !== 'elinar_hp_confirm' &&
+                    key !== 'elinar-turnstile-response' &&
                     key !== 'cf-turnstile-response' &&
                     key !== 'form_render_ts' &&
                     key !== 'form_elapsed_ms' &&

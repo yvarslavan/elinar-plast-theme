@@ -17,7 +17,7 @@ if (!defined('ELINAR_OPT_ASYNC_FONTS')) define('ELINAR_OPT_ASYNC_FONTS', true);
 if (!defined('ELINAR_TURNSTILE_SITE_KEY')) define('ELINAR_TURNSTILE_SITE_KEY', '');
 if (!defined('ELINAR_TURNSTILE_SECRET_KEY')) define('ELINAR_TURNSTILE_SECRET_KEY', '');
 if (!defined('ELINAR_FORM_RATE_LIMIT_MAX_ATTEMPTS')) define('ELINAR_FORM_RATE_LIMIT_MAX_ATTEMPTS', 5);
-if (!defined('ELINAR_FORM_RATE_LIMIT_WINDOW')) define('ELINAR_FORM_RATE_LIMIT_WINDOW', 15 * MINUTE_IN_SECONDS);
+if (!defined('ELINAR_FORM_RATE_LIMIT_WINDOW')) define('ELINAR_FORM_RATE_LIMIT_WINDOW', 15 * (defined('MINUTE_IN_SECONDS') ? MINUTE_IN_SECONDS : 60));
 if (!defined('ELINAR_FORM_MIN_ELAPSED_MS')) define('ELINAR_FORM_MIN_ELAPSED_MS', 3000);
 
 if (!function_exists('elinar_get_user_agent')) {
@@ -47,17 +47,90 @@ if (!function_exists('elinar_get_request_referrer')) {
     }
 }
 
+if (!function_exists('elinar_get_wpforms_turnstile_settings')) {
+    function elinar_get_wpforms_turnstile_settings()
+    {
+        static $settings = null;
+        if ($settings !== null) {
+            return $settings;
+        }
+
+        $settings = array(
+            'site_key' => '',
+            'secret_key' => '',
+            'source' => '',
+        );
+
+        if (!function_exists('wpforms_get_captcha_settings')) {
+            return $settings;
+        }
+
+        $captcha_settings = wpforms_get_captcha_settings();
+        if (!is_array($captcha_settings) || (!isset($captcha_settings['provider']) || (string) $captcha_settings['provider'] !== 'turnstile')) {
+            return $settings;
+        }
+
+        $site_key = isset($captcha_settings['site_key']) ? trim((string) $captcha_settings['site_key']) : '';
+        $secret_key = isset($captcha_settings['secret_key']) ? trim((string) $captcha_settings['secret_key']) : '';
+        if ($site_key === '' || $secret_key === '') {
+            return $settings;
+        }
+
+        $settings = array(
+            'site_key' => $site_key,
+            'secret_key' => $secret_key,
+            'source' => 'wpforms',
+        );
+
+        return $settings;
+    }
+}
+
+if (!function_exists('elinar_get_turnstile_settings')) {
+    function elinar_get_turnstile_settings()
+    {
+        static $settings = null;
+        if ($settings !== null) {
+            return $settings;
+        }
+
+        $const_site_key = defined('ELINAR_TURNSTILE_SITE_KEY') ? trim((string) ELINAR_TURNSTILE_SITE_KEY) : '';
+        $const_secret_key = defined('ELINAR_TURNSTILE_SECRET_KEY') ? trim((string) ELINAR_TURNSTILE_SECRET_KEY) : '';
+        $wpforms_settings = elinar_get_wpforms_turnstile_settings();
+
+        $settings = array(
+            'site_key' => '',
+            'secret_key' => '',
+            'source' => '',
+        );
+
+        if ($wpforms_settings['site_key'] !== '' && $wpforms_settings['secret_key'] !== '') {
+            $settings = $wpforms_settings;
+        } elseif ($const_site_key !== '' && $const_secret_key !== '') {
+            $settings = array(
+                'site_key' => $const_site_key,
+                'secret_key' => $const_secret_key,
+                'source' => 'constants',
+            );
+        }
+
+        return $settings;
+    }
+}
+
 if (!function_exists('elinar_get_turnstile_site_key')) {
     function elinar_get_turnstile_site_key()
     {
-        return defined('ELINAR_TURNSTILE_SITE_KEY') ? trim((string) ELINAR_TURNSTILE_SITE_KEY) : '';
+        $settings = elinar_get_turnstile_settings();
+        return isset($settings['site_key']) ? (string) $settings['site_key'] : '';
     }
 }
 
 if (!function_exists('elinar_get_turnstile_secret_key')) {
     function elinar_get_turnstile_secret_key()
     {
-        return defined('ELINAR_TURNSTILE_SECRET_KEY') ? trim((string) ELINAR_TURNSTILE_SECRET_KEY) : '';
+        $settings = elinar_get_turnstile_settings();
+        return isset($settings['secret_key']) ? (string) $settings['secret_key'] : '';
     }
 }
 
@@ -71,8 +144,21 @@ if (!function_exists('elinar_has_turnstile_keys')) {
 if (!function_exists('elinar_get_form_security_message')) {
     function elinar_get_form_security_message($code = 'security')
     {
-        if ($code === 'rate_limit') {
-            return 'Слишком много попыток, повторите позже.';
+        switch ($code) {
+            case 'rate_limit':
+                return 'Слишком много попыток, повторите позже.';
+            case 'timing':
+                return 'Форма была отправлена слишком быстро. Проверьте данные и попробуйте еще раз.';
+            case 'turnstile_missing':
+            case 'turnstile_invalid':
+                return 'Не удалось подтвердить проверку Cloudflare. Поставьте галочку еще раз и повторите отправку.';
+            case 'turnstile_request':
+            case 'turnstile_config':
+                return 'Сервис проверки безопасности временно недоступен. Попробуйте еще раз через минуту.';
+            case 'nonce':
+                return 'Страница устарела. Обновите страницу и попробуйте снова.';
+            case 'honeypot':
+                return 'Проверка формы сработала повторно. Обновите страницу и попробуйте снова.';
         }
 
         return 'Проверка безопасности не пройдена, обновите страницу и попробуйте снова.';
@@ -107,6 +193,64 @@ if (!function_exists('elinar_security_log')) {
         if (is_string($line) && $line !== '') {
             @file_put_contents(elinar_private_log_file('form-security-log.txt'), $line . "\n", FILE_APPEND | LOCK_EX);
         }
+    }
+}
+
+if (!function_exists('elinar_get_form_honeypot_field_name')) {
+    function elinar_get_form_honeypot_field_name()
+    {
+        return 'elinar_hp_confirm';
+    }
+}
+
+if (!function_exists('elinar_get_turnstile_token_field_names')) {
+    function elinar_get_turnstile_token_field_names()
+    {
+        return array('elinar-turnstile-response', 'cf-turnstile-response');
+    }
+}
+
+if (!function_exists('elinar_normalize_turnstile_token_value')) {
+    function elinar_normalize_turnstile_token_value($value)
+    {
+        if (is_array($value)) {
+            foreach ($value as $item) {
+                $token = elinar_normalize_turnstile_token_value($item);
+                if ($token !== '') {
+                    return $token;
+                }
+            }
+
+            return '';
+        }
+
+        if (!is_scalar($value)) {
+            return '';
+        }
+
+        return trim(wp_unslash((string) $value));
+    }
+}
+
+if (!function_exists('elinar_log_invalid_public_nonce')) {
+    function elinar_log_invalid_public_nonce($form_key, $field_name, $action, $request_id = '')
+    {
+        $nonce = isset($_POST[$field_name]) ? wp_unslash((string) $_POST[$field_name]) : '';
+        $nonce = is_string($nonce) ? trim($nonce) : '';
+
+        if ($nonce !== '' && wp_verify_nonce($nonce, $action)) {
+            return true;
+        }
+
+        elinar_security_log($form_key, array(
+            'event' => 'nonce_failed_soft',
+            'request_id' => $request_id,
+            'field_name' => sanitize_key((string) $field_name),
+            'action' => sanitize_key((string) $action),
+            'present' => $nonce !== '',
+        ));
+
+        return false;
     }
 }
 
@@ -175,6 +319,195 @@ if (!function_exists('elinar_check_form_rate_limit')) {
     }
 }
 
+if (!function_exists('elinar_get_turnstile_remote_ip')) {
+    function elinar_get_turnstile_remote_ip()
+    {
+        $ip = function_exists('elinar_get_real_ip') ? elinar_get_real_ip() : '';
+        $ip = is_string($ip) ? trim($ip) : '';
+
+        if ($ip === '' || $ip === 'unknown') {
+            return '';
+        }
+
+        return filter_var($ip, FILTER_VALIDATE_IP) ? $ip : '';
+    }
+}
+
+if (!function_exists('elinar_get_turnstile_raw_request_tokens')) {
+    function elinar_get_turnstile_raw_request_tokens()
+    {
+        static $tokens = null;
+        if ($tokens !== null) {
+            return $tokens;
+        }
+
+        $tokens = array();
+        foreach (elinar_get_turnstile_token_field_names() as $field_name) {
+            $tokens[$field_name] = array();
+        }
+
+        $request_method = isset($_SERVER['REQUEST_METHOD']) ? strtoupper((string) $_SERVER['REQUEST_METHOD']) : '';
+        if ($request_method !== 'POST') {
+            return $tokens;
+        }
+
+        $raw_body = file_get_contents('php://input');
+        if (!is_string($raw_body) || $raw_body === '') {
+            return $tokens;
+        }
+
+        $content_type = isset($_SERVER['CONTENT_TYPE']) ? (string) $_SERVER['CONTENT_TYPE'] : '';
+        if ($content_type === '' && isset($_SERVER['HTTP_CONTENT_TYPE'])) {
+            $content_type = (string) $_SERVER['HTTP_CONTENT_TYPE'];
+        }
+        $content_type = strtolower($content_type);
+
+        if (strpos($content_type, 'application/x-www-form-urlencoded') !== false) {
+            foreach (explode('&', $raw_body) as $pair) {
+                if ($pair === '') {
+                    continue;
+                }
+
+                $parts = explode('=', $pair, 2);
+                $name = isset($parts[0]) ? urldecode((string) $parts[0]) : '';
+                if (!array_key_exists($name, $tokens)) {
+                    continue;
+                }
+
+                $tokens[$name][] = isset($parts[1]) ? urldecode((string) $parts[1]) : '';
+            }
+
+            return $tokens;
+        }
+
+        if (strpos($content_type, 'multipart/form-data') === false || !preg_match('/boundary=(?:"([^"]+)"|([^;]+))/i', $content_type, $matches)) {
+            return $tokens;
+        }
+
+        $boundary = isset($matches[1]) && $matches[1] !== '' ? $matches[1] : (isset($matches[2]) ? trim((string) $matches[2]) : '');
+        if ($boundary === '') {
+            return $tokens;
+        }
+
+        $parts = explode('--' . $boundary, $raw_body);
+        foreach ($parts as $part) {
+            $part = ltrim($part, "\r\n");
+            $part = rtrim($part, "\r\n");
+            if ($part === '' || $part === '--') {
+                continue;
+            }
+
+            if (substr($part, -2) === '--') {
+                $part = substr($part, 0, -2);
+            }
+
+            if (!preg_match("/\r\n\r\n|\n\n/", $part, $separator_match, PREG_OFFSET_CAPTURE)) {
+                continue;
+            }
+
+            $separator = $separator_match[0][0];
+            $separator_pos = (int) $separator_match[0][1];
+            $headers = substr($part, 0, $separator_pos);
+            $body = substr($part, $separator_pos + strlen($separator));
+            if (!preg_match('/Content-Disposition:[^\r\n]*name="([^"]+)"/i', $headers, $name_matches)) {
+                continue;
+            }
+
+            $field_name = isset($name_matches[1]) ? (string) $name_matches[1] : '';
+            if (!array_key_exists($field_name, $tokens)) {
+                continue;
+            }
+
+            $tokens[$field_name][] = rtrim($body, "\r\n");
+        }
+
+        return $tokens;
+    }
+}
+
+if (!function_exists('elinar_get_turnstile_token_from_request')) {
+    function elinar_get_turnstile_token_from_request()
+    {
+        foreach (elinar_get_turnstile_token_field_names() as $field_name) {
+            if (!isset($_POST[$field_name])) {
+                continue;
+            }
+
+            $token = elinar_normalize_turnstile_token_value($_POST[$field_name]);
+            if ($token !== '') {
+                return $token;
+            }
+        }
+
+        $raw_tokens = elinar_get_turnstile_raw_request_tokens();
+        foreach (elinar_get_turnstile_token_field_names() as $field_name) {
+            if (empty($raw_tokens[$field_name]) || !is_array($raw_tokens[$field_name])) {
+                continue;
+            }
+
+            foreach ($raw_tokens[$field_name] as $raw_value) {
+                $token = elinar_normalize_turnstile_token_value($raw_value);
+                if ($token !== '') {
+                    return $token;
+                }
+            }
+        }
+
+        return '';
+    }
+}
+
+if (!function_exists('elinar_verify_turnstile_request')) {
+    function elinar_verify_turnstile_request($token, $remote_ip = '')
+    {
+        $body = array(
+            'secret' => elinar_get_turnstile_secret_key(),
+            'response' => $token,
+        );
+
+        if ($remote_ip !== '') {
+            $body['remoteip'] = $remote_ip;
+        }
+
+        $response = wp_remote_post('https://challenges.cloudflare.com/turnstile/v0/siteverify', array(
+            'timeout' => 10,
+            'body' => $body,
+        ));
+
+        if (is_wp_error($response)) {
+            return array(
+                'ok' => false,
+                'status' => 'request_error',
+                'status_code' => 0,
+                'error_codes' => array('request-error'),
+                'hostname' => '',
+                'remote_ip' => $remote_ip,
+                'transport_error' => sanitize_text_field($response->get_error_message()),
+            );
+        }
+
+        $status_code = (int) wp_remote_retrieve_response_code($response);
+        $raw_body = wp_remote_retrieve_body($response);
+        $result = json_decode($raw_body, true);
+        $success = is_array($result) && !empty($result['success']);
+        $error_codes = is_array($result) && !empty($result['error-codes']) && is_array($result['error-codes']) ? array_map('sanitize_text_field', $result['error-codes']) : array();
+        $hostname = is_array($result) && !empty($result['hostname']) ? sanitize_text_field((string) $result['hostname']) : '';
+        $challenge_ts = is_array($result) && !empty($result['challenge_ts']) ? sanitize_text_field((string) $result['challenge_ts']) : '';
+
+        return array(
+            'ok' => $success,
+            'status' => $success ? 'passed' : 'invalid',
+            'status_code' => $status_code,
+            'error_codes' => $error_codes,
+            'hostname' => $hostname,
+            'challenge_ts' => $challenge_ts,
+            'remote_ip' => $remote_ip,
+            'transport_error' => '',
+            'raw_body_excerpt' => is_string($raw_body) ? substr(sanitize_textarea_field($raw_body), 0, 300) : '',
+        );
+    }
+}
+
 if (!function_exists('elinar_validate_turnstile_token')) {
     function elinar_validate_turnstile_token($token, $form_key, $request_id = '')
     {
@@ -217,20 +550,54 @@ if (!function_exists('elinar_validate_turnstile_token')) {
             );
         }
 
-        $response = wp_remote_post('https://challenges.cloudflare.com/turnstile/v0/siteverify', array(
-            'timeout' => 10,
-            'body' => array(
-                'secret' => elinar_get_turnstile_secret_key(),
-                'response' => $token,
-                'remoteip' => function_exists('elinar_get_real_ip') ? elinar_get_real_ip() : '',
-            ),
-        ));
+        $remote_ip = elinar_get_turnstile_remote_ip();
+        $verification = elinar_verify_turnstile_request($token, $remote_ip);
+        $retry_without_remote_ip = null;
 
-        if (is_wp_error($response)) {
+        if (empty($verification['ok']) && $remote_ip !== '') {
+            $retry_without_remote_ip = elinar_verify_turnstile_request($token, '');
+
+            if (!empty($retry_without_remote_ip['ok'])) {
+                elinar_security_log($form_key, array(
+                    'event' => 'turnstile_retry_without_remote_ip',
+                    'request_id' => $request_id,
+                    'initial' => array(
+                        'status' => isset($verification['status']) ? $verification['status'] : '',
+                        'status_code' => isset($verification['status_code']) ? (int) $verification['status_code'] : 0,
+                        'error_codes' => isset($verification['error_codes']) ? $verification['error_codes'] : array(),
+                        'remote_ip' => $remote_ip,
+                        'transport_error' => isset($verification['transport_error']) ? $verification['transport_error'] : '',
+                    ),
+                ));
+
+                return array(
+                    'ok' => true,
+                    'status' => 'passed_without_remote_ip',
+                    'error_codes' => isset($retry_without_remote_ip['error_codes']) ? $retry_without_remote_ip['error_codes'] : array(),
+                    'hostname' => isset($retry_without_remote_ip['hostname']) ? $retry_without_remote_ip['hostname'] : '',
+                    'challenge_ts' => isset($retry_without_remote_ip['challenge_ts']) ? $retry_without_remote_ip['challenge_ts'] : '',
+                    'remote_ip' => '',
+                );
+            }
+        }
+
+        if (!empty($verification['transport_error']) && is_array($retry_without_remote_ip) && empty($retry_without_remote_ip['transport_error'])) {
+            $verification = $retry_without_remote_ip;
+        }
+
+        if (!empty($verification['transport_error'])) {
             elinar_security_log($form_key, array(
                 'event' => 'turnstile_request_error',
                 'request_id' => $request_id,
-                'message' => sanitize_text_field($response->get_error_message()),
+                'message' => isset($verification['transport_error']) ? $verification['transport_error'] : '',
+                'status_code' => isset($verification['status_code']) ? (int) $verification['status_code'] : 0,
+                'remote_ip' => $remote_ip,
+                'retry_without_remote_ip' => is_array($retry_without_remote_ip) ? array(
+                    'status' => isset($retry_without_remote_ip['status']) ? $retry_without_remote_ip['status'] : '',
+                    'status_code' => isset($retry_without_remote_ip['status_code']) ? (int) $retry_without_remote_ip['status_code'] : 0,
+                    'error_codes' => isset($retry_without_remote_ip['error_codes']) ? $retry_without_remote_ip['error_codes'] : array(),
+                    'transport_error' => isset($retry_without_remote_ip['transport_error']) ? $retry_without_remote_ip['transport_error'] : '',
+                ) : null,
             ));
 
             return array(
@@ -238,44 +605,56 @@ if (!function_exists('elinar_validate_turnstile_token')) {
                 'code' => 'turnstile_request',
                 'status' => 'request_error',
                 'error_codes' => array('request-error'),
+                'remote_ip' => $remote_ip,
             );
         }
 
-        $body = wp_remote_retrieve_body($response);
-        $result = json_decode($body, true);
-        $success = is_array($result) && !empty($result['success']);
-        $error_codes = is_array($result) && !empty($result['error-codes']) && is_array($result['error-codes']) ? array_map('sanitize_text_field', $result['error-codes']) : array();
-        $hostname = is_array($result) && !empty($result['hostname']) ? sanitize_text_field((string) $result['hostname']) : '';
-
-        if (!$success) {
+        if (empty($verification['ok'])) {
             elinar_security_log($form_key, array(
                 'event' => 'turnstile_invalid',
                 'request_id' => $request_id,
-                'error_codes' => $error_codes,
-                'hostname' => $hostname,
+                'status_code' => isset($verification['status_code']) ? (int) $verification['status_code'] : 0,
+                'error_codes' => isset($verification['error_codes']) ? $verification['error_codes'] : array(),
+                'hostname' => isset($verification['hostname']) ? $verification['hostname'] : '',
+                'remote_ip' => $remote_ip,
+                'raw_body_excerpt' => isset($verification['raw_body_excerpt']) ? $verification['raw_body_excerpt'] : '',
+                'retry_without_remote_ip' => is_array($retry_without_remote_ip) ? array(
+                    'status' => isset($retry_without_remote_ip['status']) ? $retry_without_remote_ip['status'] : '',
+                    'status_code' => isset($retry_without_remote_ip['status_code']) ? (int) $retry_without_remote_ip['status_code'] : 0,
+                    'error_codes' => isset($retry_without_remote_ip['error_codes']) ? $retry_without_remote_ip['error_codes'] : array(),
+                    'hostname' => isset($retry_without_remote_ip['hostname']) ? $retry_without_remote_ip['hostname'] : '',
+                    'raw_body_excerpt' => isset($retry_without_remote_ip['raw_body_excerpt']) ? $retry_without_remote_ip['raw_body_excerpt'] : '',
+                ) : null,
             ));
 
             return array(
                 'ok' => false,
                 'code' => 'turnstile_invalid',
                 'status' => 'invalid',
-                'error_codes' => $error_codes,
-                'hostname' => $hostname,
+                'error_codes' => isset($verification['error_codes']) ? $verification['error_codes'] : array(),
+                'hostname' => isset($verification['hostname']) ? $verification['hostname'] : '',
+                'remote_ip' => $remote_ip,
             );
         }
 
         return array(
             'ok' => true,
             'status' => 'passed',
-            'error_codes' => $error_codes,
-            'hostname' => $hostname,
+            'error_codes' => isset($verification['error_codes']) ? $verification['error_codes'] : array(),
+            'hostname' => isset($verification['hostname']) ? $verification['hostname'] : '',
+            'challenge_ts' => isset($verification['challenge_ts']) ? $verification['challenge_ts'] : '',
+            'remote_ip' => $remote_ip,
         );
     }
 }
 
 if (!function_exists('elinar_validate_form_security')) {
-    function elinar_validate_form_security($form_key, $request_id = '', $honeypot_field = 'website_url')
+    function elinar_validate_form_security($form_key, $request_id = '', $honeypot_field = '')
     {
+        if ($honeypot_field === '') {
+            $honeypot_field = elinar_get_form_honeypot_field_name();
+        }
+
         $ip = function_exists('elinar_get_real_ip') ? elinar_get_real_ip() : '';
         $user_agent = function_exists('elinar_get_user_agent') ? elinar_get_user_agent() : '';
         $referrer = function_exists('elinar_get_request_referrer') ? elinar_get_request_referrer() : '';
@@ -289,7 +668,7 @@ if (!function_exists('elinar_validate_form_security')) {
             return array(
                 'ok' => false,
                 'code' => 'honeypot',
-                'message' => elinar_get_form_security_message('security'),
+                'message' => elinar_get_form_security_message('honeypot'),
             );
         }
 
@@ -320,7 +699,7 @@ if (!function_exists('elinar_validate_form_security')) {
             return array(
                 'ok' => false,
                 'code' => 'timing',
-                'message' => elinar_get_form_security_message('security'),
+                'message' => elinar_get_form_security_message('timing'),
                 'meta' => array(
                     'ip' => $ip,
                     'user_agent' => $user_agent,
@@ -331,12 +710,14 @@ if (!function_exists('elinar_validate_form_security')) {
             );
         }
 
-        $turnstile = elinar_validate_turnstile_token(isset($_POST['cf-turnstile-response']) ? wp_unslash((string) $_POST['cf-turnstile-response']) : '', $form_key, $request_id);
+        $turnstile = elinar_validate_turnstile_token(elinar_get_turnstile_token_from_request(), $form_key, $request_id);
         if (empty($turnstile['ok'])) {
+            $turnstile_code = isset($turnstile['code']) ? (string) $turnstile['code'] : 'turnstile_invalid';
+
             return array(
                 'ok' => false,
-                'code' => isset($turnstile['code']) ? (string) $turnstile['code'] : 'turnstile',
-                'message' => elinar_get_form_security_message('security'),
+                'code' => $turnstile_code,
+                'message' => elinar_get_form_security_message($turnstile_code),
                 'meta' => array(
                     'ip' => $ip,
                     'user_agent' => $user_agent,
@@ -363,15 +744,19 @@ if (!function_exists('elinar_validate_form_security')) {
 }
 
 if (!function_exists('elinar_render_form_security_fields')) {
-    function elinar_render_form_security_fields($form_key, $honeypot_field = 'website_url')
+    function elinar_render_form_security_fields($form_key, $honeypot_field = '')
     {
+        if ($honeypot_field === '') {
+            $honeypot_field = elinar_get_form_honeypot_field_name();
+        }
+
         ?>
         <input type="hidden" name="form_security_key" value="<?php echo esc_attr($form_key); ?>">
         <input type="hidden" name="form_render_ts" class="elinar-form-render-ts" value="">
         <input type="hidden" name="form_elapsed_ms" class="elinar-form-elapsed-ms" value="">
         <?php if ($honeypot_field !== '') : ?>
             <div class="elinar-form-honeypot" aria-hidden="true">
-                <input type="text" name="<?php echo esc_attr($honeypot_field); ?>" tabindex="-1" autocomplete="off">
+                <input type="text" name="<?php echo esc_attr($honeypot_field); ?>" tabindex="-1" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" inputmode="none" data-lpignore="true" data-form-type="other">
             </div>
         <?php endif;
     }
@@ -448,19 +833,12 @@ function elinar_handle_project_form_universal()
     $redirect_base = $protocol . '://' . $host . $uri;
     $request_id = elinar_generate_request_id('PRJ');
 
-    // CSRF защита
-    if (!isset($_POST['project_form_nonce']) || !wp_verify_nonce($_POST['project_form_nonce'], 'elinar_project_form')) {
-        elinar_security_log('project_form_universal', array(
-            'event' => 'nonce_failed',
-            'request_id' => $request_id,
-        ));
-        wp_redirect($redirect_base . '?form=error&field=security#contact-form');
-        exit;
-    }
+    // Для публичной формы nonce только логируем: страницу может отдавать кэш/CDN.
+    elinar_log_invalid_public_nonce('project_form_universal', 'project_form_nonce', 'elinar_project_form', $request_id);
 
     $security_check = elinar_validate_form_security('project_form_universal', $request_id);
     if (empty($security_check['ok'])) {
-        $error_field = isset($security_check['code']) && $security_check['code'] === 'rate_limit' ? 'rate_limit' : 'security';
+        $error_field = isset($security_check['code']) ? sanitize_key((string) $security_check['code']) : 'security';
         wp_redirect($redirect_base . '?form=error&field=' . $error_field . '#contact-form');
         exit;
     }
@@ -2133,6 +2511,8 @@ function elinar_scripts()
     wp_localize_script('elinar-form-security', 'elinarFormSecurityConfig', array(
         'siteKey' => $turnstile_site_key,
         'enabled' => elinar_has_turnstile_keys(),
+        'tokenFieldName' => 'elinar-turnstile-response',
+        'legacyTokenFieldName' => 'cf-turnstile-response',
         'isLocal' => function_exists('elinar_is_local_environment') ? elinar_is_local_environment() : false,
         'messages' => array(
             'security' => elinar_get_form_security_message('security'),
@@ -3123,14 +3503,7 @@ function elinar_handle_contact_form()
 {
     $request_id = elinar_generate_request_id('CNT');
 
-    // Проверка nonce для безопасности
-    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'elinar_contact_form_nonce')) {
-        elinar_security_log('contact_form', array(
-            'event' => 'nonce_failed',
-            'request_id' => $request_id,
-        ));
-        wp_send_json_error(array('message' => 'Ошибка безопасности. Пожалуйста, обновите страницу и попробуйте снова.'));
-    }
+    elinar_log_invalid_public_nonce('contact_form', 'nonce', 'elinar_contact_form_nonce', $request_id);
 
     $security_check = elinar_validate_form_security('contact_form', $request_id);
     if (empty($security_check['ok'])) {
@@ -3282,14 +3655,7 @@ function elinar_handle_quote_form()
 {
     $request_id = elinar_generate_request_id('QTE');
 
-    // Проверка nonce для безопасности
-    if (!isset($_POST['quote_nonce']) || !wp_verify_nonce($_POST['quote_nonce'], 'elinar_quote_form_nonce')) {
-        elinar_security_log('quote_form', array(
-            'event' => 'nonce_failed',
-            'request_id' => $request_id,
-        ));
-        wp_send_json_error(array('message' => 'Ошибка безопасности. Пожалуйста, обновите страницу и попробуйте снова.'));
-    }
+    elinar_log_invalid_public_nonce('quote_form', 'quote_nonce', 'elinar_quote_form_nonce', $request_id);
 
     $security_check = elinar_validate_form_security('quote_form', $request_id);
     if (empty($security_check['ok'])) {
@@ -3746,14 +4112,7 @@ function elinar_handle_project_form()
     $request_id = elinar_generate_request_id('PRJ');
     $disable_nonce_checks = (bool) (defined('ELINAR_DISABLE_NONCE_CHECKS') ? constant('ELINAR_DISABLE_NONCE_CHECKS') : false);
     if (!$disable_nonce_checks) {
-        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'project_form_nonce')) {
-            elinar_security_log('project_form_ajax', array(
-                'event' => 'nonce_failed',
-                'request_id' => $request_id,
-            ));
-            wp_send_json_error(array('message' => 'Ошибка безопасности. Обновите страницу и попробуйте снова.'));
-            return;
-        }
+        elinar_log_invalid_public_nonce('project_form_ajax', 'nonce', 'project_form_nonce', $request_id);
     }
 
     $security_check = elinar_validate_form_security('project_form_ajax', $request_id);
