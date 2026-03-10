@@ -4334,101 +4334,36 @@ function elinar_yandex_metrika()
         return;
     }
 ?>
-    <!-- Yandex.Metrika counter (Consent-gated) -->
+    <!-- Yandex.Metrika counter -->
     <script type="text/javascript">
-        (function() {
-            var metrikaLoaded = false;
-            var metrikaBlocked = false;
-            var metrikaScriptSelector = 'script[src*="mc.yandex.ru/metrika/tag.js"]';
+        window.yaCounterId = 106098510;
 
-            function blockMetrikaRuntime() {
-                metrikaBlocked = true;
-                metrikaLoaded = false;
-
-                try {
-                    var scripts = document.querySelectorAll(metrikaScriptSelector);
-                    for (var i = 0; i < scripts.length; i++) {
-                        if (scripts[i] && scripts[i].parentNode) {
-                            scripts[i].parentNode.removeChild(scripts[i]);
-                        }
-                    }
-                } catch (e) {}
-
-                try {
-                    window.ym = undefined;
-                } catch (e) {}
-
-                try {
-                    window['yaCounter106098510'] = undefined;
-                } catch (e) {}
-            }
-
-            function loadMetrika() {
-                if (metrikaLoaded || metrikaBlocked) return;
-                metrikaLoaded = true;
-                window.yaCounterId = 106098510;
-
-                (function(m, e, t, r, i, k, a) {
-                    m[i] = m[i] || function() {
-                        (m[i].a = m[i].a || []).push(arguments);
-                    };
-                    m[i].l = 1 * new Date();
-                    k = e.createElement(t);
-                    a = e.getElementsByTagName(t)[0];
-                    k.async = 1;
-                    k.src = r;
-                    a.parentNode.insertBefore(k, a);
-                })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=106098510', 'ym');
-
-                ym(106098510, 'init', {
-                    clickmap: true,
-                    trackLinks: true,
-                    accurateTrackBounce: true,
-                    webvisor: true
-                });
-            }
-
-            function readConsent() {
-                try {
-                    var raw = localStorage.getItem('elinar_cookie_preferences');
-                    if (raw) {
-                        var prefs = JSON.parse(raw);
-                        if (prefs && typeof prefs === 'object') {
-                            return prefs.analytics === true;
-                        }
-                    }
-
-                    if (localStorage.getItem('elinar_cookie_consent') === 'accepted') {
-                        return true;
-                    }
-                } catch (e) {}
-
-                return null;
-            }
-
-            function onConsentChanged(detail) {
-                var allowed = !!(detail && detail.analytics);
-                if (allowed) {
-                    metrikaBlocked = false;
-                    loadMetrika();
+        (function(m, e, t, r, i, k, a) {
+            m[i] = m[i] || function() {
+                (m[i].a = m[i].a || []).push(arguments);
+            };
+            m[i].l = 1 * new Date();
+            for (var j = 0; j < document.scripts.length; j++) {
+                if (document.scripts[j].src === r) {
                     return;
                 }
-
-                blockMetrikaRuntime();
             }
+            k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a);
+        })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=106098510', 'ym');
 
-            var consent = readConsent();
-            if (consent === true) {
-                setTimeout(loadMetrika, 500);
-            } else if (consent === false) {
-                blockMetrikaRuntime();
-            }
-
-            window.addEventListener('elinar:cookie-consent', function(e) {
-                onConsentChanged(e && e.detail ? e.detail : null);
-            });
-        })();
+        ym(106098510, 'init', {
+            ssr: true,
+            webvisor: true,
+            clickmap: true,
+            referrer: document.referrer,
+            url: location.href,
+            accurateTrackBounce: true,
+            trackLinks: true
+        });
     </script>
+    <noscript>
+        <div><img src="https://mc.yandex.ru/watch/106098510" style="position:absolute; left:-9999px;" alt="" /></div>
+    </noscript>
     <!-- /Yandex.Metrika counter -->
 <?php
 }
